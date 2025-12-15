@@ -1,0 +1,138 @@
+#' Bell numbers
+#'
+#' Compute Bell numbers up to order z using a truncated series representation.
+#'
+#' This function is for internal use. The results are stored in \code{.Bell_num}
+#' and used by the Bell distribution functions.
+#'
+#' @param z nonnegative integer giving the maximum order.
+#'
+#' @return numeric vector of length \code{z + 1} containing B_0, ..., B_z.
+#' @keywords internal
+Bz <- function(z) {
+    v <- seq(0, z, by = 1L)
+    k <- seq(0, 20, by = 1L)
+    sapply(
+        v,
+        function(n) {
+            sum(k ^ n / factorial(k)) / exp(1)
+        }
+    )
+}
+
+.BELL_MAX_Z <- 236L
+.Bell_num <- Bz(.BELL_MAX_Z)
+
+#' The Bell distribution
+#'
+#' Density, distribution function, quantile function and random generation
+#' for the Bell distribution with parameter \code{theta}.
+#'
+#' Let \eqn{B_x} denote the xth Bell number. The Bell distribution has
+#' probability mass function
+#' \deqn{
+#' P(X = x) = \theta^x \exp(-\exp(\theta) + 1) \frac{B_x}{x!},
+#' }
+#' for nonnegative integers \eqn{x} and real \eqn{\theta}.
+#'
+#' The functions follow the standard naming used in base R:
+#' \code{dbell} for the density, \code{pbell} for the distribution function,
+#' \code{qbell} for the quantile function and \code{rbell} for random
+#' generation.
+#'
+#' @name Bell
+#' @importFrom stats rmultinom
+#' @param x vector of nonnegative integers (for \code{dbell} and \code{pbell}).
+#' @param p numeric vector of probabilities between 0 and 1 inclusive (for \code{qbell}).
+#' @param n number of observations to generate (for \code{rbell}).
+#' @param theta scalar real parameter.
+#' @param max_z maximum support value used for approximation in
+#'   \code{rbell} and \code{qbell}.
+#'
+#' @return
+#' For \code{dbell}, a numeric vector of probabilities.
+#' For \code{pbell}, a numeric vector of cumulative probabilities.
+#' For \code{qbell}, an integer vector of quantiles.
+#' For \code{rbell}, an integer vector of random values.
+#'
+#' @examples
+#' dbell(0:5, theta = 1)
+#' pbell(0:5, theta = 1)
+#' qbell(c(0.25, 0.5, 0.9), theta = 1)
+#' set.seed(1)
+#' rbell(10, theta = 1)
+#'
+#' @export
+dbell <- function(x, theta) {
+    x_int <- as.integer(x)
+    if (any(x_int < 0L)) {
+        stop("x must be nonnegative")
+    }
+    if (any(x_int > .BELL_MAX_Z)) {
+        stop("x exceeds precomputed Bell numbers; increase .BELL_MAX_Z if needed")
+    }
+    if (length(theta) != 1L) {
+        stop("theta must be scalar")
+    }
+    tmp <- .Bell_num[x_int + 1L] / factorial(x_int)
+    theta ^ x_int * exp(-exp(theta) + 1) * tmp
+}
+
+#' @rdname Bell
+#' @export
+pbell <- function(x, theta) {
+    x_int <- as.integer(x)
+    if (any(x_int < 0L)) {
+        stop("x must be nonnegative")
+    }
+    sapply(
+        x_int,
+        function(z) {
+            sum(dbell(0:z, theta))
+        }
+    )
+}
+
+#' @rdname Bell
+#' @export
+rbell <- function(n, theta, max_z = 100L) {
+    if (length(n) != 1L || n < 0L) {
+        stop("n must be a nonnegative integer")
+    }
+    if (max_z > .BELL_MAX_Z) {
+        stop("max_z exceeds precomputed Bell numbers; increase .BELL_MAX_Z if needed")
+    }
+    z_vals <- 0:max_z
+    p <- dbell(z_vals, theta)
+    p <- p / sum(p)
+    if (n == 0L) {
+        return(integer(0L))
+    }
+    sampling <- rmultinom(n, size = 1L, prob = p)
+    out <- integer(n)
+    for (i in seq_len(n)) {
+        out[i] <- which(sampling[, i] == 1L) - 1L
+    }
+    out
+}
+
+#' @rdname Bell
+#' @export
+qbell <- function(p, theta, max_z = 100L) {
+    if (any(p < 0 | p > 1)) {
+        stop("p must be between 0 and 1 inclusive")
+    }
+    if (max_z > .BELL_MAX_Z) {
+        stop("max_z exceeds precomputed Bell numbers; increase .BELL_MAX_Z if needed")
+    }
+    z_vals <- 0:max_z
+    pmf <- dbell(z_vals, theta)
+    pmf <- pmf / sum(pmf)
+    cdf <- cumsum(pmf)
+    sapply(
+        p,
+        function(prob) {
+            which(cdf >= prob)[1L] - 1L
+        }
+    )
+}
