@@ -104,3 +104,40 @@ test_that("negative binomial innovations use size and prob", {
 
     expect_true(mean(y1) > mean(y2))
 })
+
+test_that("blocks and tau affect innovations as intended", {
+    n_sub <- 200
+    n_time <- 3
+    blocks <- c(rep(1L, n_sub / 2), rep(2L, n_sub / 2))
+
+    set.seed(10)
+    y0 <- simulate_inad(
+        n_subjects = n_sub,
+        n_time = n_time,
+        order = 0,
+        innovation = "pois",
+        theta = 10,
+        blocks = blocks,
+        tau = 3
+    )
+
+    m1 <- mean(y0[blocks == 1L, ])
+    m2 <- mean(y0[blocks == 2L, ])
+    expect_true(m2 > m1)
+
+    set.seed(11)
+    y1 <- simulate_inad(
+        n_subjects = n_sub,
+        n_time = n_time,
+        order = 0,
+        innovation = "pois",
+        theta = 10,
+        blocks = blocks,
+        tau = c(100, 3)
+    )
+
+    m1b <- mean(y1[blocks == 1L, ])
+    m2b <- mean(y1[blocks == 2L, ])
+    expect_true(abs(m1b - 10) < 1.5)
+    expect_true(m2b > m1b)
+})

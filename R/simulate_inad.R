@@ -9,6 +9,9 @@
 #' are generated from the innovation distribution and the thinning operator
 #' and `alpha` are ignored.
 #'
+#' If `blocks` is provided, innovations include a block effect and use the
+#' parameter `theta[t] + tau[blocks[i]]` for subject i at time t.
+#'
 #' @param n_subjects number of subjects
 #' @param n_time number of time points
 #' @param order antedependence order, 0, 1 or 2
@@ -21,6 +24,11 @@
 #'   depending on the innovation type
 #' @param nb_inno_size probability parameter for negative binomial innovations
 #'   when `innovation = "nbinom"`; if `NULL`, defaults to 0.5
+#' @param blocks integer vector of length `n_subjects` indicating block
+#'   membership for each subject; if `NULL`, no block effect is applied
+#' @param tau group effect vector indexed by block; `tau[1]` is forced to 0.
+#'   If scalar x, it is expanded to c(0, x, ..., x) with length equal to the
+#'   number of blocks
 #'
 #' @return integer matrix of counts with dimension `n_subjects` by `n_time`
 #' @export
@@ -31,7 +39,9 @@ simulate_inad <- function(n_subjects,
                           innovation = c("pois", "bell", "nbinom"),
                           alpha = NULL,
                           theta = NULL,
-                          nb_inno_size = NULL) {
+                          nb_inno_size = NULL,
+                          blocks = NULL,
+                          tau = 0) {
 
     thinning <- match.arg(thinning)
     innovation <- match.arg(innovation)
@@ -50,6 +60,30 @@ simulate_inad <- function(n_subjects,
     n_subjects <- as.integer(n_subjects)
     n_time <- as.integer(n_time)
     order <- as.integer(order)
+
+    if (!is.null(blocks)) {
+        if (length(blocks) != n_subjects) {
+            stop("blocks must have length n_subjects")
+        }
+        blocks <- as.integer(blocks)
+        if (any(is.na(blocks)) || any(blocks <= 0L)) {
+            stop("blocks must be positive integers with no missing values")
+        }
+        B <- max(blocks)
+        if (length(tau) == 1L) {
+            tau <- c(0, rep(as.numeric(tau), max(B - 1L, 0L)))
+        } else {
+            tau <- as.numeric(tau)
+            if (length(tau) != B) {
+                stop("when blocks is provided, tau must be scalar or have length equal to max(blocks)")
+            }
+            tau[1L] <- 0
+        }
+    } else {
+        B <- 1L
+        blocks <- rep(1L, n_subjects)
+        tau <- 0
+    }
 
     if (is.null(theta)) {
         if (innovation == "pois") {
@@ -140,14 +174,18 @@ simulate_inad <- function(n_subjects,
     y <- matrix(0L, nrow = n_subjects, ncol = n_time)
 
     draw_innovation <- function(t_index) {
+        eff <- theta[t_index] + tau[blocks]
+        if (any(eff <= 0)) {
+            stop("theta[t] + tau[block] must be positive for all subjects")
+        }
         if (innovation == "pois") {
-            stats::rpois(n_subjects, lambda = theta[t_index])
+            stats::rpois(n_subjects, lambda = eff)
         } else if (innovation == "bell") {
-            rbell(n_subjects, theta = theta[t_index])
+            as.integer(vapply(eff, function(th) rbell(1L, theta = th), integer(1L)))
         } else {
             stats::rnbinom(
                 n_subjects,
-                size = theta[t_index],
+                size = eff,
                 prob = nb_inno_size[t_index]
             )
         }
