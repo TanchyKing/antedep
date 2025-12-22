@@ -35,7 +35,6 @@ logL_inad <- function(
 
     n <- nrow(y)
     N <- ncol(y)
-
     if (!(order %in% c(0, 1, 2))) stop("order must be 0, 1, or 2")
 
     if (is.null(blocks)) {
@@ -59,7 +58,6 @@ logL_inad <- function(
     blocks <- as.integer(blocks)
 
     B <- max(blocks)
-
     tau <- as.numeric(tau)
 
     if (B <= 1L) {
@@ -112,9 +110,9 @@ logL_inad <- function(
         stop("for order=2, alpha must be a matrix with 2 columns or a list(alpha1, alpha2)")
     }
 
-    alpha_pack <- unpack_alpha(order, alpha, N)
-    alpha1 <- alpha_pack$a1
-    alpha2 <- alpha_pack$a2
+    ap <- unpack_alpha(order, alpha, N)
+    alpha1 <- ap$a1
+    alpha2 <- ap$a2
 
     log_sum_exp <- function(x) {
         m <- max(x)
@@ -122,31 +120,28 @@ logL_inad <- function(
         m + log(sum(exp(x - m)))
     }
 
-    d_thin <- function(k, yprev, a, thinning) {
-        if (k < 0) return(0)
+    thin_vec <- function(k_vals, yprev, a, thinning) {
+        if (!is.finite(a) || a < 0) return(rep(0, length(k_vals)))
+
         if (thinning == "binom") {
-            if (!is.finite(a) || a < 0 || a > 1) return(0)
-            return(dbinom(k, size = yprev, prob = a))
+            if (a > 1) return(rep(0, length(k_vals)))
+            return(dbinom(k_vals, size = yprev, prob = a))
         }
+
         if (thinning == "pois") {
-            if (!is.finite(a) || a < 0) return(0)
-            return(dpois(k, lambda = a * yprev))
+            return(dpois(k_vals, lambda = a * yprev))
         }
-        if (thinning == "nbinom") {
-            if (!is.finite(a) || a < 0) return(0)
-            prob_nb <- 1 / (1 + a)
-            return(dnbinom(k, size = yprev, prob = prob_nb))
-        }
-        0
+
+        p_nb <- 1 / (1 + a)
+        dnbinom(k_vals, size = yprev, prob = p_nb)
     }
 
-    d_innov <- function(u, lam, innovation, size_nb) {
-        if (u < 0) return(0)
-        if (!is.finite(lam) || lam <= 0) return(0)
-        if (innovation == "pois") return(dpois(u, lambda = lam))
-        if (innovation == "bell") return(dbell(u, theta = lam))
-        if (innovation == "nbinom") return(dnbinom(u, size = size_nb, mu = lam))
-        0
+    innov_vec <- function(u_vals, lam, innovation, sz) {
+        if (!is.finite(lam) || lam <= 0) return(rep(0, length(u_vals)))
+
+        if (innovation == "pois") return(dpois(u_vals, lambda = lam))
+        if (innovation == "bell") return(dbell(u_vals, theta = lam))
+        dnbinom(u_vals, size = sz, mu = lam)
     }
 
     loglik <- 0
@@ -160,51 +155,52 @@ logL_inad <- function(
             y_si <- y[s, i]
 
             if (i == 1 || order == 0) {
-                p0 <- d_innov(y_si, lam, innovation, if (innovation == "nbinom") nb_inno_size[i] else NA_real_)
+                p0 <- innov_vec(y_si, lam, innovation, if (innovation == "nbinom") nb_inno_size[i] else NA_real_)
                 if (!is.finite(p0) || p0 <= 0) return(-Inf)
                 loglik <- loglik + log(p0)
-            } else if (order == 1 || i == 2) {
+                next
+            }
+
+            if (order == 1 || i == 2) {
                 y_prev <- y[s, i - 1]
                 k_vals <- 0:y_si
 
-                thin_vals <- vapply(k_vals, function(k) d_thin(k, y_prev, alpha1[i], thinning), numeric(1))
-                innov_vals <- vapply(y_si - k_vals, function(u) d_innov(u, lam, innovation,
-                                                                        if (innovation == "nbinom") nb_inno_size[i] else NA_real_
-                ), numeric(1))
+                thin_vals <- thin_vec(k_vals, y_prev, alpha1[i], thinning)
+                innov_vals <- innov_vec(y_si - k_vals, lam, innovation, if (innovation == "nbinom") nb_inno_size[i] else NA_real_)
 
                 conv <- sum(thin_vals * innov_vals)
                 if (!is.finite(conv) || conv <= 0) return(-Inf)
+
                 loglik <- loglik + log(conv)
-            } else {
-                y1 <- y[s, i - 1]
-                y2 <- y[s, i - 2]
-
-                k1_vals <- 0:y_si
-                log_terms <- rep(-Inf, length(k1_vals))
-
-                for (idx in seq_along(k1_vals)) {
-                    k1 <- k1_vals[idx]
-                    remain <- y_si - k1
-                    k2_vals <- 0:remain
-
-                    thin1 <- d_thin(k1, y1, alpha1[i], thinning)
-                    if (!is.finite(thin1) || thin1 <= 0) next
-
-                    thin2_vals <- vapply(k2_vals, function(k2) d_thin(k2, y2, alpha2[i], thinning), numeric(1))
-                    innov_vals <- vapply(remain - k2_vals, function(u) d_innov(u, lam, innovation,
-                                                                               if (innovation == "nbinom") nb_inno_size[i] else NA_real_
-                    ), numeric(1))
-
-                    inner_sum <- sum(thin2_vals * innov_vals)
-                    if (!is.finite(inner_sum) || inner_sum <= 0) next
-
-                    log_terms[idx] <- log(thin1) + log(inner_sum)
-                }
-
-                log_conv <- log_sum_exp(log_terms)
-                if (!is.finite(log_conv)) return(-Inf)
-                loglik <- loglik + log_conv
+                next
             }
+
+            y1 <- y[s, i - 1]
+            y2 <- y[s, i - 2]
+
+            k1_vals <- 0:y_si
+            log_terms <- rep(-Inf, length(k1_vals))
+
+            for (idx in seq_along(k1_vals)) {
+                k1 <- k1_vals[idx]
+                thin1 <- thin_vec(k1, y1, alpha1[i], thinning)
+                if (!is.finite(thin1) || thin1 <= 0) next
+
+                remain <- y_si - k1
+                k2_vals <- 0:remain
+
+                thin2_vals <- thin_vec(k2_vals, y2, alpha2[i], thinning)
+                innov_vals <- innov_vec(remain - k2_vals, lam, innovation, if (innovation == "nbinom") nb_inno_size[i] else NA_real_)
+
+                inner_sum <- sum(thin2_vals * innov_vals)
+                if (!is.finite(inner_sum) || inner_sum <= 0) next
+
+                log_terms[idx] <- log(thin1) + log(inner_sum)
+            }
+
+            log_conv <- log_sum_exp(log_terms)
+            if (!is.finite(log_conv)) return(-Inf)
+            loglik <- loglik + log_conv
         }
     }
 
@@ -222,7 +218,7 @@ logL_inad <- function(
 #' @param innovation One of "pois", "bell", "nbinom".
 #' @param alpha Thinning parameters. For order 1, numeric length 1 or n_time.
 #'   For order 2, either a matrix n_time by 2 or a list(alpha1, alpha2).
-#' @param theta Innovation mean parameters. Numeric length 1 or n_time.
+#' @param theta Innovation mean parameter at time i, or a vector length 1 or n_time.
 #' @param nb_inno_size Size parameter for innovation "nbinom". Numeric length 1 or n_time.
 #'
 #' @return A scalar log likelihood contribution for time i.
@@ -289,9 +285,9 @@ logL_inad_i <- function(
         stop("for order=2, alpha must be a matrix with 2 columns or a list(alpha1, alpha2)")
     }
 
-    alpha_pack <- unpack_alpha(order, alpha, N)
-    alpha1 <- alpha_pack$a1
-    alpha2 <- alpha_pack$a2
+    ap <- unpack_alpha(order, alpha, N)
+    alpha1 <- ap$a1
+    alpha2 <- ap$a2
 
     log_sum_exp <- function(x) {
         m <- max(x)
@@ -299,87 +295,84 @@ logL_inad_i <- function(
         m + log(sum(exp(x - m)))
     }
 
-    d_thin <- function(k, yprev, a, thinning) {
-        if (k < 0) return(0)
+    thin_vec <- function(k_vals, yprev, a, thinning) {
+        if (!is.finite(a) || a < 0) return(rep(0, length(k_vals)))
+
         if (thinning == "binom") {
-            if (!is.finite(a) || a < 0 || a > 1) return(0)
-            return(dbinom(k, size = yprev, prob = a))
+            if (a > 1) return(rep(0, length(k_vals)))
+            return(dbinom(k_vals, size = yprev, prob = a))
         }
+
         if (thinning == "pois") {
-            if (!is.finite(a) || a < 0) return(0)
-            return(dpois(k, lambda = a * yprev))
+            return(dpois(k_vals, lambda = a * yprev))
         }
-        if (thinning == "nbinom") {
-            if (!is.finite(a) || a < 0) return(0)
-            prob_nb <- 1 / (1 + a)
-            return(dnbinom(k, size = yprev, prob = prob_nb))
-        }
-        0
+
+        p_nb <- 1 / (1 + a)
+        dnbinom(k_vals, size = yprev, prob = p_nb)
     }
 
-    d_innov <- function(u, lam, innovation, size_nb) {
-        if (u < 0) return(0)
-        if (!is.finite(lam) || lam <= 0) return(0)
-        if (innovation == "pois") return(dpois(u, lambda = lam))
-        if (innovation == "bell") return(dbell(u, theta = lam))
-        if (innovation == "nbinom") return(dnbinom(u, size = size_nb, mu = lam))
-        0
+    innov_vec <- function(u_vals, lam, innovation, sz) {
+        if (!is.finite(lam) || lam <= 0) return(rep(0, length(u_vals)))
+
+        if (innovation == "pois") return(dpois(u_vals, lambda = lam))
+        if (innovation == "bell") return(dbell(u_vals, theta = lam))
+        dnbinom(u_vals, size = sz, mu = lam)
     }
 
     loglik_i <- 0
+    th_i <- theta[i]
+    if (!is.finite(th_i) || th_i <= 0) return(-Inf)
 
     for (s in 1:n) {
-        lam <- theta[i]
-        if (!is.finite(lam) || lam <= 0) return(-Inf)
-
         y_si <- y[s, i]
 
         if (i == 1 || order == 0) {
-            p0 <- d_innov(y_si, lam, innovation, if (innovation == "nbinom") nb_inno_size[i] else NA_real_)
+            p0 <- innov_vec(y_si, th_i, innovation, if (innovation == "nbinom") nb_inno_size[i] else NA_real_)
             if (!is.finite(p0) || p0 <= 0) return(-Inf)
             loglik_i <- loglik_i + log(p0)
-        } else if (order == 1 || i == 2) {
+            next
+        }
+
+        if (order == 1 || i == 2) {
             y_prev <- y[s, i - 1]
             k_vals <- 0:y_si
 
-            thin_vals <- vapply(k_vals, function(k) d_thin(k, y_prev, alpha1[i], thinning), numeric(1))
-            innov_vals <- vapply(y_si - k_vals, function(u) d_innov(u, lam, innovation,
-                                                                    if (innovation == "nbinom") nb_inno_size[i] else NA_real_
-            ), numeric(1))
+            thin_vals <- thin_vec(k_vals, y_prev, alpha1[i], thinning)
+            innov_vals <- innov_vec(y_si - k_vals, th_i, innovation, if (innovation == "nbinom") nb_inno_size[i] else NA_real_)
 
             conv <- sum(thin_vals * innov_vals)
             if (!is.finite(conv) || conv <= 0) return(-Inf)
+
             loglik_i <- loglik_i + log(conv)
-        } else {
-            y1 <- y[s, i - 1]
-            y2 <- y[s, i - 2]
-
-            k1_vals <- 0:y_si
-            log_terms <- rep(-Inf, length(k1_vals))
-
-            for (idx in seq_along(k1_vals)) {
-                k1 <- k1_vals[idx]
-                remain <- y_si - k1
-                k2_vals <- 0:remain
-
-                thin1 <- d_thin(k1, y1, alpha1[i], thinning)
-                if (!is.finite(thin1) || thin1 <= 0) next
-
-                thin2_vals <- vapply(k2_vals, function(k2) d_thin(k2, y2, alpha2[i], thinning), numeric(1))
-                innov_vals <- vapply(remain - k2_vals, function(u) d_innov(u, lam, innovation,
-                                                                           if (innovation == "nbinom") nb_inno_size[i] else NA_real_
-                ), numeric(1))
-
-                inner_sum <- sum(thin2_vals * innov_vals)
-                if (!is.finite(inner_sum) || inner_sum <= 0) next
-
-                log_terms[idx] <- log(thin1) + log(inner_sum)
-            }
-
-            log_conv <- log_sum_exp(log_terms)
-            if (!is.finite(log_conv)) return(-Inf)
-            loglik_i <- loglik_i + log_conv
+            next
         }
+
+        y1 <- y[s, i - 1]
+        y2 <- y[s, i - 2]
+
+        k1_vals <- 0:y_si
+        log_terms <- rep(-Inf, length(k1_vals))
+
+        for (idx in seq_along(k1_vals)) {
+            k1 <- k1_vals[idx]
+            thin1 <- thin_vec(k1, y1, alpha1[i], thinning)
+            if (!is.finite(thin1) || thin1 <= 0) next
+
+            remain <- y_si - k1
+            k2_vals <- 0:remain
+
+            thin2_vals <- thin_vec(k2_vals, y2, alpha2[i], thinning)
+            innov_vals <- innov_vec(remain - k2_vals, th_i, innovation, if (innovation == "nbinom") nb_inno_size[i] else NA_real_)
+
+            inner_sum <- sum(thin2_vals * innov_vals)
+            if (!is.finite(inner_sum) || inner_sum <= 0) next
+
+            log_terms[idx] <- log(thin1) + log(inner_sum)
+        }
+
+        log_conv <- log_sum_exp(log_terms)
+        if (!is.finite(log_conv)) return(-Inf)
+        loglik_i <- loglik_i + log_conv
     }
 
     loglik_i

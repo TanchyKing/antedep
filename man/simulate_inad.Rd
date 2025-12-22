@@ -12,7 +12,9 @@ simulate_inad(
   innovation = c("pois", "bell", "nbinom"),
   alpha = NULL,
   theta = NULL,
-  nb_inno_size = NULL
+  nb_inno_size = NULL,
+  blocks = NULL,
+  tau = 0
 )
 }
 \arguments{
@@ -35,6 +37,13 @@ depending on the innovation type}
 
 \item{nb_inno_size}{probability parameter for negative binomial innovations
 when \code{innovation = "nbinom"}; if \code{NULL}, defaults to 0.5}
+
+\item{blocks}{integer vector of length \code{n_subjects} indicating block
+membership for each subject; if \code{NULL}, no block effect is applied}
+
+\item{tau}{group effect vector indexed by block; \code{tau[1]} is forced to 0.
+If scalar x, it is expanded to c(0, x, ..., x) with length equal to the
+number of blocks}
 }
 \value{
 integer matrix of counts with dimension \code{n_subjects} by \code{n_time}
@@ -49,4 +58,7 @@ For times 2 to \code{n_time}, counts are generated as thinning of previous
 counts plus independent innovations. When \code{order = 0}, all time points
 are generated from the innovation distribution and the thinning operator
 and \code{alpha} are ignored.
+
+If \code{blocks} is provided, innovations include a block effect and use the
+parameter \code{theta[t] + tau[blocks[i]]} for subject i at time t.
 }
