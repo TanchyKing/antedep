@@ -4,7 +4,7 @@
 #' contributions from logL_inad_i for computational convenience.
 #'
 #' @param y Integer matrix n_sub by n_time.
-#' @param order Integer in {0, 1, 2}.
+#' @param order Integer in \{0, 1, 2\}.
 #' @param thinning One of "binom", "pois", "nbinom".
 #' @param innovation One of "pois", "bell", "nbinom".
 #' @param alpha Thinning parameters. For order 1, numeric length 1 or n_time.
@@ -213,7 +213,7 @@ logL_inad <- function(
 #'
 #' @param y Integer matrix n_sub by n_time.
 #' @param i Time index in 1..ncol(y).
-#' @param order Integer in {0, 1, 2}.
+#' @param order Integer in \{0, 1, 2\}.
 #' @param thinning One of "binom", "pois", "nbinom".
 #' @param innovation One of "pois", "bell", "nbinom".
 #' @param alpha Thinning parameters. For order 1, numeric length 1 or n_time.

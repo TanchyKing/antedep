@@ -20,7 +20,7 @@ logL_inad_i(
 
 \item{i}{Time index in 1..ncol(y).}
 
-\item{order}{Integer in {0, 1, 2}.}
+\item{order}{Integer in \{0, 1, 2\}.}
 
 \item{thinning}{One of "binom", "pois", "nbinom".}
 

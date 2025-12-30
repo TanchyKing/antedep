@@ -22,7 +22,7 @@ fit_inad(
 \arguments{
 \item{y}{Integer matrix n_sub by n_time.}
 
-\item{order}{Integer in {0, 1, 2}.}
+\item{order}{Integer in \{0, 1, 2\}.}
 
 \item{thinning}{One of "binom", "pois", "nbinom".}
 

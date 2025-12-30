@@ -7,7 +7,7 @@
 #' theta, and nb_inno_size if needed.
 #'
 #' @param y Integer matrix n_sub by n_time.
-#' @param order Integer in {0, 1, 2}.
+#' @param order Integer in \{0, 1, 2\}.
 #' @param thinning One of "binom", "pois", "nbinom".
 #' @param innovation One of "pois", "bell", "nbinom".
 #' @param blocks Optional integer vector length n_sub. Default NULL.
@@ -88,6 +88,7 @@ fit_inad_no_fe <- function(
     alpha_ub <- 1 - eps_alpha
 
     mean_y <- colMeans(y)
+
     theta_from_inno_mean <- function(mu, innovation, eps_pos) {
         if (!is.finite(mu) || mu <= eps_pos) return(NA_real_)
         if (innovation == "bell") return(solve_theta_bell(mu))
@@ -181,7 +182,7 @@ fit_inad_no_fe <- function(
     for (i in seq_len(N)) {
         if (order == 0) {
             if (innovation == "nbinom") {
-                obj <- function(par) {
+                obj0_nb <- function(par) {
                     th <- pmax(par[1], eps_pos)
                     sz <- pmax(par[2], eps_pos)
                     ll <- tryCatch(
@@ -202,20 +203,20 @@ fit_inad_no_fe <- function(
                 }
 
                 par0 <- c(pmax(theta[i], eps_pos), pmax(nb_inno_size[i], eps_pos))
-                fit <- optim(
+                fit0 <- optim(
                     par = par0,
-                    fn = obj,
+                    fn = obj0_nb,
                     method = "L-BFGS-B",
                     lower = c(eps_pos, eps_pos),
                     upper = c(Inf, Inf)
                 )
 
-                theta[i] <- pmax(fit$par[1], eps_pos)
-                nb_inno_size[i] <- pmax(fit$par[2], eps_pos)
-                loglik_i[i] <- -fit$value
-                conv[i] <- fit$convergence
+                theta[i] <- pmax(fit0$par[1], eps_pos)
+                nb_inno_size[i] <- pmax(fit0$par[2], eps_pos)
+                loglik_i[i] <- -fit0$value
+                conv[i] <- fit0$convergence
             } else {
-                obj <- function(th) {
+                obj0_th <- function(th) {
                     th <- pmax(th, eps_pos)
                     ll <- tryCatch(
                         logL_inad_i(
@@ -234,24 +235,24 @@ fit_inad_no_fe <- function(
                     -ll
                 }
 
-                fit <- optim(
+                fit0 <- optim(
                     par = pmax(theta[i], eps_pos),
-                    fn = obj,
+                    fn = obj0_th,
                     method = "L-BFGS-B",
                     lower = eps_pos,
                     upper = Inf
                 )
 
-                theta[i] <- pmax(fit$par, eps_pos)
-                loglik_i[i] <- -fit$value
-                conv[i] <- fit$convergence
+                theta[i] <- pmax(fit0$par, eps_pos)
+                loglik_i[i] <- -fit0$value
+                conv[i] <- fit0$convergence
             }
             next
         }
 
         if (i == 1) {
             if (innovation == "nbinom") {
-                obj1 <- function(par) {
+                obj1_nb <- function(par) {
                     th <- pmax(par[1], eps_pos)
                     sz <- pmax(par[2], eps_pos)
 
@@ -279,7 +280,7 @@ fit_inad_no_fe <- function(
 
                 fit1 <- optim(
                     par = c(pmax(theta[1], eps_pos), pmax(nb_inno_size[1], eps_pos)),
-                    fn = obj1,
+                    fn = obj1_nb,
                     method = "L-BFGS-B",
                     lower = c(eps_pos, eps_pos),
                     upper = c(Inf, Inf)
@@ -287,11 +288,10 @@ fit_inad_no_fe <- function(
 
                 theta[1] <- pmax(fit1$par[1], eps_pos)
                 nb_inno_size[1] <- pmax(fit1$par[2], eps_pos)
-
                 loglik_i[1] <- -fit1$value
                 conv[1] <- fit1$convergence
             } else {
-                obj1 <- function(th) {
+                obj1_th <- function(th) {
                     th <- pmax(th, eps_pos)
                     th_try <- theta
                     th_try[1] <- th
@@ -315,7 +315,7 @@ fit_inad_no_fe <- function(
 
                 fit1 <- optim(
                     par = pmax(theta[1], eps_pos),
-                    fn = obj1,
+                    fn = obj1_th,
                     method = "L-BFGS-B",
                     lower = eps_pos,
                     upper = Inf
@@ -331,15 +331,20 @@ fit_inad_no_fe <- function(
         if (order == 1 || i == 2) {
             m1 <- mean_y[i - 1]
 
-            obj <- function(par) {
+            obj_a1 <- function(par) {
                 a <- pmin(pmax(par[1], 0), alpha_ub)
                 mu_inno <- mean_y[i] - a * m1
                 th <- theta_from_inno_mean(mu_inno, innovation, eps_pos)
                 if (!is.finite(th)) return(1e10)
 
                 alpha_try <- alpha_out
-                alpha_try[i] <- a
                 theta_try <- theta
+
+                if (order == 1) {
+                    alpha_try[i] <- a
+                } else {
+                    alpha_try[i, 1] <- a
+                }
                 theta_try[i] <- th
 
                 if (innovation == "nbinom") {
@@ -382,46 +387,46 @@ fit_inad_no_fe <- function(
             if (order == 1) {
                 alpha_start <- alpha_out[i]
                 if (innovation == "nbinom") {
-                    fit <- optim(
+                    fit_i <- optim(
                         par = c(alpha_start, nb_inno_size[i]),
-                        fn = obj,
+                        fn = obj_a1,
                         method = "L-BFGS-B",
                         lower = c(0, eps_pos),
                         upper = c(alpha_ub, Inf)
                     )
-                    alpha_out[i] <- pmin(pmax(fit$par[1], 0), alpha_ub)
-                    nb_inno_size[i] <- pmax(fit$par[2], eps_pos)
+                    alpha_out[i] <- pmin(pmax(fit_i$par[1], 0), alpha_ub)
+                    nb_inno_size[i] <- pmax(fit_i$par[2], eps_pos)
                 } else {
-                    fit <- optim(
+                    fit_i <- optim(
                         par = alpha_start,
-                        fn = function(a) obj(c(a)),
+                        fn = function(a) obj_a1(c(a)),
                         method = "L-BFGS-B",
                         lower = 0,
                         upper = alpha_ub
                     )
-                    alpha_out[i] <- pmin(pmax(fit$par, 0), alpha_ub)
+                    alpha_out[i] <- pmin(pmax(fit_i$par, 0), alpha_ub)
                 }
             } else {
                 alpha_start <- alpha_out[i, 1]
                 if (innovation == "nbinom") {
-                    fit <- optim(
+                    fit_i <- optim(
                         par = c(alpha_start, nb_inno_size[i]),
-                        fn = obj,
+                        fn = obj_a1,
                         method = "L-BFGS-B",
                         lower = c(0, eps_pos),
                         upper = c(alpha_ub, Inf)
                     )
-                    alpha_out[i, 1] <- pmin(pmax(fit$par[1], 0), alpha_ub)
-                    nb_inno_size[i] <- pmax(fit$par[2], eps_pos)
+                    alpha_out[i, 1] <- pmin(pmax(fit_i$par[1], 0), alpha_ub)
+                    nb_inno_size[i] <- pmax(fit_i$par[2], eps_pos)
                 } else {
-                    fit <- optim(
+                    fit_i <- optim(
                         par = alpha_start,
-                        fn = function(a) obj(c(a)),
+                        fn = function(a) obj_a1(c(a)),
                         method = "L-BFGS-B",
                         lower = 0,
                         upper = alpha_ub
                     )
-                    alpha_out[i, 1] <- pmin(pmax(fit$par, 0), alpha_ub)
+                    alpha_out[i, 1] <- pmin(pmax(fit_i$par, 0), alpha_ub)
                 }
             }
 
@@ -435,15 +440,15 @@ fit_inad_no_fe <- function(
                 alpha_out[i, 2] <- 0
             }
 
-            loglik_i[i] <- -fit$value
-            conv[i] <- fit$convergence
+            loglik_i[i] <- -fit_i$value
+            conv[i] <- fit_i$convergence
             next
         }
 
         m1 <- mean_y[i - 1]
         m2 <- mean_y[i - 2]
 
-        obj <- function(par) {
+        obj_a12 <- function(par) {
             a1 <- pmin(pmax(par[1], 0), alpha_ub)
             a2 <- pmin(pmax(par[2], 0), alpha_ub)
             mu_inno <- mean_y[i] - a1 * m1 - a2 * m2
@@ -495,26 +500,26 @@ fit_inad_no_fe <- function(
         }
 
         if (innovation == "nbinom") {
-            fit <- optim(
+            fit_i <- optim(
                 par = c(alpha_out[i, 1], alpha_out[i, 2], nb_inno_size[i]),
-                fn = obj,
+                fn = obj_a12,
                 method = "L-BFGS-B",
                 lower = c(0, 0, eps_pos),
                 upper = c(alpha_ub, alpha_ub, Inf)
             )
-            alpha_out[i, 1] <- pmin(pmax(fit$par[1], 0), alpha_ub)
-            alpha_out[i, 2] <- pmin(pmax(fit$par[2], 0), alpha_ub)
-            nb_inno_size[i] <- pmax(fit$par[3], eps_pos)
+            alpha_out[i, 1] <- pmin(pmax(fit_i$par[1], 0), alpha_ub)
+            alpha_out[i, 2] <- pmin(pmax(fit_i$par[2], 0), alpha_ub)
+            nb_inno_size[i] <- pmax(fit_i$par[3], eps_pos)
         } else {
-            fit <- optim(
+            fit_i <- optim(
                 par = c(alpha_out[i, 1], alpha_out[i, 2]),
-                fn = function(p) obj(p),
+                fn = function(p) obj_a12(p),
                 method = "L-BFGS-B",
                 lower = c(0, 0),
                 upper = c(alpha_ub, alpha_ub)
             )
-            alpha_out[i, 1] <- pmin(pmax(fit$par[1], 0), alpha_ub)
-            alpha_out[i, 2] <- pmin(pmax(fit$par[2], 0), alpha_ub)
+            alpha_out[i, 1] <- pmin(pmax(fit_i$par[1], 0), alpha_ub)
+            alpha_out[i, 2] <- pmin(pmax(fit_i$par[2], 0), alpha_ub)
         }
 
         mu_inno <- mean_y[i] - alpha_out[i, 1] * m1 - alpha_out[i, 2] * m2
@@ -522,13 +527,11 @@ fit_inad_no_fe <- function(
         if (!is.finite(th)) th <- eps_pos
         theta[i] <- th
 
-        loglik_i[i] <- -fit$value
-        conv[i] <- fit$convergence
+        loglik_i[i] <- -fit_i$value
+        conv[i] <- fit_i$convergence
     }
 
-    if (!is.null(alpha_out)) {
-        alpha_out <- unname(alpha_out)
-    }
+    if (!is.null(alpha_out)) alpha_out <- unname(alpha_out)
     theta <- unname(theta)
     if (!is.null(nb_inno_size)) nb_inno_size <- unname(nb_inno_size)
 
