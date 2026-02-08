@@ -2,7 +2,7 @@
 
 ## P0 - Release blockers
 
-- [ ] Clean Git workspace hygiene (post-checkpoint)
+- [x] Clean Git workspace hygiene (post-checkpoint)
   - Issue: commit `65b86dc` included generated build/check artifacts and showed many LF/CRLF warnings.
   - Clean now:
     - Untrack generated artifacts: `antedep.Rcheck/`, `..Rcheck/`, `antedep_0.1.0.tar.gz`, `tests/testthat/Rplots.pdf`.

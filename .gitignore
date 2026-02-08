@@ -7,3 +7,11 @@
 inst/doc
 /doc/
 /Meta/
+
+# Build/check artifacts
+*.Rcheck/
+..Rcheck/
+*.tar.gz
+
+# Transient test graphics
+tests/testthat/Rplots.pdf
