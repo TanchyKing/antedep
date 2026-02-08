@@ -526,13 +526,18 @@ plot_profile <- function(y,
         )
     }
 
-    # Mean trajectory
-    p <- p + ggplot2::geom_line(
+    # Mean trajectory: use version-compatible line width argument.
+    mean_line_args <- list(
         data = stats,
-        ggplot2::aes(x = time, y = mean_val),
-        color = mean_color,
-        linewidth = mean_lwd
+        mapping = ggplot2::aes(x = time, y = mean_val),
+        color = mean_color
     )
+    if (utils::packageVersion("ggplot2") >= "3.4.0") {
+        mean_line_args$linewidth <- mean_lwd
+    } else {
+        mean_line_args$size <- mean_lwd
+    }
+    p <- p + do.call(ggplot2::geom_line, mean_line_args)
 
     # SD error bars
     if (show_sd) {
