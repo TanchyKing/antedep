@@ -204,6 +204,36 @@ test_that(".build_ad_covariance works for order 1", {
   expect_equal(Sigma[1, 2], Sigma[2, 1])
 })
 
+test_that(".build_ad_covariance works for order 2", {
+  set.seed(321)
+
+  n_time <- 6
+  sigma <- c(1.0, 1.1, 1.2, 1.0, 0.9, 1.1)
+  phi <- matrix(0, nrow = 2, ncol = n_time)
+  phi[1, 2:n_time] <- 0.45
+  phi[2, 3:n_time] <- -0.20
+
+  Sigma <- .build_ad_covariance(order = 2, phi = phi, sigma = sigma, n_time = n_time)
+
+  expect_equal(dim(Sigma), c(n_time, n_time))
+  expect_true(isSymmetric(Sigma, tol = 1e-10))
+  expect_true(all(diag(Sigma) > 0))
+
+  y <- simulate_ad(
+    n_subjects = 5000,
+    n_time = n_time,
+    order = 2,
+    mu = 0,
+    phi = phi,
+    sigma = sigma
+  )
+  Sigma_emp <- stats::cov(y)
+
+  expect_equal(diag(Sigma_emp), diag(Sigma), tolerance = 0.12)
+  expect_equal(Sigma_emp[3, 1], Sigma[3, 1], tolerance = 0.12)
+  expect_equal(Sigma_emp[6, 4], Sigma[6, 4], tolerance = 0.12)
+})
+
 # ==== Test fit_ad with missing data ====
 
 test_that("fit_ad with na_action='fail' errors on missing data", {
@@ -252,7 +282,10 @@ test_that(".initialize_ad_em works with enough complete cases", {
   
   expect_length(init$mu, 3)
   expect_length(init$sigma, 3)
-  expect_length(init$phi, 2)
+  expect_true(length(init$phi) %in% c(2, 3))
+  if (length(init$phi) == 3) {
+    expect_equal(init$phi[1], 0, tolerance = 1e-10)
+  }
   expect_true(all(is.finite(init$mu)))
   expect_true(all(init$sigma > 0))
 })
@@ -353,6 +386,58 @@ test_that("EM log-likelihood is monotone increasing", {
   # Check monotonicity (allowing tiny numerical errors)
   diffs <- diff(ll_trace)
   expect_true(all(diffs >= -1e-6))
+})
+
+test_that("fit_ad EM order 2 converges and recovers dependence parameters", {
+  skip_on_cran()
+
+  set.seed(2026)
+
+  n_subjects <- 400
+  n_time <- 6
+  mu_true <- seq(0.2, 0.7, length.out = n_time)
+  sigma_true <- c(1.0, 1.1, 1.0, 0.9, 1.1, 1.0)
+  phi_true <- matrix(0, nrow = 2, ncol = n_time)
+  phi_true[1, 2:n_time] <- 0.50
+  phi_true[2, 3:n_time] <- -0.25
+
+  y_complete <- simulate_ad(
+    n_subjects = n_subjects,
+    n_time = n_time,
+    order = 2,
+    mu = mu_true,
+    phi = phi_true,
+    sigma = sigma_true
+  )
+
+  y_missing <- y_complete
+  missing_idx <- sample(length(y_missing), size = round(0.12 * length(y_missing)))
+  y_missing[missing_idx] <- NA
+
+  fit_em <- fit_ad(
+    y_missing,
+    order = 2,
+    na_action = "em",
+    em_max_iter = 120,
+    em_tol = 1e-6,
+    em_verbose = FALSE
+  )
+  fit_complete <- fit_ad(y_complete, order = 2, na_action = "fail")
+
+  expect_true(fit_em$em_converged)
+  expect_true(is.matrix(fit_em$phi))
+  expect_equal(dim(fit_em$phi), c(2, n_time))
+  expect_equal(fit_em$phi[1, 1], 0, tolerance = 1e-10)
+  expect_equal(fit_em$phi[2, 1], 0, tolerance = 1e-10)
+  expect_equal(fit_em$phi[2, 2], 0, tolerance = 1e-10)
+  expect_true(all(diff(fit_em$em_ll_trace) >= -1e-6))
+
+  # Agreement with truth and complete-data fit.
+  expect_equal(fit_em$phi[1, 3:n_time], phi_true[1, 3:n_time], tolerance = 0.25)
+  expect_equal(fit_em$phi[2, 3:n_time], phi_true[2, 3:n_time], tolerance = 0.25)
+  expect_equal(fit_em$phi[1, 3:n_time], fit_complete$phi[1, 3:n_time], tolerance = 0.20)
+  expect_equal(fit_em$phi[2, 3:n_time], fit_complete$phi[2, 3:n_time], tolerance = 0.20)
+  expect_equal(fit_em$sigma[3:n_time], fit_complete$sigma[3:n_time], tolerance = 0.20)
 })
 
 # ==== Integration test ====

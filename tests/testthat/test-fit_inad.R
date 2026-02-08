@@ -124,3 +124,121 @@ test_that("fit_inad works for innovation nbinom and returns nb_inno_size", {
     expect_true(all(fit$nb_inno_size > 0))
     expect_true(is.finite(fit$log_l))
 })
+
+test_that("fit_inad with na_action='fail' errors on missing data", {
+    y <- matrix(c(1L, 2L, NA, 3L, 2L, 1L), nrow = 2, byrow = TRUE)
+
+    expect_error(
+        fit_inad(
+            y,
+            order = 1,
+            thinning = "binom",
+            innovation = "pois",
+            na_action = "fail"
+        ),
+        "contains NA"
+    )
+})
+
+test_that("fit_inad with na_action='complete' runs on complete-case subset", {
+    set.seed(101)
+    y <- matrix(rpois(120, lambda = 2), nrow = 30, ncol = 4)
+    y[1:8, 4] <- NA
+
+    fit <- suppressWarnings(
+        fit_inad(
+            y,
+            order = 1,
+            thinning = "binom",
+            innovation = "pois",
+            na_action = "complete"
+        )
+    )
+
+    expect_true(is.finite(fit$log_l))
+    expect_true(all(is.finite(fit$alpha)))
+    expect_true(all(is.finite(fit$theta)))
+})
+
+test_that("fit_inad marginalize handles monotone MAR missingness", {
+    skip_on_cran()
+
+    set.seed(202)
+    y_complete <- simulate_inad(
+        n_subjects = 50,
+        n_time = 5,
+        order = 1,
+        thinning = "binom",
+        innovation = "pois",
+        alpha = 0.35,
+        theta = 2.0
+    )
+
+    # MAR monotone dropout probability depends on observed baseline count.
+    y_mis <- y_complete
+    p_drop <- stats::plogis(-1 + 0.2 * y_complete[, 1])
+    drop <- runif(nrow(y_complete)) < p_drop
+    y_mis[drop, 4:5] <- NA
+
+    fit_marg <- fit_inad(
+        y_mis,
+        order = 1,
+        thinning = "binom",
+        innovation = "pois",
+        na_action = "marginalize",
+        max_iter = 12,
+        tol = 1e-5
+    )
+    fit_full <- fit_inad(
+        y_complete,
+        order = 1,
+        thinning = "binom",
+        innovation = "pois"
+    )
+
+    expect_true(is.finite(fit_marg$log_l))
+    expect_gt(fit_marg$n_missing, 0)
+    expect_true(all(is.finite(fit_marg$alpha)))
+    expect_true(all(is.finite(fit_marg$theta)))
+    expect_equal(fit_marg$theta, fit_full$theta, tolerance = 1.2)
+})
+
+test_that("fit_inad marginalize handles intermittent MAR missingness", {
+    skip_on_cran()
+
+    set.seed(303)
+    y_complete <- simulate_inad(
+        n_subjects = 40,
+        n_time = 6,
+        order = 1,
+        thinning = "binom",
+        innovation = "pois",
+        alpha = 0.30,
+        theta = 1.8
+    )
+
+    # Intermittent MAR: missingness depends on observed baseline and time.
+    y_mis <- y_complete
+    for (t in 2:ncol(y_mis)) {
+        p_mis_t <- stats::plogis(-2 + 0.18 * y_complete[, 1] + 0.15 * t)
+        miss_t <- runif(nrow(y_mis)) < p_mis_t
+        y_mis[miss_t, t] <- NA
+    }
+
+    fit_marg <- fit_inad(
+        y_mis,
+        order = 1,
+        thinning = "binom",
+        innovation = "pois",
+        na_action = "marginalize",
+        max_iter = 12,
+        tol = 1e-5
+    )
+
+    expect_true(is.finite(fit_marg$log_l))
+    expect_gt(fit_marg$n_missing, 0)
+    expect_true(all(is.finite(fit_marg$alpha)))
+    expect_true(all(is.finite(fit_marg$theta)))
+    expect_true(!is.null(fit_marg$settings$na_action))
+    expect_equal(fit_marg$settings$na_action, "marginalize")
+})

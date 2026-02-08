@@ -19,6 +19,12 @@
 #' @param init_theta Optional initial theta numeric length 1 or n_time.
 #' @param init_tau Optional initial tau. Scalar expands to c(0, x, ..., x). Vector forces first to 0.
 #' @param init_nb_inno_size Optional initial size for innovation nbinom, length 1 or n_time.
+#' @param na_action How to handle missing values:
+#'   \itemize{
+#'     \item \code{"fail"}: stop if any NA is present.
+#'     \item \code{"complete"}: fit using complete-case subjects only.
+#'     \item \code{"marginalize"}: maximize observed-data likelihood under MAR.
+#'   }
 #'
 #' @return A list with estimators, log likelihood, and settings.
 #' @export
@@ -34,16 +40,50 @@ fit_inad <- function(
         init_alpha = NULL,
         init_theta = NULL,
         init_tau = 0.4,
-        init_nb_inno_size = 1
+        init_nb_inno_size = 1,
+        na_action = c("fail", "complete", "marginalize")
 ) {
     thinning <- match.arg(thinning)
     innovation <- match.arg(innovation)
+    na_action <- match.arg(na_action)
 
     if (!is.matrix(y)) y <- as.matrix(y)
-    if (any(!is.finite(y)) || any(y < 0) || any(y != floor(y))) {
+    y_obs <- y[!is.na(y)]
+    if (any(!is.finite(y_obs)) || any(y_obs < 0) || any(y_obs != floor(y_obs))) {
         stop("y must be a nonnegative integer matrix")
     }
     if (!(order %in% c(0, 1, 2))) stop("order must be 0, 1, or 2")
+    has_missing <- any(is.na(y))
+
+    if (has_missing) {
+        if (na_action == "fail") {
+            stop("y contains NA values. Use na_action = 'complete' or 'marginalize'.", call. = FALSE)
+        }
+
+        if (na_action == "complete") {
+            cc <- .extract_complete_cases(y, blocks, warn = TRUE)
+            y <- cc$y
+            blocks <- cc$blocks
+            has_missing <- FALSE
+        }
+
+        if (na_action == "marginalize" && has_missing) {
+            return(.fit_inad_missing(
+                y = y,
+                order = order,
+                thinning = thinning,
+                innovation = innovation,
+                blocks = blocks,
+                max_iter = max_iter,
+                tol = tol,
+                verbose = verbose,
+                init_alpha = init_alpha,
+                init_theta = init_theta,
+                init_tau = init_tau,
+                init_nb_inno_size = init_nb_inno_size
+            ))
+        }
+    }
 
     if (is.null(blocks)) {
         return(fit_inad_no_fe(
@@ -70,6 +110,269 @@ fit_inad <- function(
         init_theta = init_theta,
         init_tau = init_tau,
         init_nb_inno_size = init_nb_inno_size
+    )
+}
+
+.fit_inad_missing <- function(
+        y,
+        order,
+        thinning,
+        innovation,
+        blocks,
+        max_iter,
+        tol,
+        verbose,
+        init_alpha,
+        init_theta,
+        init_tau,
+        init_nb_inno_size
+) {
+    n <- nrow(y)
+    N <- ncol(y)
+    eps_pos <- 1e-8
+    eps_alpha <- 1e-8
+    alpha_ub <- 1 - eps_alpha
+
+    # Normalize blocks and tau setup.
+    if (!is.null(blocks)) {
+        if (length(blocks) != n) stop("length(blocks) must equal nrow(y)")
+        blocks <- as.integer(factor(blocks))
+        B <- max(blocks)
+    } else {
+        B <- 1L
+    }
+
+    # Build a fallback complete-data initializer from complete cases when possible.
+    fit_init <- NULL
+    cc <- tryCatch(.extract_complete_cases(y, blocks, warn = FALSE), error = function(e) NULL)
+    if (!is.null(cc) && nrow(cc$y) >= max(5L, order + 2L)) {
+        fit_init <- tryCatch(
+            fit_inad(
+                y = cc$y,
+                order = order,
+                thinning = thinning,
+                innovation = innovation,
+                blocks = cc$blocks,
+                max_iter = max_iter,
+                tol = tol,
+                verbose = FALSE,
+                init_alpha = init_alpha,
+                init_theta = init_theta,
+                init_tau = init_tau,
+                init_nb_inno_size = init_nb_inno_size,
+                na_action = "fail"
+            ),
+            error = function(e) NULL
+        )
+    }
+
+    theta_init <- if (!is.null(fit_init)) {
+        as.numeric(fit_init$theta)
+    } else if (!is.null(init_theta)) {
+        th <- as.numeric(init_theta)
+        if (length(th) == 1L) th <- rep(th, N)
+        if (length(th) != N) stop("init_theta must be length 1 or ncol(y)")
+        th
+    } else {
+        col_mean <- colMeans(y, na.rm = TRUE)
+        col_mean[!is.finite(col_mean)] <- 1
+        pmax(col_mean, 0.5)
+    }
+    theta_init <- pmax(theta_init, eps_pos)
+
+    nb_init <- NULL
+    if (innovation == "nbinom") {
+        nb_init <- if (!is.null(fit_init) && !is.null(fit_init$nb_inno_size)) {
+            as.numeric(fit_init$nb_inno_size)
+        } else {
+            nb <- as.numeric(init_nb_inno_size)
+            if (length(nb) == 1L) nb <- rep(nb, N)
+            if (length(nb) != N) stop("init_nb_inno_size must be length 1 or ncol(y)")
+            nb
+        }
+        nb_init <- pmax(nb_init, eps_pos)
+    }
+
+    alpha_init <- NULL
+    if (order == 1) {
+        if (!is.null(fit_init) && !is.null(fit_init$alpha)) {
+            alpha_init <- as.numeric(fit_init$alpha)
+        } else if (!is.null(init_alpha)) {
+            a <- as.numeric(init_alpha)
+            if (length(a) == 1L) a <- rep(a, N)
+            if (length(a) != N) stop("init_alpha must be length 1 or ncol(y) for order=1")
+            alpha_init <- a
+        } else {
+            alpha_init <- rep(0, N)
+            if (N >= 2) alpha_init[2:N] <- 0.3
+        }
+        alpha_init[1] <- 0
+        alpha_init <- pmin(pmax(alpha_init, 0), alpha_ub)
+    }
+    if (order == 2) {
+        if (!is.null(fit_init) && !is.null(fit_init$alpha)) {
+            alpha_init <- as.matrix(fit_init$alpha)
+        } else if (!is.null(init_alpha)) {
+            if (is.matrix(init_alpha) && ncol(init_alpha) >= 2) {
+                alpha_init <- init_alpha
+                if (nrow(alpha_init) == 1L) alpha_init <- alpha_init[rep.int(1L, N), , drop = FALSE]
+                if (nrow(alpha_init) != N) stop("for order=2, init_alpha matrix must have nrow 1 or ncol(y)")
+                alpha_init <- alpha_init[, 1:2, drop = FALSE]
+            } else if (is.list(init_alpha) && length(init_alpha) >= 2) {
+                a1 <- as.numeric(init_alpha[[1]])
+                a2 <- as.numeric(init_alpha[[2]])
+                if (length(a1) == 1L) a1 <- rep(a1, N)
+                if (length(a2) == 1L) a2 <- rep(a2, N)
+                if (length(a1) != N || length(a2) != N) {
+                    stop("init_alpha list entries must be length 1 or ncol(y)")
+                }
+                alpha_init <- cbind(a1, a2)
+            } else {
+                stop("for order=2, init_alpha must be matrix with 2 columns or list(alpha1, alpha2)")
+            }
+        } else {
+            alpha_init <- matrix(0, nrow = N, ncol = 2)
+            if (N >= 2) alpha_init[2:N, 1] <- 0.3
+            if (N >= 3) alpha_init[3:N, 2] <- 0.1
+        }
+        alpha_init[1, 1] <- 0
+        alpha_init[1, 2] <- 0
+        if (N >= 2) alpha_init[2, 2] <- 0
+        alpha_init <- pmin(pmax(alpha_init, 0), alpha_ub)
+    }
+
+    tau_init <- NULL
+    if (B > 1L) {
+        if (!is.null(fit_init) && !is.null(fit_init$tau)) {
+            tau_init <- as.numeric(fit_init$tau)
+        } else {
+            tau_init <- as.numeric(init_tau)
+        }
+        if (length(tau_init) == 1L) {
+            tau_init <- c(0, rep(tau_init, B - 1L))
+        } else {
+            if (length(tau_init) < B) stop("init_tau must be length 1 or at least max(blocks)")
+            tau_init <- tau_init[seq_len(B)]
+            tau_init[1] <- 0
+        }
+    }
+
+    pack_init <- function() {
+        out <- c(log(theta_init))
+        if (innovation == "nbinom") out <- c(out, log(nb_init))
+        if (order == 1 && N >= 2) {
+            out <- c(out, stats::qlogis(pmin(pmax(alpha_init[2:N] / alpha_ub, eps_alpha), 1 - eps_alpha)))
+        }
+        if (order == 2 && N >= 2) {
+            out <- c(out, stats::qlogis(pmin(pmax(alpha_init[2:N, 1] / alpha_ub, eps_alpha), 1 - eps_alpha)))
+            if (N >= 3) {
+                out <- c(out, stats::qlogis(pmin(pmax(alpha_init[3:N, 2] / alpha_ub, eps_alpha), 1 - eps_alpha)))
+            }
+        }
+        if (B > 1L) out <- c(out, tau_init[2:B])
+        out
+    }
+
+    unpack_par <- function(par) {
+        idx <- 1L
+        theta <- exp(par[idx:(idx + N - 1L)])
+        idx <- idx + N
+
+        nb <- NULL
+        if (innovation == "nbinom") {
+            nb <- exp(par[idx:(idx + N - 1L)])
+            idx <- idx + N
+        }
+
+        alpha <- NULL
+        if (order == 1) {
+            alpha <- rep(0, N)
+            if (N >= 2) {
+                a_free <- par[idx:(idx + N - 2L)]
+                alpha[2:N] <- alpha_ub * stats::plogis(a_free)
+                idx <- idx + N - 1L
+            }
+        }
+        if (order == 2) {
+            alpha <- matrix(0, nrow = N, ncol = 2)
+            if (N >= 2) {
+                a1_free <- par[idx:(idx + N - 2L)]
+                alpha[2:N, 1] <- alpha_ub * stats::plogis(a1_free)
+                idx <- idx + N - 1L
+            }
+            if (N >= 3) {
+                a2_free <- par[idx:(idx + N - 3L)]
+                alpha[3:N, 2] <- alpha_ub * stats::plogis(a2_free)
+                idx <- idx + N - 2L
+            }
+        }
+
+        tau <- 0
+        if (B > 1L) {
+            tau <- c(0, par[idx:(idx + B - 2L)])
+        }
+
+        list(theta = pmax(theta, eps_pos), nb_inno_size = if (is.null(nb)) NULL else pmax(nb, eps_pos), alpha = alpha, tau = tau)
+    }
+
+    obj <- function(par) {
+        cur <- unpack_par(par)
+        ll <- tryCatch(
+            logL_inad(
+                y = y,
+                order = order,
+                thinning = thinning,
+                innovation = innovation,
+                alpha = cur$alpha,
+                theta = cur$theta,
+                nb_inno_size = cur$nb_inno_size,
+                blocks = blocks,
+                tau = cur$tau,
+                na_action = "marginalize"
+            ),
+            error = function(e) -Inf
+        )
+        if (!is.finite(ll)) return(1e10)
+        -ll
+    }
+
+    par0 <- pack_init()
+    control <- list(maxit = max(200L, 20L * max_iter), reltol = tol)
+    opt <- optim(par = par0, fn = obj, method = "BFGS", control = control)
+    if (!is.finite(opt$value)) {
+        opt <- optim(par = par0, fn = obj, method = "Nelder-Mead", control = control)
+    }
+
+    cur <- unpack_par(opt$par)
+    log_l <- logL_inad(
+        y = y,
+        order = order,
+        thinning = thinning,
+        innovation = innovation,
+        alpha = cur$alpha,
+        theta = cur$theta,
+        nb_inno_size = cur$nb_inno_size,
+        blocks = blocks,
+        tau = cur$tau,
+        na_action = "marginalize"
+    )
+
+    if (verbose) {
+        message("Missing-data fit completed: logL=", round(log_l, 4), " convergence=", opt$convergence)
+    }
+
+    list(
+        alpha = cur$alpha,
+        theta = cur$theta,
+        nb_inno_size = cur$nb_inno_size,
+        tau = if (is.null(blocks)) NULL else cur$tau,
+        log_l = log_l,
+        loglik_i = NULL,
+        n_obs = sum(!is.na(y)),
+        n_missing = sum(is.na(y)),
+        pct_missing = mean(is.na(y)) * 100,
+        convergence = list(code = opt$convergence, message = opt$message, method = opt$method),
+        settings = list(order = order, thinning = thinning, innovation = innovation, blocks = blocks, na_action = "marginalize")
     )
 }
 
@@ -909,4 +1212,3 @@ solve_theta_bell <- function(mu, lower = 0, upper = 10) {
 
     uniroot(f, c(lower, up))$root
 }
-

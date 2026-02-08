@@ -129,3 +129,99 @@ test_that("innovation nbinom requires nb_inno_size", {
         )
     )
 })
+
+test_that("logL_inad with na_action='fail' errors on missing data", {
+    y <- matrix(c(1L, 2L, NA, 2L, 1L, 0L), nrow = 2, byrow = TRUE)
+    alpha <- rep(0.2, ncol(y))
+    theta <- rep(1.5, ncol(y))
+
+    expect_error(
+        logL_inad(
+            y = y,
+            order = 1,
+            thinning = "binom",
+            innovation = "pois",
+            alpha = alpha,
+            theta = theta,
+            na_action = "fail"
+        ),
+        "contains NA"
+    )
+})
+
+test_that("logL_inad with na_action='complete' matches complete-case subset", {
+    set.seed(11)
+    y_full <- matrix(rpois(80, lambda = 2.0), nrow = 20, ncol = 4)
+    y_mis <- y_full
+    y_mis[1:6, 4] <- NA
+
+    alpha <- rep(0.3, ncol(y_mis))
+    theta <- rep(1.8, ncol(y_mis))
+
+    ll_complete <- logL_inad(
+        y = y_mis,
+        order = 1,
+        thinning = "binom",
+        innovation = "pois",
+        alpha = alpha,
+        theta = theta,
+        na_action = "complete"
+    )
+
+    cc_idx <- complete.cases(y_mis)
+    ll_cc <- logL_inad(
+        y = y_mis[cc_idx, , drop = FALSE],
+        order = 1,
+        thinning = "binom",
+        innovation = "pois",
+        alpha = alpha,
+        theta = theta,
+        na_action = "fail"
+    )
+
+    expect_equal(ll_complete, ll_cc, tolerance = 1e-8)
+})
+
+test_that("logL_inad with na_action='marginalize' handles monotone and intermittent missingness", {
+    set.seed(12)
+    y <- simulate_inad(
+        n_subjects = 40,
+        n_time = 5,
+        order = 1,
+        thinning = "binom",
+        innovation = "pois",
+        alpha = 0.35,
+        theta = 2.2
+    )
+
+    y_mon <- y
+    y_mon[1:8, 4:5] <- NA
+
+    y_int <- y
+    y_int[sample(length(y_int), size = 25)] <- NA
+
+    alpha <- rep(0.35, ncol(y))
+    theta <- rep(2.2, ncol(y))
+
+    ll_mon <- logL_inad(
+        y = y_mon,
+        order = 1,
+        thinning = "binom",
+        innovation = "pois",
+        alpha = alpha,
+        theta = theta,
+        na_action = "marginalize"
+    )
+    ll_int <- logL_inad(
+        y = y_int,
+        order = 1,
+        thinning = "binom",
+        innovation = "pois",
+        alpha = alpha,
+        theta = theta,
+        na_action = "marginalize"
+    )
+
+    expect_true(is.finite(ll_mon))
+    expect_true(is.finite(ll_int))
+})

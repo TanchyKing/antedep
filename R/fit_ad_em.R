@@ -136,29 +136,29 @@
 #'
 #' @keywords internal
 .initialize_ad_em <- function(y, order, blocks, estimate_mu) {
-  n_time <- ncol(y)
-  
   # Try complete-case initialization
   cc <- .extract_complete_cases(y, blocks, warn = FALSE)
   
   if (nrow(cc$y) >= 10) {
-    # Enough complete cases - fit model
+    # Enough complete cases - initialize from the complete-case MLE.
     tryCatch({
-      # This would call the actual fit_ad function (assumed to exist)
-      # For now, use simple estimates
-      mu <- colMeans(cc$y, na.rm = TRUE)
-      sigma <- apply(cc$y, 2, sd, na.rm = TRUE)
-      phi <- rep(0.5, n_time - 1)  # Simple default
-      
-      if (!is.null(blocks)) {
-        tau <- numeric(length(unique(blocks)))
-        tau[1] <- 0
-      } else {
-        tau <- 0
-      }
-      
-      list(mu = mu, phi = phi, sigma = sigma, tau = tau)
-      
+      fit_cc <- fit_ad(
+        y = cc$y,
+        order = order,
+        blocks = cc$blocks,
+        na_action = "fail",
+        estimate_mu = estimate_mu
+      )
+
+      tau <- fit_cc$tau
+      if (is.null(tau)) tau <- 0
+
+      list(
+        mu = fit_cc$mu,
+        phi = fit_cc$phi,
+        sigma = fit_cc$sigma,
+        tau = tau
+      )
     }, error = function(e) {
       # Fallback to marginal estimates
       .initialize_ad_marginal(y, order, blocks)
@@ -183,8 +183,9 @@
   if (order == 1) {
     phi <- rep(0.3, n_time - 1)
   } else if (order == 2) {
-    phi <- matrix(c(rep(0.25, n_time - 2), rep(0.1, n_time - 2)), 
-                  ncol = 2)
+    phi <- matrix(0, nrow = 2, ncol = n_time)
+    if (n_time >= 2) phi[1, 2:n_time] <- 0.25
+    if (n_time >= 3) phi[2, 3:n_time] <- 0.10
   } else {
     phi <- numeric(0)
   }
@@ -258,11 +259,17 @@
       Sigma_cross <- Sigma[mis_idx, obs_idx, drop = FALSE]
       
       # Conditional mean: E[Y_mis | Y_obs]
-      Sigma_obs_inv <- solve(Sigma_obs)
+      Sigma_obs_inv <- tryCatch(
+        solve(Sigma_obs),
+        error = function(e) {
+          solve(Sigma_obs + diag(1e-8, nrow(Sigma_obs)))
+        }
+      )
       E_mis <- mu_mis + Sigma_cross %*% Sigma_obs_inv %*% (y_obs - mu_obs)
       
       # Conditional covariance: Var[Y_mis | Y_obs]
       Var_mis <- Sigma_mis - Sigma_cross %*% Sigma_obs_inv %*% t(Sigma_cross)
+      Var_mis <- 0.5 * (Var_mis + t(Var_mis))
       
       # Impute missing values
       y_full <- y_s
@@ -312,40 +319,64 @@
   
   # Compute centered second moments
   S2_centered <- S2 / n - tcrossprod(mu)
+  S2_centered <- 0.5 * (S2_centered + t(S2_centered))
+  eps <- 1e-8
   
   # Update phi and sigma based on order
   if (order == 0) {
     phi <- numeric(0)
-    sigma <- sqrt(pmax(diag(S2_centered), 1e-8))
+    sigma <- sqrt(pmax(diag(S2_centered), eps))
     
   } else if (order == 1) {
     phi <- numeric(n_time - 1)
     sigma <- numeric(n_time)
-    sigma[1] <- sqrt(max(S2_centered[1, 1], 1e-8))
-    
-    for (t in 2:n_time) {
+    sigma[1] <- sqrt(max(S2_centered[1, 1], eps))
+
+    if (n_time >= 2) for (t in 2:n_time) {
       # phi[t] = Cov(Y_t, Y_{t-1}) / Var(Y_{t-1})
-      phi[t - 1] <- S2_centered[t, t-1] / max(S2_centered[t-1, t-1], 1e-8)
+      denom <- max(S2_centered[t - 1, t - 1], eps)
+      phi[t - 1] <- S2_centered[t, t - 1] / denom
       
       # sigma[t]^2 = Var(Y_t) - phi[t]^2 * Var(Y_{t-1})
-      sigma[t] <- sqrt(max(S2_centered[t, t] - phi[t-1]^2 * S2_centered[t-1, t-1], 1e-8))
+      sigma2_t <- S2_centered[t, t] - phi[t - 1] * S2_centered[t, t - 1]
+      sigma[t] <- sqrt(max(sigma2_t, eps))
     }
     
   } else if (order == 2) {
-    # Order 2 (simplified)
-    phi <- matrix(0, nrow = n_time - 2, ncol = 2)
-    sigma <- numeric(n_time)
-    sigma[1:2] <- sqrt(pmax(diag(S2_centered)[1:2], 1e-8))
-    
-    for (t in 3:n_time) {
-      # Simplified: use least squares for phi
-      # Full implementation would solve normal equations properly
-      phi[t - 2, 1] <- 0.3  # Placeholder
-      phi[t - 2, 2] <- 0.1  # Placeholder
-      sigma[t] <- sqrt(max(S2_centered[t, t], 1e-8))
+    # Exact order-2 conditional least-squares updates from expected moments.
+    phi <- matrix(0, nrow = 2, ncol = n_time)
+    sigma2 <- pmax(diag(S2_centered), eps)
+
+    # Time 2 depends on time 1 only.
+    if (n_time >= 2) {
+      var1 <- max(S2_centered[1, 1], eps)
+      cov21 <- S2_centered[2, 1]
+      phi[1, 2] <- cov21 / var1
+      sigma2[2] <- max(S2_centered[2, 2] - phi[1, 2] * cov21, eps)
     }
-    
-    warning("Order 2 M-step uses simplified parameter updates", call. = FALSE)
+
+    # Times 3..n depend on the two previous time points.
+    if (n_time >= 3) for (t in 3:n_time) {
+      G <- matrix(
+        c(
+          S2_centered[t - 1, t - 1], S2_centered[t - 1, t - 2],
+          S2_centered[t - 2, t - 1], S2_centered[t - 2, t - 2]
+        ),
+        nrow = 2,
+        byrow = TRUE
+      )
+      rhs <- c(S2_centered[t, t - 1], S2_centered[t, t - 2])
+
+      beta <- tryCatch(
+        solve(G, rhs),
+        error = function(e) solve(G + diag(eps, 2), rhs)
+      )
+
+      phi[, t] <- as.numeric(beta)
+      sigma2[t] <- max(S2_centered[t, t] - sum(phi[, t] * rhs), eps)
+    }
+
+    sigma <- sqrt(sigma2)
   }
   
   list(mu = mu, phi = phi, sigma = sigma, tau = tau)

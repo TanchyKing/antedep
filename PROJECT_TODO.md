@@ -41,14 +41,14 @@
 
 ## P1 - Statistical completeness
 
-- [ ] Complete AD order-2 missing-data implementation
+- [x] Complete AD order-2 missing-data implementation
   - Files: `R/fit_ad_em.R`, `R/logL_ad_missing.R`.
   - Current gap: simplified order-2 updates.
   - Done when:
     - Exact order-2 covariance and M-step are implemented.
     - Added tests prove stable convergence and agreement with simulated truth.
 
-- [ ] Add missing-data support for INAD
+- [x] Add missing-data support for INAD
   - Scope: `fit_inad`, `logL_inad`, related inference paths.
   - Done when:
     - `na_action` strategy is defined and implemented.

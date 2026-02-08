@@ -13,7 +13,8 @@ logL_inad(
   theta,
   nb_inno_size = NULL,
   blocks = NULL,
-  tau = 0
+  tau = 0,
+  na_action = c("fail", "complete", "marginalize")
 )
 }
 \arguments{
@@ -35,6 +36,13 @@ For order 2, either a matrix n_time by 2 or a list(alpha1, alpha2).}
 \item{blocks}{Optional integer vector of length n_sub. If NULL, no fixed effect.}
 
 \item{tau}{Optional numeric vector. Only used if blocks is not NULL.}
+
+\item{na_action}{How to handle missing values:
+\itemize{
+\item \code{"fail"}: error if any NA is present.
+\item \code{"complete"}: use only complete-case subjects.
+\item \code{"marginalize"}: observed-data likelihood under MAR via truncated-state recursion.
+}}
 }
 \value{
 A scalar log likelihood.

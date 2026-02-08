@@ -16,7 +16,8 @@ fit_inad(
   init_alpha = NULL,
   init_theta = NULL,
   init_tau = 0.4,
-  init_nb_inno_size = 1
+  init_nb_inno_size = 1,
+  na_action = c("fail", "complete", "marginalize")
 )
 }
 \arguments{
@@ -44,6 +45,13 @@ For order 2 matrix n_time by 2 or list(alpha1, alpha2).}
 \item{init_tau}{Optional initial tau. Scalar expands to c(0, x, ..., x). Vector forces first to 0.}
 
 \item{init_nb_inno_size}{Optional initial size for innovation nbinom, length 1 or n_time.}
+
+\item{na_action}{How to handle missing values:
+\itemize{
+\item \code{"fail"}: stop if any NA is present.
+\item \code{"complete"}: fit using complete-case subjects only.
+\item \code{"marginalize"}: maximize observed-data likelihood under MAR.
+}}
 }
 \value{
 A list with estimators, log likelihood, and settings.
