@@ -2,3 +2,10 @@
 ^\.Rproj\.user$
 ^LICENSE\.md$
 ^data-raw$
+^antedep\.Rproj$
+^doc$
+^Meta$
+^MISSING_DATA_IMPLEMENTATION_SUMMARY\.md$
+^README_MISSING_DATA\.md$
+^INTEGRATION_SUMMARY\.md$
+^examples$
