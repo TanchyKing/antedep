@@ -10,7 +10,7 @@ vignette: >
 ## Getting Started
 
 The `antedep` package fits antedependence models for longitudinal data...
-```{r}
+```{r, warning=FALSE, message=FALSE}
 library(antedep)
 data("bolus_inad")
 plot_profile(bolus_inad$y)

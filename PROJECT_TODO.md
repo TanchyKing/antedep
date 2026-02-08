@@ -19,7 +19,7 @@
     - `man/` contains `.Rd` entries for all exported objects.
     - `R CMD check` no longer reports "Undocumented code objects" or "Undocumented data sets".
 
-- [ ] Run full package checks (not skipped)
+- [x] Run full package checks (not skipped)
   - Scope: examples, tests, and vignettes.
   - Done when:
     - `R CMD check` passes with no ERROR/WARNING on local machine.
