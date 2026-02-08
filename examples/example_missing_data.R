@@ -1,190 +1,181 @@
 #!/usr/bin/env Rscript
 
-#' Example: Missing Data Handling in antedep Package
-#' 
-#' This script demonstrates the missing data functionality implemented
-#' for the AD module.
+# Example: Missing-data workflow for AD models in antedep
 
-# Load required functions (in practice, these would be in the package)
-cat("Loading functions...\n")
-source("missing_utils.R")
-source("logL_ad_missing.R")
-source("fit_ad_em.R")
-source("logL_ad_modified.R")
-source("fit_ad_modified.R")
+load_antedep <- function() {
+  if (requireNamespace("antedep", quietly = TRUE)) {
+    suppressPackageStartupMessages(library(antedep))
+    return(invisible(TRUE))
+  }
 
-# Set seed for reproducibility
+  if (!file.exists("DESCRIPTION")) {
+    stop("Run this script from the package root, or install 'antedep' first.")
+  }
+  if (!requireNamespace("pkgload", quietly = TRUE)) {
+    stop("Install 'pkgload' to run from source: install.packages('pkgload').")
+  }
+
+  pkgload::load_all(
+    ".",
+    export_all = FALSE,
+    helpers = FALSE,
+    attach_testthat = FALSE,
+    quiet = TRUE
+  )
+  invisible(TRUE)
+}
+
+is_monotone_dropout <- function(row_values) {
+  missing_idx <- which(is.na(row_values))
+  if (length(missing_idx) == 0) {
+    return(FALSE)
+  }
+  identical(missing_idx, seq.int(min(missing_idx), length(row_values)))
+}
+
+summarize_missing <- function(y) {
+  has_row_missing <- rowSums(is.na(y)) > 0
+  n_incomplete <- sum(has_row_missing)
+  n_dropout <- 0L
+  if (n_incomplete > 0) {
+    n_dropout <- sum(apply(y[has_row_missing, , drop = FALSE], 1, is_monotone_dropout))
+  }
+
+  list(
+    n_subjects = nrow(y),
+    n_time = ncol(y),
+    n_missing = sum(is.na(y)),
+    pct_missing = 100 * mean(is.na(y)),
+    n_complete = sum(!has_row_missing),
+    n_dropout = n_dropout,
+    n_intermittent = n_incomplete - n_dropout
+  )
+}
+
+print_missing <- function(info) {
+  cat("Data dimensions:", info$n_subjects, "x", info$n_time, "\n")
+  cat("Missing values:", info$n_missing, "\n")
+  cat("Percent missing:", sprintf("%.1f%%", info$pct_missing), "\n")
+  cat("Complete subjects:", info$n_complete, "\n")
+  cat("Dropout subjects:", info$n_dropout, "\n")
+  cat("Intermittent subjects:", info$n_intermittent, "\n\n")
+}
+
+print_fit <- function(name, fit_obj) {
+  cat(name, "\n", sep = "")
+  cat("  log-likelihood:", round(fit_obj$log_l, 2), "\n")
+  cat("  AIC:", round(fit_obj$aic, 2), "\n")
+  cat("  BIC:", round(fit_obj$bic, 2), "\n")
+  if (!is.null(fit_obj$em_converged)) {
+    cat("  EM converged:", fit_obj$em_converged, "\n")
+    cat("  EM iterations:", fit_obj$em_iterations, "\n")
+  }
+  cat("\n")
+}
+
+load_antedep()
 set.seed(123)
 
-# ==== Example 1: Monotone Missing (Dropout) ====
-cat("\n=== Example 1: Monotone Missing (Dropout) ===\n")
+cat("\n=== Example 1: Monotone dropout ===\n")
+n_subjects <- 80
+n_time <- 6
+y_complete <- simulate_ad(
+  n_subjects = n_subjects,
+  n_time = n_time,
+  order = 1,
+  mu = 10,
+  phi = 0.55,
+  sigma = 1.4
+)
 
-# Simulate complete data
-n_subjects <- 20
-n_time <- 5
-y_complete <- matrix(rnorm(n_subjects * n_time, mean = 10, sd = 2), 
-                     nrow = n_subjects, ncol = n_time)
-
-# Introduce dropout pattern (last 1-2 time points missing for some subjects)
 y_dropout <- y_complete
-dropout_subjects <- sample(n_subjects, 8)
+dropout_subjects <- sample(seq_len(n_subjects), size = 24)
 for (s in dropout_subjects) {
   n_drop <- sample(1:2, 1)
   y_dropout[s, (n_time - n_drop + 1):n_time] <- NA
 }
+print_missing(summarize_missing(y_dropout))
 
-cat("Data dimensions:", nrow(y_dropout), "x", ncol(y_dropout), "\n")
-cat("Missing data:", sum(is.na(y_dropout)), "values\n")
-cat("Percent missing:", round(mean(is.na(y_dropout)) * 100, 1), "%\n\n")
-
-# Validate missing pattern
-missing_info <- .validate_missing(y_dropout)
-cat("Complete subjects:", missing_info$n_complete, "\n")
-cat("Dropout subjects:", sum(missing_info$patterns == "dropout"), "\n")
-cat("Intermittent subjects:", missing_info$n_intermittent, "\n\n")
-
-# Fit with EM
-cat("Fitting with EM algorithm...\n")
-fit_em <- fit_ad(y_dropout, order = 1, na_action = "em", 
-                 em_max_iter = 50, em_verbose = TRUE)
-
-cat("\n--- EM Results ---\n")
-cat("Converged:", fit_em$em_converged, "\n")
-cat("Iterations:", fit_em$em_iterations, "\n")
-cat("Log-likelihood:", round(fit_em$log_l, 2), "\n")
-cat("AIC:", round(fit_em$aic, 2), "\n")
-cat("BIC:", round(fit_em$bic, 2), "\n\n")
-
-# Compare with complete-case analysis
-cat("Fitting with complete-case analysis...\n")
+fit_em <- fit_ad(
+  y_dropout,
+  order = 1,
+  na_action = "em",
+  em_max_iter = 100,
+  em_verbose = FALSE
+)
 fit_cc <- fit_ad(y_dropout, order = 1, na_action = "complete")
+print_fit("EM fit:", fit_em)
+print_fit("Complete-case fit:", fit_cc)
 
-cat("\n--- Complete-Case Results ---\n")
-cat("Subjects used:", fit_cc$settings$n_subjects, "/", n_subjects, "\n")
-cat("Log-likelihood:", round(fit_cc$log_l, 2), "\n")
-cat("AIC:", round(fit_cc$aic, 2), "\n")
-cat("BIC:", round(fit_cc$bic, 2), "\n\n")
+cat("Subjects used by complete-case fit:", fit_cc$settings$n_subjects, "/", n_subjects, "\n")
+cat("mu (EM):", paste(round(fit_em$mu, 2), collapse = ", "), "\n")
+cat("mu (complete-case):", paste(round(fit_cc$mu, 2), collapse = ", "), "\n")
+cat("mu (true sample mean):", paste(round(colMeans(y_complete), 2), collapse = ", "), "\n\n")
 
-# Compare parameters
-cat("--- Parameter Comparison ---\n")
-cat("mu (EM):  ", round(fit_em$mu, 2), "\n")
-cat("mu (CC):  ", round(fit_cc$mu, 2), "\n")
-cat("mu (True):", round(colMeans(y_complete), 2), "\n\n")
-
-cat("phi (EM):  ", round(fit_em$phi, 3), "\n")
-cat("phi (CC):  ", round(fit_cc$phi, 3), "\n\n")
-
-# Plot EM convergence
-cat("Plotting EM convergence...\n")
-png("em_convergence_dropout.png", width = 600, height = 400)
-plot(fit_em$em_ll_trace, type = "b", pch = 19, col = "steelblue",
-     xlab = "EM Iteration", ylab = "Log-Likelihood",
-     main = "EM Convergence (Monotone Dropout)")
-grid()
-dev.off()
-cat("Saved: em_convergence_dropout.png\n\n")
-
-# ==== Example 2: Intermittent Missing ====
-cat("\n=== Example 2: Intermittent Missing ===\n")
-
-# Introduce random (MCAR) missing pattern
+cat("=== Example 2: Intermittent (MCAR) missingness ===\n")
 y_mcar <- y_complete
-missing_idx <- sample(length(y_mcar), round(0.15 * length(y_mcar)))
-y_mcar[missing_idx] <- NA
+mcar_idx <- sample(length(y_mcar), size = round(0.15 * length(y_mcar)))
+y_mcar[mcar_idx] <- NA
+print_missing(summarize_missing(y_mcar))
 
-cat("Data dimensions:", nrow(y_mcar), "x", ncol(y_mcar), "\n")
-cat("Missing data:", sum(is.na(y_mcar)), "values\n")
-cat("Percent missing:", round(mean(is.na(y_mcar)) * 100, 1), "%\n\n")
+fit_mcar_em <- fit_ad(
+  y_mcar,
+  order = 1,
+  na_action = "em",
+  em_max_iter = 100,
+  em_verbose = FALSE
+)
+print_fit("EM fit (MCAR):", fit_mcar_em)
 
-# Validate missing pattern
-missing_info2 <- .validate_missing(y_mcar)
-cat("Complete subjects:", missing_info2$n_complete, "\n")
-cat("Intermittent subjects:", missing_info2$n_intermittent, "\n\n")
-
-# Fit with EM
-cat("Fitting with EM algorithm...\n")
-fit_em2 <- fit_ad(y_mcar, order = 1, na_action = "em",
-                  em_max_iter = 50, em_verbose = FALSE)
-
-cat("\n--- Results ---\n")
-cat("Converged:", fit_em2$em_converged, "\n")
-cat("Iterations:", fit_em2$em_iterations, "\n")
-cat("Log-likelihood:", round(fit_em2$log_l, 2), "\n\n")
-
-# Plot convergence
-png("em_convergence_intermittent.png", width = 600, height = 400)
-plot(fit_em2$em_ll_trace, type = "b", pch = 19, col = "darkgreen",
-     xlab = "EM Iteration", ylab = "Log-Likelihood",
-     main = "EM Convergence (Intermittent Missing)")
-grid()
-dev.off()
-cat("Saved: em_convergence_intermittent.png\n\n")
-
-# ==== Example 3: With Block Effects ====
-cat("\n=== Example 3: With Block Effects ===\n")
-
-# Simulate two groups with different means
-n_per_group <- 15
-y_group1 <- matrix(rnorm(n_per_group * n_time, mean = 10, sd = 2),
-                   nrow = n_per_group, ncol = n_time)
-y_group2 <- matrix(rnorm(n_per_group * n_time, mean = 12, sd = 2),
-                   nrow = n_per_group, ncol = n_time)
-y_groups <- rbind(y_group1, y_group2)
-blocks <- c(rep(1, n_per_group), rep(2, n_per_group))
-
-# Introduce missing data
-y_groups_missing <- y_groups
-missing_idx <- sample(length(y_groups), round(0.1 * length(y_groups)))
-y_groups_missing[missing_idx] <- NA
-
-cat("Group 1 mean (true):", round(mean(y_group1), 2), "\n")
-cat("Group 2 mean (true):", round(mean(y_group2), 2), "\n")
-cat("Difference:", round(mean(y_group2) - mean(y_group1), 2), "\n\n")
-
-# Fit with blocks
-cat("Fitting with blocks...\n")
-fit_blocks <- fit_ad(y_groups_missing, order = 1, blocks = blocks,
-                     na_action = "em", em_max_iter = 50, em_verbose = FALSE)
-
-cat("\n--- Results ---\n")
-cat("Converged:", fit_blocks$em_converged, "\n")
-cat("Block effects (tau):", round(fit_blocks$tau, 2), "\n")
-cat("Estimated difference:", round(fit_blocks$tau[2], 2), "\n\n")
-
-# ==== Example 4: Log-Likelihood Evaluation ====
-cat("\n=== Example 4: Log-Likelihood with Different na_action ===\n")
-
-# Use the dropout data from Example 1
-true_params <- list(
-  mu = colMeans(y_complete),
-  phi = rep(0.5, n_time - 1),
-  sigma = apply(y_complete, 2, sd)
+cat("=== Example 3: Block effects with missing data ===\n")
+n_per_group <- 40
+blocks <- c(rep(1L, n_per_group), rep(2L, n_per_group))
+y_blocks <- simulate_ad(
+  n_subjects = 2 * n_per_group,
+  n_time = n_time,
+  order = 1,
+  mu = 10,
+  phi = 0.5,
+  sigma = 1.5,
+  blocks = blocks,
+  tau = c(0, 2)
 )
 
-# Evaluate log-likelihood with different methods
-ll_marginalize <- logL_ad(y_dropout, order = 1, 
-                          mu = true_params$mu,
-                          phi = true_params$phi,
-                          sigma = true_params$sigma,
-                          na_action = "marginalize")
+y_blocks_missing <- y_blocks
+blocks_missing_idx <- sample(length(y_blocks_missing), size = round(0.10 * length(y_blocks_missing)))
+y_blocks_missing[blocks_missing_idx] <- NA
+print_missing(summarize_missing(y_blocks_missing))
 
-ll_complete <- logL_ad(y_dropout, order = 1,
-                       mu = true_params$mu,
-                       phi = true_params$phi,
-                       sigma = true_params$sigma,
-                       na_action = "complete")
+fit_blocks <- fit_ad(
+  y_blocks_missing,
+  order = 1,
+  blocks = blocks,
+  na_action = "em",
+  em_max_iter = 100,
+  em_verbose = FALSE
+)
+print_fit("EM fit with blocks:", fit_blocks)
+cat("Estimated tau:", paste(round(fit_blocks$tau, 2), collapse = ", "), "\n\n")
 
-cat("Log-likelihood (marginalize):", round(ll_marginalize, 2), "\n")
-cat("Log-likelihood (complete):   ", round(ll_complete, 2), "\n")
-cat("\nNote: These are not directly comparable as they use different data.\n")
-cat("Marginalize uses all subjects; complete uses only complete cases.\n\n")
+cat("=== Example 4: logL_ad with different missing-data actions ===\n")
+ll_marginalize <- logL_ad(
+  y_dropout,
+  order = 1,
+  mu = fit_em$mu,
+  phi = fit_em$phi,
+  sigma = fit_em$sigma,
+  na_action = "marginalize"
+)
+ll_complete <- logL_ad(
+  y_dropout,
+  order = 1,
+  mu = fit_em$mu,
+  phi = fit_em$phi,
+  sigma = fit_em$sigma,
+  na_action = "complete"
+)
 
-# ==== Summary ====
-cat("\n=== Summary ===\n")
-cat("✓ Implemented missing data handling for AD models\n")
-cat("✓ EM algorithm converges reliably\n")
-cat("✓ Handles monotone and intermittent missing patterns\n")
-cat("✓ Works with block effects\n")
-cat("✓ Provides proper observed-data likelihood\n\n")
+cat("logL (marginalize):", round(ll_marginalize, 2), "\n")
+cat("logL (complete-case):", round(ll_complete, 2), "\n\n")
 
-cat("Implementation complete!\n")
+cat("Done.\n")

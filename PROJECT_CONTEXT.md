@@ -16,6 +16,15 @@
 - `examples/example_missing_data.R` is stale (sources root-level files that do not exist).
 - `tests/testthat/lrt_homogeneity_inad.R` appears to contain implementation code, not tests.
 
+## Git hygiene issue (2026-02-08)
+
+- Checkpoint commit `65b86dc` successfully pushed, but included generated artifacts.
+- Push/commit showed mass LF/CRLF conversion warnings on Windows (`core.autocrlf=true`).
+- Cleanup is needed before more feature work:
+  - Untrack generated artifacts: `antedep.Rcheck/`, `..Rcheck/`, `antedep_0.1.0.tar.gz`, `tests/testthat/Rplots.pdf`.
+  - Add/adjust ignore rules so check/build outputs are never staged again.
+  - Add a `.gitattributes` policy so text files stay normalized and warning noise is reduced.
+
 ## Primary roadmap
 
 - See `PROJECT_TODO.md` for prioritized TODO list (P0/P1/P2).

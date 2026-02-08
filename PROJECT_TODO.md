@@ -25,7 +25,7 @@
     - `R CMD check` passes with no ERROR/WARNING on local machine.
     - Any unavoidable NOTE/WARNING is documented in a short decision log.
 
-- [ ] Fix stale missing-data example script
+- [x] Fix stale missing-data example script
   - File: `examples/example_missing_data.R`.
   - Issue: script sources non-existing root files (`missing_utils.R`, `fit_ad_em.R`, etc.).
   - Done when:
