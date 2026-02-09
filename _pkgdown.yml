@@ -26,3 +26,75 @@ articles:
   navbar: ~
   contents:
   - antedep-intro
+
+reference:
+- title: AD (Gaussian models)
+  desc: Fitting, simulation, model selection, and inference for continuous outcomes.
+  contents:
+  - fit_ad
+  - logL_ad
+  - simulate_ad
+  - bic_ad
+  - bic_order_ad
+  - lrt_order_ad
+  - lrt_one_sample_ad
+  - lrt_two_sample_ad
+  - lrt_contrast_ad
+  - lrt_homogeneity_ad
+
+- title: INAD (Count models)
+  desc: Fitting, simulation, likelihood, and inferential tools for integer-valued outcomes.
+  contents:
+  - fit_inad
+  - logL_inad
+  - logL_inad_i
+  - simulate_inad
+  - em_inad
+  - ci_inad
+  - bic_inad
+  - bic_order_inad
+  - lrt_order_inad
+  - lrt_homogeneity_inad
+  - lrt_stationarity_inad
+  - run_homogeneity_tests_inad
+  - run_stationarity_tests_inad
+
+- title: CAT (Categorical models)
+  desc: Fitting, simulation, order/stationarity tests, and confidence intervals for categorical outcomes.
+  contents:
+  - fit_cat
+  - logL_cat
+  - simulate_cat
+  - ci_cat
+  - aic_cat
+  - bic_cat
+  - bic_order_cat
+  - lrt_order_cat
+  - lrt_homogeneity_cat
+  - lrt_timeinvariance_cat
+  - lrt_stationarity_cat
+  - run_order_tests_cat
+  - run_stationarity_tests_cat
+
+- title: Diagnostics and visualization
+  desc: Exploratory diagnostics and plotting helpers for longitudinal trajectories and dependence.
+  contents:
+  - partial_corr
+  - plot_prism
+  - plot_profile
+
+- title: Distributions and data
+  contents:
+  - dbell
+  - pbell
+  - qbell
+  - rbell
+  - Bz
+  - bolus_inad
+
+- title: Methods and internal topics
+  desc: S3 methods and developer-facing helper functions.
+  contents:
+  - matches("^print\\.")
+  - matches("^summary\\.")
+  - matches("^\\.")
