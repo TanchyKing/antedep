@@ -56,7 +56,9 @@ fit_miss$log_l
 
 ## Vignette
 
-See `vignettes/antedep-intro.Rmd` for a compact workflow guide and usage matrix.
+Source vignette: `vignettes/antedep-intro.Rmd`.
+Rendered site article: `docs/articles/antedep-intro.html`.
+Integrated function reference: `docs/reference/index.html`.
 
 ## Function Reference Site (pkgdown)
 
