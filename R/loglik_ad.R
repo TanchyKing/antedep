@@ -192,36 +192,3 @@ logL_ad <- function(y, order, mu = NULL, phi = NULL, sigma = NULL, blocks = NULL
 
   log_lik
 }
-
-#' Count parameters for AD model
-#'
-#' @param order Antedependence order
-#' @param n_time Number of time points
-#' @param n_blocks Number of blocks (default 1)
-#'
-#' @return Number of free parameters
-#'
-#' @keywords internal
-.count_params_ad <- function(order, n_time, n_blocks = 1) {
-  # mu: n_time parameters
-  n_mu <- n_time
-  
-  # phi: depends on order
-  if (order == 0) {
-    n_phi <- 0
-  } else if (order == 1) {
-    n_phi <- n_time - 1
-  } else if (order == 2) {
-    n_phi <- 2 * (n_time - 2)
-  } else {
-    stop("order must be 0, 1, or 2")
-  }
-  
-  # sigma: n_time parameters
-  n_sigma <- n_time
-  
-  # tau: (n_blocks - 1) parameters (tau[1] = 0)
-  n_tau <- max(0, n_blocks - 1)
-  
-  n_mu + n_phi + n_sigma + n_tau
-}

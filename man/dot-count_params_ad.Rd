@@ -4,9 +4,7 @@
 \alias{.count_params_ad}
 \title{Count parameters for AD model}
 \usage{
-.count_params_ad(order, n_time, n_blocks = 1)
-
-.count_params_ad(order, n_time, n_blocks = 1)
+.count_params_ad(order, n_time, n_blocks = 1L, estimate_mu = FALSE)
 }
 \arguments{
 \item{order}{Antedependence order}
@@ -18,13 +16,9 @@
 \item{estimate_mu}{Whether mu is estimated.}
 }
 \value{
-Number of free parameters.
-
 Number of free parameters
 }
 \description{
-Count parameters for AD model
-
 Count parameters for AD model
 }
 \keyword{internal}

@@ -9,3 +9,6 @@
 ^README_MISSING_DATA\.md$
 ^INTEGRATION_SUMMARY\.md$
 ^examples$
+^PROJECT_CONTEXT\.md$
+^PROJECT_TODO\.md$
+^\.codex_.*\.R$
