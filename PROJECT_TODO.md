@@ -54,7 +54,7 @@
     - `na_action` strategy is defined and implemented.
     - Missing-data likelihood/EM path is tested on monotone + intermittent patterns.
 
-- [ ] Add missing-data support for CAT
+- [x] Add missing-data support for CAT
   - Scope: `fit_cat`, `logL_cat`, and downstream CAT tests.
   - Done when:
     - Missingness handling is implemented and documented.
@@ -78,6 +78,14 @@
   - Done when:
     - New users can identify which methods are production-ready.
     - Known limitations are documented in one place.
+
+## P3 - Workflow polish
+
+- [ ] Document local check modes and expected notes/warnings
+  - Scope: add a short local-check script/guide for directory-mode vs tarball-mode checks.
+  - Done when:
+    - A one-command local check is available with cleanup of `*.Rcheck` directories.
+    - The team has documented which NOTE/WARNING messages are expected in directory-mode checks.
 
 ## Suggested execution order
 

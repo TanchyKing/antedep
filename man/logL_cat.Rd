@@ -11,7 +11,8 @@ logL_cat(
   transition = NULL,
   blocks = NULL,
   homogeneous = TRUE,
-  n_categories = NULL
+  n_categories = NULL,
+  na_action = c("fail", "complete", "marginalize")
 )
 }
 \arguments{
@@ -34,6 +35,11 @@ membership. Required if homogeneous = FALSE.}
 subjects. If FALSE, marginal and transition should be lists indexed by block.}
 
 \item{n_categories}{Number of categories. If NULL, inferred from data.}
+
+\item{na_action}{Handling of missing values in \code{y}. One of
+\code{"fail"} (default, error if any missing), \code{"complete"}
+(drop subjects with any missing values), or \code{"marginalize"}
+(integrate over missing categorical outcomes under the AD model).}
 }
 \value{
 Scalar log-likelihood value.

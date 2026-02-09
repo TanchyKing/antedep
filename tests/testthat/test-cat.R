@@ -133,6 +133,55 @@ test_that("fit_cat works for order 2", {
 })
 
 
+test_that("fit_cat missing-data modes behave correctly", {
+  set.seed(43)
+  y <- simulate_cat(120, 5, order = 1, n_categories = 2)
+  y_miss <- y
+  y_miss[1, 2] <- NA
+  y_miss[4, 5] <- NA
+  
+  expect_error(fit_cat(y_miss, order = 1, na_action = "fail"), "Missing data")
+  
+  keep <- stats::complete.cases(y_miss)
+  fit_complete_mode <- fit_cat(y_miss, order = 1, na_action = "complete")
+  fit_complete_ref <- fit_cat(y_miss[keep, , drop = FALSE], order = 1)
+  expect_equal(as.numeric(fit_complete_mode$log_l), as.numeric(fit_complete_ref$log_l), tolerance = 1e-10)
+  
+  # With no missing values, marginalize should reduce to complete-data fit.
+  fit_full <- fit_cat(y, order = 1)
+  fit_marg_no_missing <- fit_cat(y, order = 1, na_action = "marginalize")
+  expect_equal(as.numeric(fit_marg_no_missing$log_l), as.numeric(fit_full$log_l), tolerance = 1e-10)
+  expect_equal(fit_marg_no_missing$settings$na_action_effective, "complete")
+})
+
+
+test_that("fit_cat marginalize handles missingness for order 2", {
+  set.seed(44)
+  y <- simulate_cat(140, 6, order = 2, n_categories = 2)
+  
+  # Create mixed monotone/intermittent missingness.
+  y_miss <- y
+  dropout_time <- sample(3:6, nrow(y_miss), replace = TRUE)
+  dropout_flag <- runif(nrow(y_miss)) < 0.25
+  for (i in seq_len(nrow(y_miss))) {
+    if (dropout_flag[i]) {
+      y_miss[i, dropout_time[i]:ncol(y_miss)] <- NA
+    }
+  }
+  mask <- matrix(runif(length(y_miss)) < 0.08, nrow = nrow(y_miss))
+  y_miss[mask] <- NA
+  
+  fit_miss <- fit_cat(y_miss, order = 2, na_action = "marginalize")
+  ll_miss <- logL_cat(
+    y_miss, order = 2, marginal = fit_miss$marginal, transition = fit_miss$transition,
+    na_action = "marginalize"
+  )
+  
+  expect_true(is.finite(fit_miss$log_l))
+  expect_true(is.finite(ll_miss))
+})
+
+
 # ============================================================
 # Test 5: simulate_cat functionality
 # ============================================================

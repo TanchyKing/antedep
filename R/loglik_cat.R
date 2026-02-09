@@ -18,6 +18,10 @@
 #' @param homogeneous Logical. If TRUE (default), same parameters used for all
 #'   subjects. If FALSE, marginal and transition should be lists indexed by block.
 #' @param n_categories Number of categories. If NULL, inferred from data.
+#' @param na_action Handling of missing values in \code{y}. One of
+#'   \code{"fail"} (default, error if any missing), \code{"complete"}
+#'   (drop subjects with any missing values), or \code{"marginalize"}
+#'   (integrate over missing categorical outcomes under the AD model).
 #'
 #' @return Scalar log-likelihood value.
 #'
@@ -49,10 +53,12 @@
 #'
 #' @export
 logL_cat <- function(y, order, marginal, transition = NULL, blocks = NULL,
-                     homogeneous = TRUE, n_categories = NULL) {
+                     homogeneous = TRUE, n_categories = NULL,
+                     na_action = c("fail", "complete", "marginalize")) {
+  na_action <- match.arg(na_action)
   
   # Validate data
-  validated <- .validate_y_cat(y, n_categories)
+  validated <- .validate_y_cat(y, n_categories, allow_na = (na_action != "fail"))
   y <- validated$y
   c <- validated$n_categories
   
@@ -63,9 +69,25 @@ logL_cat <- function(y, order, marginal, transition = NULL, blocks = NULL,
   # Validate order
   if (p < 0) stop("order must be non-negative")
   if (p >= n_time) stop("order must be less than number of time points")
+  if (na_action == "marginalize" && p > 2) {
+    stop("na_action = 'marginalize' currently supports order 0, 1, and 2")
+  }
   
   # Validate blocks
   blocks <- .validate_blocks_cat(blocks, n_subjects)
+  
+  # Handle missing values according to na_action
+  if (na_action == "complete") {
+    keep <- stats::complete.cases(y)
+    y <- y[keep, , drop = FALSE]
+    blocks <- blocks[keep]
+    if (nrow(y) == 0) {
+      stop("No complete subjects remain after na_action = 'complete'")
+    }
+    blocks <- .validate_blocks_cat(blocks, nrow(y))
+  }
+  
+  n_subjects <- nrow(y)
   n_blocks <- max(blocks)
   
   # Determine number of populations
@@ -93,7 +115,8 @@ logL_cat <- function(y, order, marginal, transition = NULL, blocks = NULL,
     }
     
     # Add contribution from subject s
-    log_l <- log_l + .logL_subject_cat(y[s, ], p, c, marg_s, trans_s)
+    log_l <- log_l + .logL_subject_cat_observed(y[s, ], p, c, marg_s, trans_s,
+                                                na_action = na_action)
   }
   
   log_l
@@ -159,6 +182,189 @@ logL_cat <- function(y, order, marginal, transition = NULL, blocks = NULL,
   }
   
   ll
+}
+
+
+#' Compute observed-data log-likelihood contribution from one subject
+#'
+#' @param y_s Integer vector of length n_time (one subject's data; may contain NA)
+#' @param p Order
+#' @param c Number of categories
+#' @param marginal Marginal parameters for this population
+#' @param transition Transition parameters for this population
+#' @param na_action Missing-data handling mode
+#'
+#' @return Scalar log-likelihood contribution
+#'
+#' @keywords internal
+.logL_subject_cat_observed <- function(y_s, p, c, marginal, transition, na_action) {
+  has_na <- any(is.na(y_s))
+  
+  if (!has_na) {
+    return(.logL_subject_cat(y_s, p, c, marginal, transition))
+  }
+  
+  if (na_action == "fail") {
+    stop("Missing data not supported in this call; use na_action = 'complete' or 'marginalize'")
+  }
+  
+  if (na_action == "complete") {
+    stop("Internal error: complete-case subject path should not contain missing values")
+  }
+  
+  # na_action == "marginalize"
+  if (p == 0) {
+    ll <- 0
+    n_time <- length(y_s)
+    for (k in seq_len(n_time)) {
+      if (!is.na(y_s[k])) {
+        ll <- ll + log(marginal[[k]][y_s[k]])
+      }
+    }
+    return(ll)
+  }
+  
+  if (p == 1) {
+    return(.logL_subject_cat_marginalize_p1(y_s, c, marginal, transition))
+  }
+  
+  if (p == 2) {
+    return(.logL_subject_cat_marginalize_p2(y_s, c, marginal, transition))
+  }
+  
+  stop("na_action = 'marginalize' currently supports order 0, 1, and 2")
+}
+
+
+#' Stable log-sum-exp
+#'
+#' @param x Numeric vector
+#'
+#' @return Scalar log(sum(exp(x)))
+#'
+#' @keywords internal
+.logsumexp_cat <- function(x) {
+  m <- max(x)
+  if (!is.finite(m)) return(-Inf)
+  m + log(sum(exp(x - m)))
+}
+
+
+#' Observed-data log-likelihood for order-1 CAT model
+#'
+#' @param y_s Subject row (may contain NA)
+#' @param c Number of categories
+#' @param marginal Marginal list
+#' @param transition Transition list
+#'
+#' @return Scalar log-likelihood contribution
+#'
+#' @keywords internal
+.logL_subject_cat_marginalize_p1 <- function(y_s, c, marginal, transition) {
+  n_time <- length(y_s)
+  log_alpha <- rep(-Inf, c)
+  
+  # k = 1
+  if (is.na(y_s[1])) {
+    log_alpha <- log(marginal[["t1"]])
+  } else {
+    log_alpha[y_s[1]] <- log(marginal[["t1"]][y_s[1]])
+  }
+  
+  if (n_time == 1) {
+    return(.logsumexp_cat(log_alpha))
+  }
+  
+  # k = 2,...,n
+  for (k in 2:n_time) {
+    trans_k <- transition[[paste0("t", k)]]
+    log_trans_k <- log(trans_k)
+    log_trans_k[trans_k <= 0] <- -Inf
+    
+    log_next <- rep(-Inf, c)
+    if (is.na(y_s[k])) {
+      for (j in seq_len(c)) {
+        log_next[j] <- .logsumexp_cat(log_alpha + log_trans_k[, j])
+      }
+    } else {
+      j_obs <- y_s[k]
+      log_next[j_obs] <- .logsumexp_cat(log_alpha + log_trans_k[, j_obs])
+    }
+    log_alpha <- log_next
+  }
+  
+  .logsumexp_cat(log_alpha)
+}
+
+
+#' Observed-data log-likelihood for order-2 CAT model
+#'
+#' @param y_s Subject row (may contain NA)
+#' @param c Number of categories
+#' @param marginal Marginal list
+#' @param transition Transition list
+#'
+#' @return Scalar log-likelihood contribution
+#'
+#' @keywords internal
+.logL_subject_cat_marginalize_p2 <- function(y_s, c, marginal, transition) {
+  n_time <- length(y_s)
+  
+  # k = 1
+  log_alpha1 <- rep(-Inf, c)
+  if (is.na(y_s[1])) {
+    log_alpha1 <- log(marginal[["t1"]])
+  } else {
+    log_alpha1[y_s[1]] <- log(marginal[["t1"]][y_s[1]])
+  }
+  
+  if (n_time == 1) {
+    return(.logsumexp_cat(log_alpha1))
+  }
+  
+  # k = 2: state is (Y1, Y2)
+  trans_2 <- marginal[["t2_given_1to1"]]
+  log_trans_2 <- log(trans_2)
+  log_trans_2[trans_2 <= 0] <- -Inf
+  log_state <- matrix(-Inf, nrow = c, ncol = c)
+  
+  for (a in seq_len(c)) {
+    if (!is.finite(log_alpha1[a])) next
+    if (!is.na(y_s[1]) && y_s[1] != a) next
+    for (b in seq_len(c)) {
+      if (!is.na(y_s[2]) && y_s[2] != b) next
+      log_state[a, b] <- log_alpha1[a] + log_trans_2[a, b]
+    }
+  }
+  
+  if (n_time == 2) {
+    return(.logsumexp_cat(as.vector(log_state)))
+  }
+  
+  # k = 3,...,n: state is (Y_{k-1}, Y_k)
+  for (k in 3:n_time) {
+    trans_k <- transition[[paste0("t", k)]]
+    log_trans_k <- log(trans_k)
+    log_trans_k[trans_k <= 0] <- -Inf
+    log_next <- matrix(-Inf, nrow = c, ncol = c)
+    
+    for (b in seq_len(c)) {
+      for (cat_k in seq_len(c)) {
+        if (!is.na(y_s[k]) && y_s[k] != cat_k) next
+        
+        candidates <- rep(-Inf, c)
+        for (a in seq_len(c)) {
+          if (!is.finite(log_state[a, b])) next
+          candidates[a] <- log_state[a, b] + log_trans_k[a, b, cat_k]
+        }
+        log_next[b, cat_k] <- .logsumexp_cat(candidates)
+      }
+    }
+    
+    log_state <- log_next
+  }
+  
+  .logsumexp_cat(as.vector(log_state))
 }
 
 

@@ -4,11 +4,12 @@
 #'
 #' @param y Data matrix
 #' @param n_categories Number of categories (NULL to infer)
+#' @param allow_na Logical; if TRUE, allow missing values.
 #'
 #' @return List with validated y and n_categories
 #'
 #' @keywords internal
-.validate_y_cat <- function(y, n_categories = NULL) {
+.validate_y_cat <- function(y, n_categories = NULL, allow_na = FALSE) {
   # Convert to matrix if needed
 
   if (!is.matrix(y)) y <- as.matrix(y)
@@ -26,13 +27,16 @@
     stop("y must have category codes >= 1")
   }
   
-  # Check for NA (complete data only for now)
-  if (any(is.na(y))) {
-    stop("Missing data not yet supported; y must be complete")
+  # Check for NA
+  if (!allow_na && any(is.na(y))) {
+    stop("Missing data not supported in this call; y must be complete")
   }
   
   # Infer number of categories
-  c_inferred <- max(y)
+  c_inferred <- max(y, na.rm = TRUE)
+  if (!is.finite(c_inferred)) {
+    stop("Unable to infer categories: all values are NA")
+  }
   
   if (!is.null(n_categories)) {
     if (n_categories < c_inferred) {

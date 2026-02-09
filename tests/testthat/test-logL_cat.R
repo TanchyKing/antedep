@@ -14,6 +14,78 @@ test_that("logL_cat validates inputs correctly", {
 })
 
 
+test_that("logL_cat missing-data modes behave correctly", {
+  set.seed(124)
+  y <- simulate_cat(120, 5, order = 1, n_categories = 2)
+  fit <- fit_cat(y, order = 1)
+  
+  y_miss <- y
+  y_miss[1, 3] <- NA
+  y_miss[2, 5] <- NA
+  
+  expect_error(
+    logL_cat(y_miss, order = 1, marginal = fit$marginal, transition = fit$transition,
+             na_action = "fail"),
+    "Missing data"
+  )
+  
+  keep <- stats::complete.cases(y_miss)
+  ll_complete_mode <- logL_cat(
+    y_miss, order = 1, marginal = fit$marginal, transition = fit$transition,
+    na_action = "complete"
+  )
+  ll_complete_ref <- logL_cat(
+    y_miss[keep, , drop = FALSE], order = 1,
+    marginal = fit$marginal, transition = fit$transition
+  )
+  expect_equal(as.numeric(ll_complete_mode), as.numeric(ll_complete_ref), tolerance = 1e-10)
+  
+  ll_no_missing <- logL_cat(y, order = 1, marginal = fit$marginal, transition = fit$transition)
+  ll_no_missing_marg <- logL_cat(
+    y, order = 1, marginal = fit$marginal, transition = fit$transition,
+    na_action = "marginalize"
+  )
+  expect_equal(as.numeric(ll_no_missing_marg), as.numeric(ll_no_missing), tolerance = 1e-10)
+})
+
+
+test_that("logL_cat marginalize is finite for MAR-style missingness", {
+  set.seed(125)
+  y <- simulate_cat(160, 6, order = 1, n_categories = 2)
+  
+  # Monotone missingness (dropout)
+  y_monotone <- y
+  dropout_time <- sample(2:6, nrow(y_monotone), replace = TRUE)
+  dropout_flag <- runif(nrow(y_monotone)) < 0.35
+  for (i in seq_len(nrow(y_monotone))) {
+    if (dropout_flag[i]) {
+      y_monotone[i, dropout_time[i]:ncol(y_monotone)] <- NA
+    }
+  }
+  
+  fit_monotone <- fit_cat(y_monotone, order = 1, na_action = "marginalize")
+  ll_monotone <- logL_cat(
+    y_monotone, order = 1, marginal = fit_monotone$marginal,
+    transition = fit_monotone$transition, na_action = "marginalize"
+  )
+  expect_true(is.finite(fit_monotone$log_l))
+  expect_true(is.finite(ll_monotone))
+  
+  # Intermittent missingness
+  y_intermittent <- y
+  mask <- matrix(runif(length(y_intermittent)) < 0.15, nrow = nrow(y_intermittent))
+  y_intermittent[mask] <- NA
+  
+  fit_intermittent <- fit_cat(y_intermittent, order = 1, na_action = "marginalize")
+  ll_intermittent <- logL_cat(
+    y_intermittent, order = 1, marginal = fit_intermittent$marginal,
+    transition = fit_intermittent$transition, na_action = "marginalize"
+  )
+  expect_true(is.finite(fit_intermittent$log_l))
+  expect_true(is.finite(ll_intermittent))
+})
+
+
 test_that("logL_cat computes correct log-likelihood for order 0", {
   set.seed(234)
   n_subjects <- 50

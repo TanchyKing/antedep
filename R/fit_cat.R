@@ -16,6 +16,10 @@
 #'   transition probabilities are estimated for each group.
 #' @param n_categories Number of categories. If NULL (default), inferred from
 #'   the maximum value in y.
+#' @param na_action Handling of missing values in \code{y}. One of
+#'   \code{"fail"} (default, error if any missing), \code{"complete"}
+#'   (drop subjects with any missing values), or \code{"marginalize"}
+#'   (maximize observed-data likelihood by integrating over missing outcomes).
 #'
 #' @return A list of class \code{"cat_fit"} containing:
 #'   \item{marginal}{List of marginal/joint probabilities for initial time points}
@@ -25,7 +29,7 @@
 #'   \item{bic}{Bayesian Information Criterion}
 #'   \item{n_params}{Number of free parameters}
 #'   \item{cell_counts}{List of observed cell counts}
-#'   \item{convergence}{Always 0 (closed-form solution)}
+#'   \item{convergence}{Optimizer convergence code (0 for closed-form solutions)}
 #'   \item{settings}{List of model settings}
 #'
 #' @details
@@ -64,11 +68,13 @@
 #'
 #' @export
 fit_cat <- function(y, order = 1, blocks = NULL, homogeneous = TRUE, 
-                    n_categories = NULL) {
+                    n_categories = NULL,
+                    na_action = c("fail", "complete", "marginalize")) {
+  na_action <- match.arg(na_action)
   
 
   # Validate inputs
-  validated <- .validate_y_cat(y, n_categories)
+  validated <- .validate_y_cat(y, n_categories, allow_na = (na_action != "fail"))
   y <- validated$y
   c <- validated$n_categories
   
@@ -80,9 +86,31 @@ fit_cat <- function(y, order = 1, blocks = NULL, homogeneous = TRUE,
   if (p < 0) stop("order must be non-negative")
   if (p > 2) stop("order > 2 not currently supported")
   if (p >= n_time) stop("order must be less than number of time points")
+  if (na_action == "marginalize" && p > 2) {
+    stop("na_action = 'marginalize' currently supports order 0, 1, and 2")
+  }
   
   # Validate and process blocks
   blocks <- .validate_blocks_cat(blocks, n_subjects)
+  
+  # Handle complete-case filtering if requested
+  if (na_action == "complete") {
+    keep <- stats::complete.cases(y)
+    y <- y[keep, , drop = FALSE]
+    blocks <- blocks[keep]
+    if (nrow(y) == 0) {
+      stop("No complete subjects remain after na_action = 'complete'")
+    }
+    blocks <- .validate_blocks_cat(blocks, nrow(y))
+  }
+  
+  n_subjects <- nrow(y)
+  effective_na_action <- na_action
+  if (na_action == "marginalize" && !any(is.na(y))) {
+    # Degenerate to complete-data closed-form fit when no missing values remain.
+    effective_na_action <- "complete"
+  }
+  
   n_blocks <- max(blocks)
   
   # Determine number of populations to estimate
@@ -95,9 +123,16 @@ fit_cat <- function(y, order = 1, blocks = NULL, homogeneous = TRUE,
   # Count parameters
   n_params <- .count_params_cat(p, c, n_time, n_blocks, homogeneous)
   
+  convergence <- 0L
+  
   # Initialize storage for parameters
   if (n_pops == 1) {
-    result <- .fit_cat_single_pop(y, p, c, n_time, subject_mask = NULL)
+    if (effective_na_action == "marginalize") {
+      result <- .fit_cat_single_pop_marginalize(y, p, c, n_time)
+      convergence <- as.integer(result$convergence)
+    } else {
+      result <- .fit_cat_single_pop(y, p, c, n_time, subject_mask = NULL)
+    }
     marginal <- result$marginal
     transition <- result$transition
     cell_counts <- result$cell_counts
@@ -108,10 +143,18 @@ fit_cat <- function(y, order = 1, blocks = NULL, homogeneous = TRUE,
     transition <- vector("list", n_pops)
     cell_counts <- vector("list", n_pops)
     log_l <- 0
+    conv_codes <- integer(n_pops)
     
     for (g in seq_len(n_pops)) {
       mask <- (blocks == g)
-      result_g <- .fit_cat_single_pop(y, p, c, n_time, subject_mask = mask)
+      y_g <- y[mask, , drop = FALSE]
+      if (effective_na_action == "marginalize") {
+        result_g <- .fit_cat_single_pop_marginalize(y_g, p, c, n_time)
+        conv_codes[g] <- as.integer(result_g$convergence)
+      } else {
+        result_g <- .fit_cat_single_pop(y, p, c, n_time, subject_mask = mask)
+        conv_codes[g] <- 0L
+      }
       marginal[[g]] <- result_g$marginal
       transition[[g]] <- result_g$transition
       cell_counts[[g]] <- result_g$cell_counts
@@ -120,6 +163,7 @@ fit_cat <- function(y, order = 1, blocks = NULL, homogeneous = TRUE,
     names(marginal) <- paste0("block_", seq_len(n_pops))
     names(transition) <- paste0("block_", seq_len(n_pops))
     names(cell_counts) <- paste0("block_", seq_len(n_pops))
+    convergence <- as.integer(max(conv_codes))
   }
   
   # Compute AIC and BIC
@@ -135,7 +179,7 @@ fit_cat <- function(y, order = 1, blocks = NULL, homogeneous = TRUE,
     bic = bic,
     n_params = n_params,
     cell_counts = cell_counts,
-    convergence = 0L,
+    convergence = convergence,
     settings = list(
       order = p,
       n_categories = c,
@@ -143,12 +187,309 @@ fit_cat <- function(y, order = 1, blocks = NULL, homogeneous = TRUE,
       n_subjects = n_subjects,
       blocks = if (n_blocks > 1) blocks else NULL,
       homogeneous = homogeneous,
-      n_blocks = n_blocks
+      n_blocks = n_blocks,
+      na_action = na_action,
+      na_action_effective = effective_na_action
     )
   )
   
   class(out) <- "cat_fit"
   out
+}
+
+
+#' Fit CAT model with missing data via observed-data likelihood optimization
+#'
+#' @param y Data matrix for one population (may contain NA)
+#' @param p Order
+#' @param c Number of categories
+#' @param n_time Number of time points
+#'
+#' @return List with marginal, transition, cell_counts, log_l, convergence
+#'
+#' @keywords internal
+.fit_cat_single_pop_marginalize <- function(y, p, c, n_time) {
+  # Initialize from complete cases if available; otherwise uniform probabilities.
+  y_complete <- y[stats::complete.cases(y), , drop = FALSE]
+  if (nrow(y_complete) > 0) {
+    init_fit <- .fit_cat_single_pop(y_complete, p, c, n_time, subject_mask = NULL)
+    init_marginal <- init_fit$marginal
+    init_transition <- init_fit$transition
+  } else {
+    init <- .uniform_cat_params(p, c, n_time)
+    init_marginal <- init$marginal
+    init_transition <- init$transition
+  }
+  
+  theta_start <- .pack_cat_params(init_marginal, init_transition, p, c, n_time)
+  
+  objective <- function(theta) {
+    params <- .unpack_cat_params(theta, p, c, n_time)
+    ll <- logL_cat(
+      y = y,
+      order = p,
+      marginal = params$marginal,
+      transition = params$transition,
+      n_categories = c,
+      na_action = "marginalize"
+    )
+    if (!is.finite(ll)) return(1e50)
+    -as.numeric(ll)
+  }
+  
+  if (length(theta_start) == 0) {
+    # Degenerate single-category case
+    params <- .unpack_cat_params(theta_start, p, c, n_time)
+    ll <- -objective(theta_start)
+    return(list(
+      marginal = params$marginal,
+      transition = params$transition,
+      cell_counts = NULL,
+      log_l = ll,
+      convergence = 0L
+    ))
+  }
+  
+  opt <- stats::optim(
+    par = theta_start,
+    fn = objective,
+    method = "BFGS",
+    control = list(maxit = 2000, reltol = 1e-10)
+  )
+  
+  # Fallback if BFGS does not converge cleanly.
+  if (opt$convergence != 0L || !is.finite(opt$value)) {
+    opt_nm <- stats::optim(
+      par = opt$par,
+      fn = objective,
+      method = "Nelder-Mead",
+      control = list(maxit = 4000, reltol = 1e-10)
+    )
+    if (is.finite(opt_nm$value) && (!is.finite(opt$value) || opt_nm$value < opt$value)) {
+      opt <- opt_nm
+    }
+  }
+  
+  params <- .unpack_cat_params(opt$par, p, c, n_time)
+  
+  list(
+    marginal = params$marginal,
+    transition = params$transition,
+    cell_counts = NULL,
+    log_l = -opt$value,
+    convergence = as.integer(opt$convergence)
+  )
+}
+
+
+#' Convert probability row to unconstrained logits
+#'
+#' @param prob Probability vector of length c
+#' @param c Number of categories
+#' @param eps Lower bound for numerical stability
+#'
+#' @return Numeric vector of length c-1
+#'
+#' @keywords internal
+.cat_prob_to_theta <- function(prob, c, eps = 1e-8) {
+  if (c <= 1) return(numeric(0))
+  prob <- as.numeric(prob)
+  if (length(prob) != c) {
+    stop("Probability row has wrong length in CAT parameter packing")
+  }
+  prob <- pmax(prob, eps)
+  prob <- prob / sum(prob)
+  log(prob[seq_len(c - 1)] / prob[c])
+}
+
+
+#' Convert unconstrained logits to probability row
+#'
+#' @param theta_row Numeric vector of length c-1
+#' @param c Number of categories
+#'
+#' @return Probability vector of length c
+#'
+#' @keywords internal
+.cat_theta_to_prob <- function(theta_row, c) {
+  if (c <= 1) return(1)
+  if (length(theta_row) != (c - 1)) {
+    stop("Theta row has wrong length in CAT parameter unpacking")
+  }
+  z <- c(theta_row, 0)
+  z <- z - max(z)
+  ez <- exp(z)
+  ez / sum(ez)
+}
+
+
+#' Pack CAT parameters into unconstrained vector
+#'
+#' @param marginal Marginal parameter list
+#' @param transition Transition parameter list
+#' @param p Order
+#' @param c Number of categories
+#' @param n_time Number of time points
+#'
+#' @return Numeric parameter vector
+#'
+#' @keywords internal
+.pack_cat_params <- function(marginal, transition, p, c, n_time) {
+  theta <- numeric(0)
+  
+  if (p == 0) {
+    for (k in seq_len(n_time)) {
+      theta <- c(theta, .cat_prob_to_theta(marginal[[k]], c))
+    }
+    return(theta)
+  }
+  
+  theta <- c(theta, .cat_prob_to_theta(marginal[["t1"]], c))
+  
+  if (p == 1) {
+    for (k in 2:n_time) {
+      trans_k <- transition[[paste0("t", k)]]
+      for (from in seq_len(c)) {
+        theta <- c(theta, .cat_prob_to_theta(trans_k[from, ], c))
+      }
+    }
+    return(theta)
+  }
+  
+  # p == 2
+  trans_t2 <- marginal[["t2_given_1to1"]]
+  for (from in seq_len(c)) {
+    theta <- c(theta, .cat_prob_to_theta(trans_t2[from, ], c))
+  }
+  for (k in 3:n_time) {
+    trans_k <- transition[[paste0("t", k)]]
+    for (from1 in seq_len(c)) {
+      for (from2 in seq_len(c)) {
+        theta <- c(theta, .cat_prob_to_theta(trans_k[from1, from2, ], c))
+      }
+    }
+  }
+  
+  theta
+}
+
+
+#' Unpack unconstrained CAT parameter vector
+#'
+#' @param theta Numeric parameter vector
+#' @param p Order
+#' @param c Number of categories
+#' @param n_time Number of time points
+#'
+#' @return List with marginal and transition parameter lists
+#'
+#' @keywords internal
+.unpack_cat_params <- function(theta, p, c, n_time) {
+  idx <- 1L
+  
+  next_row <- function() {
+    if (c <= 1) return(1)
+    end_idx <- idx + c - 2
+    if (end_idx > length(theta)) {
+      stop("Theta vector ended early while unpacking CAT parameters")
+    }
+    row <- .cat_theta_to_prob(theta[idx:end_idx], c)
+    idx <<- end_idx + 1L
+    row
+  }
+  
+  marginal <- list()
+  transition <- list()
+  
+  if (p == 0) {
+    for (k in seq_len(n_time)) {
+      marginal[[k]] <- next_row()
+      names(marginal[[k]]) <- paste0("cat_", seq_len(c))
+    }
+    names(marginal) <- paste0("t", seq_len(n_time))
+  } else if (p == 1) {
+    marginal[["t1"]] <- next_row()
+    names(marginal[["t1"]]) <- paste0("cat_", seq_len(c))
+    
+    for (k in 2:n_time) {
+      trans_k <- matrix(0, nrow = c, ncol = c)
+      for (from in seq_len(c)) {
+        trans_k[from, ] <- next_row()
+      }
+      transition[[paste0("t", k)]] <- trans_k
+    }
+  } else if (p == 2) {
+    marginal[["t1"]] <- next_row()
+    names(marginal[["t1"]]) <- paste0("cat_", seq_len(c))
+    
+    trans_t2 <- matrix(0, nrow = c, ncol = c)
+    for (from in seq_len(c)) {
+      trans_t2[from, ] <- next_row()
+    }
+    marginal[["t2_given_1to1"]] <- trans_t2
+    
+    for (k in 3:n_time) {
+      trans_k <- array(0, dim = c(c, c, c))
+      for (from1 in seq_len(c)) {
+        for (from2 in seq_len(c)) {
+          trans_k[from1, from2, ] <- next_row()
+        }
+      }
+      transition[[paste0("t", k)]] <- trans_k
+    }
+  } else {
+    stop("Only orders 0, 1, and 2 are supported")
+  }
+  
+  if (idx <= length(theta)) {
+    stop("Theta vector has extra elements after CAT parameter unpacking")
+  }
+  
+  list(marginal = marginal, transition = transition)
+}
+
+
+#' Build uniform CAT parameter values
+#'
+#' @param p Order
+#' @param c Number of categories
+#' @param n_time Number of time points
+#'
+#' @return List with marginal and transition
+#'
+#' @keywords internal
+.uniform_cat_params <- function(p, c, n_time) {
+  probs <- rep(1 / c, c)
+  marginal <- list()
+  transition <- list()
+  
+  if (p == 0) {
+    marginal <- lapply(seq_len(n_time), function(k) {
+      out <- probs
+      names(out) <- paste0("cat_", seq_len(c))
+      out
+    })
+    names(marginal) <- paste0("t", seq_len(n_time))
+    return(list(marginal = marginal, transition = transition))
+  }
+  
+  marginal[["t1"]] <- stats::setNames(probs, paste0("cat_", seq_len(c)))
+  
+  if (p == 1) {
+    for (k in 2:n_time) {
+      transition[[paste0("t", k)]] <- matrix(rep(probs, each = c), nrow = c, byrow = TRUE)
+    }
+  } else if (p == 2) {
+    marginal[["t2_given_1to1"]] <- matrix(rep(probs, each = c), nrow = c, byrow = TRUE)
+    for (k in 3:n_time) {
+      transition[[paste0("t", k)]] <- array(
+        rep(probs, each = c * c),
+        dim = c(c, c, c)
+      )
+    }
+  }
+  
+  list(marginal = marginal, transition = transition)
 }
 
 

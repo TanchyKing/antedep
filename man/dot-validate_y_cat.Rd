@@ -4,12 +4,14 @@
 \alias{.validate_y_cat}
 \title{Validate categorical data matrix}
 \usage{
-.validate_y_cat(y, n_categories = NULL)
+.validate_y_cat(y, n_categories = NULL, allow_na = FALSE)
 }
 \arguments{
 \item{y}{Data matrix}
 
 \item{n_categories}{Number of categories (NULL to infer)}
+
+\item{allow_na}{Logical; if TRUE, allow missing values.}
 }
 \value{
 List with validated y and n_categories

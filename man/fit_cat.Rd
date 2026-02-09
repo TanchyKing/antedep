@@ -4,7 +4,14 @@
 \alias{fit_cat}
 \title{Fit a categorical antedependence model}
 \usage{
-fit_cat(y, order = 1, blocks = NULL, homogeneous = TRUE, n_categories = NULL)
+fit_cat(
+  y,
+  order = 1,
+  blocks = NULL,
+  homogeneous = TRUE,
+  n_categories = NULL,
+  na_action = c("fail", "complete", "marginalize")
+)
 }
 \arguments{
 \item{y}{Integer matrix with n_subjects rows and n_time columns. Each entry
@@ -21,6 +28,11 @@ transition probabilities are estimated for each group.}
 
 \item{n_categories}{Number of categories. If NULL (default), inferred from
 the maximum value in y.}
+
+\item{na_action}{Handling of missing values in \code{y}. One of
+\code{"fail"} (default, error if any missing), \code{"complete"}
+(drop subjects with any missing values), or \code{"marginalize"}
+(maximize observed-data likelihood by integrating over missing outcomes).}
 }
 \value{
 A list of class \code{"cat_fit"} containing:
@@ -31,7 +43,7 @@ A list of class \code{"cat_fit"} containing:
 \item{bic}{Bayesian Information Criterion}
 \item{n_params}{Number of free parameters}
 \item{cell_counts}{List of observed cell counts}
-\item{convergence}{Always 0 (closed-form solution)}
+\item{convergence}{Optimizer convergence code (0 for closed-form solutions)}
 \item{settings}{List of model settings}
 }
 \description{
