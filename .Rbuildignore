@@ -12,3 +12,5 @@
 ^PROJECT_CONTEXT\.md$
 ^PROJECT_TODO\.md$
 ^\.codex_.*\.R$
+^\.github$
+^scripts$

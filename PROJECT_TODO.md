@@ -67,7 +67,7 @@
   - Done when:
     - Missing-data compatible inference is supported or explicitly rejected with clear errors.
 
-- [ ] Add automated check workflow
+- [x] Add automated check workflow
   - Scope: local script and/or GitHub Actions.
   - Done when:
     - One command runs document + test + check.
