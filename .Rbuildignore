@@ -16,3 +16,5 @@
 ^scripts$
 ^_pkgdown\.yml$
 ^docs$
+^LOCAL_CHECKS\.md$
+^antedep-reference-manual\.pdf$

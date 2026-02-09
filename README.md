@@ -64,3 +64,7 @@ Integrated function reference: `docs/reference/index.html`.
 
 - Local build: `Rscript -e "pkgdown::build_site(preview = FALSE)"`
 - CI deployment: `.github/workflows/pkgdown.yml` (GitHub Pages via Actions)
+
+## Local Check Guide
+
+- See `LOCAL_CHECKS.md` for tarball-mode vs directory-mode checks and expected NOTE messages.

@@ -81,11 +81,16 @@
 
 ## P3 - Workflow polish
 
-- [ ] Document local check modes and expected notes/warnings
+- [x] Document local check modes and expected notes/warnings
   - Scope: add a short local-check script/guide for directory-mode vs tarball-mode checks.
   - Done when:
     - A one-command local check is available with cleanup of `*.Rcheck` directories.
     - The team has documented which NOTE/WARNING messages are expected in directory-mode checks.
+  - Implemented in: `LOCAL_CHECKS.md`
+
+- [ ] Release memo: regenerate local PDF reference manual when needed
+  - Command: `R CMD Rd2pdf --output=antedep-reference-manual.pdf .`
+  - Policy: keep local only (ignored by git; excluded from package build).
 
 - [ ] Implement missing-data CI/LRT inference for AD/INAD/CAT
   - Scope: support `ci_*` and `lrt_*` on incomplete data (or model-specific documented approximations).

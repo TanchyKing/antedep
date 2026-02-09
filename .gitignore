@@ -13,6 +13,7 @@ inst/doc
 *.Rcheck/
 ..Rcheck/
 *.tar.gz
+antedep-reference-manual.pdf
 
 # Transient test graphics
 tests/testthat/Rplots.pdf
