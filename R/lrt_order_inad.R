@@ -23,13 +23,8 @@ lrt_order_inad <- function(y, order_null = 1, order_alt = 2,
                            blocks = NULL, use_chibar = TRUE, weights = NULL,
                            fit_null = NULL, fit_alt = NULL, ...) {
   if (!is.matrix(y)) y <- as.matrix(y)
-  if (anyNA(y)) {
-    stop(
-      "lrt_order_inad currently supports complete data only. Missing-data INAD likelihood-ratio tests are not implemented yet.",
-      call. = FALSE
-    )
-  }
-  if (any(y < 0) || any(y != floor(y))) stop("y must contain non-negative integers")
+  y_obs <- y[!is.na(y)]
+  if (any(y_obs < 0) || any(y_obs != floor(y_obs))) stop("y must contain non-negative integers")
   n_subjects <- nrow(y); n_time <- ncol(y)
   if (!order_null %in% c(0, 1)) stop("order_null must be 0 or 1")
   if (!order_alt %in% c(1, 2)) stop("order_alt must be 1 or 2")
@@ -39,11 +34,29 @@ lrt_order_inad <- function(y, order_null = 1, order_alt = 2,
   innovation <- match.arg(innovation, c("pois", "bell", "nbinom"))
   if (is.null(blocks)) blocks <- rep(1L, n_subjects)
   n_blocks <- length(unique(blocks))
+  fit_args <- list(...)
+  if (anyNA(y) && is.null(fit_args$na_action)) {
+    fit_args$na_action <- "marginalize"
+  }
   
-  if (is.null(fit_null)) fit_null <- fit_inad(y, order = order_null, thinning = thinning,
-                                               innovation = innovation, blocks = blocks, ...)
-  if (is.null(fit_alt)) fit_alt <- fit_inad(y, order = order_alt, thinning = thinning,
-                                             innovation = innovation, blocks = blocks, ...)
+  if (is.null(fit_null)) {
+    fit_null <- do.call(
+      fit_inad,
+      c(
+        list(y = y, order = order_null, thinning = thinning, innovation = innovation, blocks = blocks),
+        fit_args
+      )
+    )
+  }
+  if (is.null(fit_alt)) {
+    fit_alt <- do.call(
+      fit_inad,
+      c(
+        list(y = y, order = order_alt, thinning = thinning, innovation = innovation, blocks = blocks),
+        fit_args
+      )
+    )
+  }
   
   logL_null <- fit_null$log_l; logL_alt <- fit_alt$log_l
   lrt_stat <- 2 * (logL_alt - logL_null)

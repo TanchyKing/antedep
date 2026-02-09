@@ -104,13 +104,8 @@ lrt_homogeneity_inad <- function(y, blocks, order = 1,
   
   # Validate inputs
   if (!is.matrix(y)) y <- as.matrix(y)
-  if (anyNA(y)) {
-    stop(
-      "lrt_homogeneity_inad currently supports complete data only. Missing-data INAD likelihood-ratio tests are not implemented yet.",
-      call. = FALSE
-    )
-  }
-  if (any(y < 0) || any(y != floor(y))) {
+  y_obs <- y[!is.na(y)]
+  if (any(y_obs < 0) || any(y_obs != floor(y_obs))) {
     stop("y must contain non-negative integers")
   }
   
@@ -143,6 +138,10 @@ lrt_homogeneity_inad <- function(y, blocks, order = 1,
   innovation <- match.arg(innovation, c("pois", "bell", "nbinom"))
   order <- as.integer(order)
   if (!order %in% c(0L, 1L, 2L)) stop("order must be 0, 1, or 2")
+  fit_args <- list(...)
+  if (anyNA(y) && is.null(fit_args$na_action)) {
+    fit_args$na_action <- "marginalize"
+  }
   
   # Group sizes
   group_sizes <- table(blocks_norm)
@@ -151,21 +150,43 @@ lrt_homogeneity_inad <- function(y, blocks, order = 1,
   # Fit required models
   # M1: Pooled model (no block effects)
   if (is.null(fit_pooled) && test %in% c("all", "mean")) {
-    fit_pooled <- fit_inad(y, order = order, thinning = thinning,
-                           innovation = innovation, blocks = NULL, ...)
+    fit_pooled <- do.call(
+      fit_inad,
+      c(
+        list(y = y, order = order, thinning = thinning, innovation = innovation, blocks = NULL),
+        fit_args
+      )
+    )
   }
   
   # M2: INADFE model (shared dependence, different means via tau)
   if (is.null(fit_inadfe) && test %in% c("mean", "dependence")) {
-    fit_inadfe <- fit_inad(y, order = order, thinning = thinning,
-                           innovation = innovation, blocks = blocks_norm, ...)
+    fit_inadfe <- do.call(
+      fit_inad,
+      c(
+        list(y = y, order = order, thinning = thinning, innovation = innovation, blocks = blocks_norm),
+        fit_args
+      )
+    )
   }
   
   # M3: Fully heterogeneous (separate fits per group)
   if (is.null(fit_hetero) && test %in% c("all", "dependence")) {
-    fit_hetero <- .fit_inad_heterogeneous(y, blocks_norm, n_blocks, 
-                                           group_indices, order, thinning,
-                                           innovation, ...)
+    fit_hetero <- do.call(
+      .fit_inad_heterogeneous,
+      c(
+        list(
+          y = y,
+          blocks = blocks_norm,
+          n_blocks = n_blocks,
+          group_indices = group_indices,
+          order = order,
+          thinning = thinning,
+          innovation = innovation
+        ),
+        fit_args
+      )
+    )
   }
   
   # Determine null and alternative models based on test type
@@ -386,14 +407,12 @@ run_homogeneity_tests_inad <- function(y, blocks, order = 1,
   
   # Fit all three models once
   if (!is.matrix(y)) y <- as.matrix(y)
-  if (anyNA(y)) {
-    stop(
-      "run_homogeneity_tests_inad currently supports complete data only. Missing-data INAD likelihood-ratio tests are not implemented yet.",
-      call. = FALSE
-    )
-  }
   n_subjects <- nrow(y)
   n_time <- ncol(y)
+  fit_args <- list(...)
+  if (anyNA(y) && is.null(fit_args$na_action)) {
+    fit_args$na_action <- "marginalize"
+  }
   
   blocks <- as.integer(blocks)
   unique_blocks <- sort(unique(blocks))
@@ -403,36 +422,61 @@ run_homogeneity_tests_inad <- function(y, blocks, order = 1,
   group_indices <- lapply(1:n_blocks, function(g) which(blocks_norm == g))
   
   # Fit M1 (Pooled)
-  fit_pooled <- fit_inad(y, order = order, thinning = thinning,
-                         innovation = innovation, blocks = NULL, ...)
+  fit_pooled <- do.call(
+    fit_inad,
+    c(
+      list(y = y, order = order, thinning = thinning, innovation = innovation, blocks = NULL),
+      fit_args
+    )
+  )
   
   # Fit M2 (INADFE)
-  fit_inadfe <- fit_inad(y, order = order, thinning = thinning,
-                         innovation = innovation, blocks = blocks_norm, ...)
+  fit_inadfe <- do.call(
+    fit_inad,
+    c(
+      list(y = y, order = order, thinning = thinning, innovation = innovation, blocks = blocks_norm),
+      fit_args
+    )
+  )
   
   # Fit M3 (Heterogeneous)
-  fit_hetero <- .fit_inad_heterogeneous(y, blocks_norm, n_blocks, 
-                                         group_indices, order, thinning,
-                                         innovation, ...)
+  fit_hetero <- do.call(
+    .fit_inad_heterogeneous,
+    c(
+      list(
+        y = y,
+        blocks = blocks_norm,
+        n_blocks = n_blocks,
+        group_indices = group_indices,
+        order = order,
+        thinning = thinning,
+        innovation = innovation
+      ),
+      fit_args
+    )
+  )
   
   # Run all three tests
   test_all <- lrt_homogeneity_inad(y, blocks, order = order,
                                     thinning = thinning, innovation = innovation,
                                     test = "all",
                                     fit_pooled = fit_pooled,
-                                    fit_hetero = fit_hetero, ...)
+                                    fit_hetero = fit_hetero,
+                                    na_action = fit_args$na_action)
   
   test_mean <- lrt_homogeneity_inad(y, blocks, order = order,
                                      thinning = thinning, innovation = innovation,
                                      test = "mean",
                                      fit_pooled = fit_pooled,
-                                     fit_inadfe = fit_inadfe, ...)
+                                     fit_inadfe = fit_inadfe,
+                                     na_action = fit_args$na_action)
   
   test_dep <- lrt_homogeneity_inad(y, blocks, order = order,
                                     thinning = thinning, innovation = innovation,
                                     test = "dependence",
                                     fit_inadfe = fit_inadfe,
-                                    fit_hetero = fit_hetero, ...)
+                                    fit_hetero = fit_hetero,
+                                    na_action = fit_args$na_action)
   
   # Create summary table
   summary_table <- data.frame(

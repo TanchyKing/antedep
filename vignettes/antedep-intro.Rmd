@@ -140,6 +140,13 @@ fit_inad_miss$log_l
 fit_inad_miss$pct_missing
 ```
 
+```{r}
+# Missing-data LRTs (observed-data likelihood)
+blocks_inad <- rep(1:2, each = nrow(y_inad_miss) / 2)
+lrt_order_inad(y_inad_miss, order_null = 0, order_alt = 1, blocks = blocks_inad)$p_value
+lrt_homogeneity_inad(y_inad_miss, blocks = blocks_inad, order = 1, test = "mean")$p_value
+```
+
 ## CAT Workflow (Categorical Outcomes)
 
 ### Complete-data CAT fit and inference
@@ -170,6 +177,13 @@ fit_cat_miss$log_l
 fit_cat_miss$settings$na_action_effective
 ```
 
+```{r}
+# Missing-data order/homogeneity tests are supported
+blocks_cat <- rep(1:2, each = nrow(y_cat_miss) / 2)
+lrt_order_cat(y_cat_miss, order_null = 0, order_alt = 1)$p_value
+lrt_homogeneity_cat(y_cat_miss, blocks = blocks_cat, order = 1)$p_value
+```
+
 ## Additional Inference Helpers (Complete Data)
 
 ```{r eval=FALSE}
@@ -185,7 +199,9 @@ lrt_stationarity_cat(y_cat, order = 1)
 
 ## Known Limitations
 
-- Missing-data CI/LRT inference is not implemented yet for AD/INAD/CAT (`ci_*`, `lrt_*` on incomplete data).
+- Missing-data confidence intervals are not implemented yet (`ci_inad`, `ci_cat` require complete-data fits).
+- AD missing-data LRT/mean/covariance tests are not implemented yet.
+- CAT missing-data time-invariance/stationarity tests (`lrt_timeinvariance_cat`, `lrt_stationarity_cat`, `run_stationarity_tests_cat`) are not implemented yet.
 - Current order support is up to order 2 for AD, INAD, and CAT.
 - CAT missing-data marginalization currently supports orders 0, 1, and 2.
 

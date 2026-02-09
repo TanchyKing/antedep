@@ -94,6 +94,10 @@
 
 - [ ] Implement missing-data CI/LRT inference for AD/INAD/CAT
   - Scope: support `ci_*` and `lrt_*` on incomplete data (or model-specific documented approximations).
+  - Progress (2026-02-09):
+    - Implemented: INAD missing-data LRT wrappers (`lrt_order_inad`, `lrt_homogeneity_inad`, `lrt_stationarity_inad`, and `run_*` helpers) via `na_action = "marginalize"`.
+    - Implemented: CAT missing-data order/homogeneity LRT (`lrt_order_cat`, `lrt_homogeneity_cat`, `run_order_tests_cat`) via `na_action = "marginalize"`.
+    - Remaining: AD missing-data LRT/mean/covariance tests, CAT missing-data time-invariance/stationarity tests, and missing-data CI (`ci_inad`, `ci_cat`).
   - Done when:
     - Missing-data inference paths are implemented and tested for AD, INAD, and CAT.
     - README/vignette limitations section is updated accordingly.

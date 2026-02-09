@@ -157,7 +157,8 @@ fit_cat <- function(y, order = 1, blocks = NULL, homogeneous = TRUE,
       }
       marginal[[g]] <- result_g$marginal
       transition[[g]] <- result_g$transition
-      cell_counts[[g]] <- result_g$cell_counts
+      # Preserve list length even when cell_counts is NULL under marginalization.
+      cell_counts[g] <- list(result_g$cell_counts)
       log_l <- log_l + result_g$log_l
     }
     names(marginal) <- paste0("block_", seq_len(n_pops))

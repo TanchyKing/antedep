@@ -50,7 +50,10 @@ fit_miss$log_l
 
 ## Known Limitations
 
-- Missing-data confidence intervals and likelihood-ratio inference are currently not implemented (`ci_*`, `lrt_*`); functions fail with clear error messages on incomplete data.
+- Missing-data confidence intervals are not yet implemented (`ci_inad`, `ci_cat` require complete-data fits).
+- AD missing-data LRT/mean/covariance tests remain complete-data only.
+- CAT missing-data stationarity/time-invariance tests (`lrt_stationarity_cat`, `lrt_timeinvariance_cat`, `run_stationarity_tests_cat`) remain complete-data only.
+- INAD missing-data LRTs and CAT missing-data order/homogeneity LRTs are supported via observed-data likelihood (`na_action = "marginalize"`).
 - Current model order support is up to order 2 for AD, INAD, and CAT.
 - CAT missing-data marginalization currently supports orders 0, 1, and 2.
 

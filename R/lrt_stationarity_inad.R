@@ -21,13 +21,8 @@ lrt_stationarity_inad <- function(y, order = 1, thinning = "binom", innovation =
                                   blocks = NULL, constrain = "both",
                                   fit_unconstrained = NULL, verbose = FALSE, ...) {
   if (!is.matrix(y)) y <- as.matrix(y)
-  if (anyNA(y)) {
-    stop(
-      "lrt_stationarity_inad currently supports complete data only. Missing-data INAD likelihood-ratio tests are not implemented yet.",
-      call. = FALSE
-    )
-  }
-  if (any(y < 0) || any(y != floor(y))) stop("y must contain non-negative integers")
+  y_obs <- y[!is.na(y)]
+  if (any(y_obs < 0) || any(y_obs != floor(y_obs))) stop("y must contain non-negative integers")
   n_subjects <- nrow(y); n_time <- ncol(y)
   if (!order %in% c(1, 2)) stop("order must be 1 or 2 for stationarity testing")
   if (order >= n_time) stop("order must be less than n_time")
@@ -35,15 +30,29 @@ lrt_stationarity_inad <- function(y, order = 1, thinning = "binom", innovation =
   innovation <- match.arg(innovation, c("pois", "bell", "nbinom"))
   if (is.null(blocks)) blocks <- rep(1L, n_subjects)
   n_blocks <- length(unique(blocks))
+  fit_args <- list(...)
+  if (anyNA(y) && is.null(fit_args$na_action)) {
+    fit_args$na_action <- "marginalize"
+  }
+  na_action_inference <- if (!is.null(fit_args$na_action)) fit_args$na_action else "fail"
   
   constraint_info <- .parse_constraint(constrain, order, n_time)
   
   if (is.null(fit_unconstrained)) {
     if (verbose) cat("Fitting unconstrained model...\n")
-    fit_unconstrained <- fit_inad(y, order = order, thinning = thinning, innovation = innovation, blocks = blocks, ...)
+    fit_unconstrained <- do.call(
+      fit_inad,
+      c(
+        list(y = y, order = order, thinning = thinning, innovation = innovation, blocks = blocks),
+        fit_args
+      )
+    )
   }
   if (verbose) cat("Fitting constrained model...\n")
-  fit_constrained <- .fit_constrained(y, order, thinning, innovation, blocks, constraint_info, fit_unconstrained, ...)
+  fit_constrained <- .fit_constrained(
+    y, order, thinning, innovation, blocks, constraint_info, fit_unconstrained,
+    na_action = na_action_inference, ...
+  )
   
   logL_uncon <- fit_unconstrained$log_l; logL_con <- fit_constrained$log_l
   lrt_stat <- 2 * (logL_uncon - logL_con)
@@ -67,7 +76,8 @@ lrt_stationarity_inad <- function(y, order = 1, thinning = "binom", innovation =
                  estimates = list(unconstrained = list(alpha = fit_unconstrained$alpha, theta = fit_unconstrained$theta, tau = fit_unconstrained$tau),
                                   constrained = list(alpha = fit_constrained$alpha, theta = fit_constrained$theta, tau = fit_constrained$tau)),
                  table = table, settings = list(order = order, thinning = thinning, innovation = innovation,
-                                                n_subjects = n_subjects, n_time = n_time, n_blocks = n_blocks, constrain = constrain))
+                                                n_subjects = n_subjects, n_time = n_time, n_blocks = n_blocks, constrain = constrain,
+                                                na_action = na_action_inference))
   class(result) <- "lrt_stationarity_inad"
   result
 }
@@ -116,8 +126,19 @@ print.lrt_stationarity_inad <- function(x, digits = 4, ...) {
 }
 
 #' @keywords internal
-.fit_constrained <- function(y, order, thinning, innovation, blocks, cinfo, init_from, ...) {
+.fit_constrained <- function(y, order, thinning, innovation, blocks, cinfo, init_from,
+                             na_action = "fail", ...) {
   n <- nrow(y); N <- ncol(y); B <- length(unique(blocks))
+  theta_default <- colMeans(y, na.rm = TRUE)
+  theta_default[!is.finite(theta_default)] <- 1
+  nb_inno_size_fixed <- NULL
+  if (innovation == "nbinom") {
+    nb_inno_size_fixed <- init_from$nb_inno_size
+    if (is.null(nb_inno_size_fixed)) nb_inno_size_fixed <- rep(1, N)
+    nb_inno_size_fixed <- as.numeric(nb_inno_size_fixed)
+    if (length(nb_inno_size_fixed) == 1L) nb_inno_size_fixed <- rep(nb_inno_size_fixed, N)
+    nb_inno_size_fixed <- pmax(nb_inno_size_fixed, 1e-8)
+  }
   
   if (order == 1) {
     obj_fn <- function(par) {
@@ -132,10 +153,11 @@ print.lrt_stationarity_inad <- function(x, digits = 4, ...) {
       lam_mat <- outer(rep(1, n), theta) + matrix(tau[blocks], n, N)
       if (any(lam_mat <= 0)) return(1e20)
       -logL_inad(y = y, order = 1, thinning = thinning, innovation = innovation,
-                 alpha = alpha, theta = theta, blocks = blocks, tau = tau)
+                 alpha = alpha, theta = theta, nb_inno_size = nb_inno_size_fixed,
+                 blocks = blocks, tau = tau, na_action = na_action)
     }
     alpha_init <- if (!is.null(init_from$alpha)) init_from$alpha else c(0, rep(0.3, N - 1))
-    theta_init <- if (!is.null(init_from$theta)) init_from$theta else colMeans(y)
+    theta_init <- if (!is.null(init_from$theta)) init_from$theta else theta_default
     tau_init <- if (!is.null(init_from$tau)) init_from$tau else rep(0, B)
     par0 <- c(); lower <- c(); upper <- c()
     if (cinfo$alpha_const) { par0 <- c(par0, mean(alpha_init[-1])); lower <- c(lower, 0); upper <- c(upper, if(thinning == "binom") 0.999 else 10) }
@@ -159,11 +181,12 @@ print.lrt_stationarity_inad <- function(x, digits = 4, ...) {
       lam_mat <- outer(rep(1, n), theta) + matrix(tau[blocks], n, N)
       if (any(lam_mat <= 0)) return(1e20)
       -logL_inad(y = y, order = 2, thinning = thinning, innovation = innovation,
-                 alpha = cbind(alpha1, alpha2), theta = theta, blocks = blocks, tau = tau)
+                 alpha = cbind(alpha1, alpha2), theta = theta, nb_inno_size = nb_inno_size_fixed,
+                 blocks = blocks, tau = tau, na_action = na_action)
     }
     if (!is.null(init_from$alpha)) { au <- .unpack_alpha(2, init_from$alpha, N); alpha1_init <- au$a1; alpha2_init <- au$a2 }
     else { alpha1_init <- c(0, 0, rep(0.3, N-2)); alpha2_init <- c(0, 0, rep(0.1, N-2)) }
-    theta_init <- if (!is.null(init_from$theta)) init_from$theta else colMeans(y)
+    theta_init <- if (!is.null(init_from$theta)) init_from$theta else theta_default
     tau_init <- if (!is.null(init_from$tau)) init_from$tau else rep(0, B)
     par0 <- c(); lower <- c(); upper <- c()
     if (cinfo$alpha1_const) { par0 <- c(par0, mean(alpha1_init[-(1:2)])); lower <- c(lower, 0); upper <- c(upper, if(thinning == "binom") 0.999 else 10) }
@@ -188,7 +211,8 @@ print.lrt_stationarity_inad <- function(x, digits = 4, ...) {
     if (cinfo$theta_const) { theta <- rep(sol[idx], N); idx <- idx + 1 }
     else { theta <- sol[idx:(idx + N - 1)]; idx <- idx + N }
     tau <- if (B > 1) c(0, sol[idx:(idx + B - 2)]) else 0
-    list(alpha = pmax(alpha, 0), theta = pmax(theta, 1e-8), tau = tau, log_l = log_l)
+    list(alpha = pmax(alpha, 0), theta = pmax(theta, 1e-8), tau = tau,
+         nb_inno_size = nb_inno_size_fixed, log_l = log_l)
   } else {
     idx <- 1
     if (cinfo$alpha1_const) { alpha1 <- c(0, 0, rep(sol[idx], N - 2)); idx <- idx + 1 }
@@ -198,7 +222,8 @@ print.lrt_stationarity_inad <- function(x, digits = 4, ...) {
     if (cinfo$theta_const) { theta <- rep(sol[idx], N); idx <- idx + 1 }
     else { theta <- sol[idx:(idx + N - 1)]; idx <- idx + N }
     tau <- if (B > 1) c(0, sol[idx:(idx + B - 2)]) else 0
-    list(alpha = cbind(pmax(alpha1, 0), pmax(alpha2, 0)), theta = pmax(theta, 1e-8), tau = tau, log_l = log_l)
+    list(alpha = cbind(pmax(alpha1, 0), pmax(alpha2, 0)), theta = pmax(theta, 1e-8), tau = tau,
+         nb_inno_size = nb_inno_size_fixed, log_l = log_l)
   }
 }
 
@@ -215,16 +240,20 @@ print.lrt_stationarity_inad <- function(x, digits = 4, ...) {
 run_stationarity_tests_inad <- function(y, order = 1, thinning = "binom", innovation = "pois",
                                         blocks = NULL, verbose = TRUE, ...) {
   if (!is.matrix(y)) y <- as.matrix(y)
-  if (anyNA(y)) {
-    stop(
-      "run_stationarity_tests_inad currently supports complete data only. Missing-data INAD likelihood-ratio tests are not implemented yet.",
-      call. = FALSE
-    )
-  }
   n_subjects <- nrow(y)
+  fit_args <- list(...)
+  if (anyNA(y) && is.null(fit_args$na_action)) {
+    fit_args$na_action <- "marginalize"
+  }
   if (is.null(blocks)) blocks <- rep(1L, n_subjects)
   if (verbose) cat("Fitting unconstrained model...\n")
-  fit_uncon <- fit_inad(y, order = order, thinning = thinning, innovation = innovation, blocks = blocks, ...)
+  fit_uncon <- do.call(
+    fit_inad,
+    c(
+      list(y = y, order = order, thinning = thinning, innovation = innovation, blocks = blocks),
+      fit_args
+    )
+  )
   tests <- if (order == 1) c("alpha", "theta", "both") else c("alpha1", "alpha2", "alpha", "theta", "all")
   results <- list()
   for (test in tests) {
