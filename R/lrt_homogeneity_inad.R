@@ -104,6 +104,12 @@ lrt_homogeneity_inad <- function(y, blocks, order = 1,
   
   # Validate inputs
   if (!is.matrix(y)) y <- as.matrix(y)
+  if (anyNA(y)) {
+    stop(
+      "lrt_homogeneity_inad currently supports complete data only. Missing-data INAD likelihood-ratio tests are not implemented yet.",
+      call. = FALSE
+    )
+  }
   if (any(y < 0) || any(y != floor(y))) {
     stop("y must contain non-negative integers")
   }
@@ -380,6 +386,12 @@ run_homogeneity_tests_inad <- function(y, blocks, order = 1,
   
   # Fit all three models once
   if (!is.matrix(y)) y <- as.matrix(y)
+  if (anyNA(y)) {
+    stop(
+      "run_homogeneity_tests_inad currently supports complete data only. Missing-data INAD likelihood-ratio tests are not implemented yet.",
+      call. = FALSE
+    )
+  }
   n_subjects <- nrow(y)
   n_time <- ncol(y)
   

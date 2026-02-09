@@ -69,6 +69,12 @@
 lrt_homogeneity_ad <- function(y, blocks, p = 1L, use_modified = TRUE) {
 
     if (!is.matrix(y)) y <- as.matrix(y)
+    if (anyNA(y)) {
+        stop(
+            "lrt_homogeneity_ad currently supports complete data only. Missing-data AD likelihood-ratio tests are not implemented yet.",
+            call. = FALSE
+        )
+    }
     if (any(!is.finite(y))) stop("y must contain finite values")
 
     n <- nrow(y)  # Total N

@@ -67,6 +67,12 @@
 lrt_order_ad <- function(y, p = 0L, q = 1L, mu = NULL, use_modified = TRUE) {
 
     if (!is.matrix(y)) y <- as.matrix(y)
+    if (anyNA(y)) {
+        stop(
+            "lrt_order_ad currently supports complete data only. Missing-data AD likelihood-ratio tests are not implemented yet.",
+            call. = FALSE
+        )
+    }
     if (any(!is.finite(y))) stop("y must contain finite values")
 
     n <- nrow(y)  # Number of subjects (N in the book)

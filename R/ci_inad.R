@@ -49,6 +49,12 @@ ci_inad <- function(
         profile_xtol_rel = 1e-6
 ) {
     if (!is.matrix(y)) y <- as.matrix(y)
+    if (anyNA(y)) {
+        stop(
+            "ci_inad currently supports complete data only. Missing-data INAD confidence intervals are not implemented yet.",
+            call. = FALSE
+        )
+    }
     if (any(!is.finite(y)) || any(y < 0) || any(y != floor(y))) stop("y must be a nonnegative integer matrix")
 
     if (is.null(fit$settings$order)) stop("fit$settings$order is missing")
@@ -56,6 +62,12 @@ ci_inad <- function(
     if (is.null(fit$settings$innovation)) stop("fit$settings$innovation is missing")
     if (is.null(fit$theta)) stop("fit$theta is missing")
     if (is.null(fit$log_l) || !is.finite(fit$log_l)) stop("fit$log_l must be finite")
+    if (!is.null(fit$settings$na_action) && identical(fit$settings$na_action, "marginalize")) {
+        stop(
+            "ci_inad currently supports complete-data fits only. Missing-data INAD confidence intervals are not implemented yet.",
+            call. = FALSE
+        )
+    }
 
     ord <- fit$settings$order
     thinning <- fit$settings$thinning

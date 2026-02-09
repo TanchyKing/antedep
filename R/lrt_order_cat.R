@@ -1,5 +1,23 @@
 # lrt_order_cat.R - Likelihood ratio tests for order in categorical AD models
 
+.cat_fit_uses_missing_likelihood <- function(fit) {
+  na_effective <- fit$settings$na_action_effective
+  na_raw <- fit$settings$na_action
+  identical(na_effective, "marginalize") ||
+    identical(na_raw, "marginalize") ||
+    is.null(fit$cell_counts)
+}
+
+.stop_cat_missing_inference <- function(fn_name) {
+  stop(
+    paste0(
+      fn_name,
+      " currently supports complete data only. Missing-data CAT likelihood-ratio inference is not implemented yet."
+    ),
+    call. = FALSE
+  )
+}
+
 #' Likelihood ratio test for antedependence order (categorical data)
 #'
 #' Tests whether a higher-order AD model provides significantly better fit
@@ -80,6 +98,9 @@ lrt_order_cat <- function(y = NULL, order_null = 0, order_alt = 1,
   if (is.null(y) && (is.null(fit_null) || is.null(fit_alt))) {
     stop("Either y must be provided, or both fit_null and fit_alt must be provided")
   }
+  if (!is.null(y) && anyNA(y)) {
+    .stop_cat_missing_inference("lrt_order_cat")
+  }
   
   # Validate orders
   if (order_alt <= order_null) {
@@ -100,6 +121,9 @@ lrt_order_cat <- function(y = NULL, order_null = 0, order_alt = 1,
     if (!inherits(fit_null, "cat_fit")) {
       stop("fit_null must be a cat_fit object")
     }
+    if (.cat_fit_uses_missing_likelihood(fit_null)) {
+      .stop_cat_missing_inference("lrt_order_cat")
+    }
     order_null <- fit_null$settings$order
   }
   
@@ -109,6 +133,9 @@ lrt_order_cat <- function(y = NULL, order_null = 0, order_alt = 1,
   } else {
     if (!inherits(fit_alt, "cat_fit")) {
       stop("fit_alt must be a cat_fit object")
+    }
+    if (.cat_fit_uses_missing_likelihood(fit_alt)) {
+      .stop_cat_missing_inference("lrt_order_cat")
     }
     order_alt <- fit_alt$settings$order
   }
@@ -216,6 +243,9 @@ print.cat_lrt <- function(x, ...) {
 #' @export
 run_order_tests_cat <- function(y, max_order = 2, blocks = NULL, 
                                  homogeneous = TRUE, n_categories = NULL) {
+  if (anyNA(y)) {
+    .stop_cat_missing_inference("run_order_tests_cat")
+  }
   
   # Validate data
   validated <- .validate_y_cat(y, n_categories)

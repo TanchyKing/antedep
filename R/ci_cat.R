@@ -59,6 +59,26 @@ ci_cat <- function(fit, y = NULL, level = 0.95, parameters = "all") {
   if (!inherits(fit, "cat_fit")) {
     stop("fit must be a cat_fit object from fit_cat()")
   }
+
+  fit_na_action <- NULL
+  if (!is.null(fit$settings$na_action_effective)) {
+    fit_na_action <- fit$settings$na_action_effective
+  } else if (!is.null(fit$settings$na_action)) {
+    fit_na_action <- fit$settings$na_action
+  }
+  if (identical(fit_na_action, "marginalize") || is.null(fit$cell_counts)) {
+    stop(
+      "ci_cat currently supports complete-data fits only. Missing-data CAT confidence intervals are not implemented yet; refit with na_action = 'complete'.",
+      call. = FALSE
+    )
+  }
+
+  if (!is.null(y) && anyNA(y)) {
+    stop(
+      "ci_cat currently supports complete y only. Missing-data CAT confidence intervals are not implemented yet.",
+      call. = FALSE
+    )
+  }
   
   if (level <= 0 || level >= 1) {
     stop("level must be between 0 and 1")

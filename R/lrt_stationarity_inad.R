@@ -21,6 +21,12 @@ lrt_stationarity_inad <- function(y, order = 1, thinning = "binom", innovation =
                                   blocks = NULL, constrain = "both",
                                   fit_unconstrained = NULL, verbose = FALSE, ...) {
   if (!is.matrix(y)) y <- as.matrix(y)
+  if (anyNA(y)) {
+    stop(
+      "lrt_stationarity_inad currently supports complete data only. Missing-data INAD likelihood-ratio tests are not implemented yet.",
+      call. = FALSE
+    )
+  }
   if (any(y < 0) || any(y != floor(y))) stop("y must contain non-negative integers")
   n_subjects <- nrow(y); n_time <- ncol(y)
   if (!order %in% c(1, 2)) stop("order must be 1 or 2 for stationarity testing")
@@ -209,6 +215,12 @@ print.lrt_stationarity_inad <- function(x, digits = 4, ...) {
 run_stationarity_tests_inad <- function(y, order = 1, thinning = "binom", innovation = "pois",
                                         blocks = NULL, verbose = TRUE, ...) {
   if (!is.matrix(y)) y <- as.matrix(y)
+  if (anyNA(y)) {
+    stop(
+      "run_stationarity_tests_inad currently supports complete data only. Missing-data INAD likelihood-ratio tests are not implemented yet.",
+      call. = FALSE
+    )
+  }
   n_subjects <- nrow(y)
   if (is.null(blocks)) blocks <- rep(1L, n_subjects)
   if (verbose) cat("Fitting unconstrained model...\n")

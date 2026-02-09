@@ -62,6 +62,12 @@
 lrt_one_sample_ad <- function(y, mu0, p = 1L, use_modified = TRUE) {
 
     if (!is.matrix(y)) y <- as.matrix(y)
+    if (anyNA(y)) {
+        stop(
+            "lrt_one_sample_ad currently supports complete data only. Missing-data AD likelihood-ratio tests are not implemented yet.",
+            call. = FALSE
+        )
+    }
     if (any(!is.finite(y))) stop("y must contain finite values")
 
     n <- nrow(y)  # N in the book
@@ -196,6 +202,12 @@ lrt_one_sample_ad <- function(y, mu0, p = 1L, use_modified = TRUE) {
 lrt_two_sample_ad <- function(y, blocks, p = 1L, use_modified = TRUE) {
 
     if (!is.matrix(y)) y <- as.matrix(y)
+    if (anyNA(y)) {
+        stop(
+            "lrt_two_sample_ad currently supports complete data only. Missing-data AD likelihood-ratio tests are not implemented yet.",
+            call. = FALSE
+        )
+    }
     if (any(!is.finite(y))) stop("y must contain finite values")
 
     n <- nrow(y)
@@ -360,6 +372,13 @@ lrt_contrast_ad <- function(y, C, c = NULL, p = 1L) {
 
     if (!is.matrix(y)) y <- as.matrix(y)
     if (!is.matrix(C)) C <- as.matrix(C)
+    if (anyNA(y)) {
+        stop(
+            "lrt_contrast_ad currently supports complete data only. Missing-data AD likelihood-ratio tests are not implemented yet.",
+            call. = FALSE
+        )
+    }
+    if (any(!is.finite(y))) stop("y must contain finite values")
 
     n <- nrow(y)
     n_time <- ncol(y)

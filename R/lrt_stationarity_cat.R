@@ -59,6 +59,9 @@
 #' @export
 lrt_stationarity_cat <- function(y, order = 1, blocks = NULL,
                                   homogeneous = TRUE, n_categories = NULL) {
+  if (anyNA(y)) {
+    .stop_cat_missing_inference("lrt_stationarity_cat")
+  }
   
   # Validate data
  validated <- .validate_y_cat(y, n_categories)
@@ -344,6 +347,9 @@ lrt_stationarity_cat <- function(y, order = 1, blocks = NULL,
 #' @export
 run_stationarity_tests_cat <- function(y, order = 1, blocks = NULL,
                                         homogeneous = TRUE, n_categories = NULL) {
+  if (anyNA(y)) {
+    .stop_cat_missing_inference("run_stationarity_tests_cat")
+  }
   
   # Run time-invariance test
   test_ti <- lrt_timeinvariance_cat(y, order = order, blocks = blocks,

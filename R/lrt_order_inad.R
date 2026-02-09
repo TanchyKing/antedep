@@ -23,6 +23,12 @@ lrt_order_inad <- function(y, order_null = 1, order_alt = 2,
                            blocks = NULL, use_chibar = TRUE, weights = NULL,
                            fit_null = NULL, fit_alt = NULL, ...) {
   if (!is.matrix(y)) y <- as.matrix(y)
+  if (anyNA(y)) {
+    stop(
+      "lrt_order_inad currently supports complete data only. Missing-data INAD likelihood-ratio tests are not implemented yet.",
+      call. = FALSE
+    )
+  }
   if (any(y < 0) || any(y != floor(y))) stop("y must contain non-negative integers")
   n_subjects <- nrow(y); n_time <- ncol(y)
   if (!order_null %in% c(0, 1)) stop("order_null must be 0 or 1")

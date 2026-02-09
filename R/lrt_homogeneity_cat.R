@@ -77,6 +77,9 @@ lrt_homogeneity_cat <- function(y = NULL, blocks = NULL, order = 1,
   if (is.null(y) && (is.null(fit_null) || is.null(fit_alt))) {
     stop("Either y and blocks must be provided, or both fit_null and fit_alt must be provided")
   }
+  if (!is.null(y) && anyNA(y)) {
+    .stop_cat_missing_inference("lrt_homogeneity_cat")
+  }
   
   if (!is.null(y) && is.null(blocks)) {
     stop("blocks must be provided when y is provided")
@@ -90,6 +93,9 @@ lrt_homogeneity_cat <- function(y = NULL, blocks = NULL, order = 1,
     if (!inherits(fit_null, "cat_fit")) {
       stop("fit_null must be a cat_fit object")
     }
+    if (.cat_fit_uses_missing_likelihood(fit_null)) {
+      .stop_cat_missing_inference("lrt_homogeneity_cat")
+    }
     if (!fit_null$settings$homogeneous) {
       warning("fit_null should be a homogeneous model (homogeneous = TRUE)")
     }
@@ -101,6 +107,9 @@ lrt_homogeneity_cat <- function(y = NULL, blocks = NULL, order = 1,
   } else {
     if (!inherits(fit_alt, "cat_fit")) {
       stop("fit_alt must be a cat_fit object")
+    }
+    if (.cat_fit_uses_missing_likelihood(fit_alt)) {
+      .stop_cat_missing_inference("lrt_homogeneity_cat")
     }
     if (fit_alt$settings$homogeneous) {
       warning("fit_alt should be a heterogeneous model (homogeneous = FALSE)")
@@ -207,6 +216,9 @@ lrt_homogeneity_cat <- function(y = NULL, blocks = NULL, order = 1,
 #' @export
 lrt_timeinvariance_cat <- function(y, order = 1, blocks = NULL,
                                     homogeneous = TRUE, n_categories = NULL) {
+  if (anyNA(y)) {
+    .stop_cat_missing_inference("lrt_timeinvariance_cat")
+  }
   
   # Validate data
   validated <- .validate_y_cat(y, n_categories)

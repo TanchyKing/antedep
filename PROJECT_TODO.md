@@ -62,7 +62,7 @@
 
 ## P2 - Inference and workflow hardening
 
-- [ ] Extend CI/inference utilities for missing-data fits
+- [x] Extend CI/inference utilities for missing-data fits
   - Scope: `ci_*` and `lrt_*` behavior with incomplete data.
   - Done when:
     - Missing-data compatible inference is supported or explicitly rejected with clear errors.
