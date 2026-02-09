@@ -73,7 +73,7 @@
     - One command runs document + test + check.
     - CI runs on push/PR and publishes results.
 
-- [ ] Expand user-facing docs
+- [x] Expand user-facing docs
   - Scope: main README + vignette usage matrix (AD/CAT/INAD, complete/missing data).
   - Done when:
     - New users can identify which methods are production-ready.

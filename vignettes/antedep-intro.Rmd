@@ -7,17 +7,61 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-## Getting Started
+## Overview
 
-The `antedep` package fits antedependence models for longitudinal data...
+`antedep` supports three model families:
+
+- AD (Gaussian) for continuous longitudinal outcomes
+- INAD for count longitudinal outcomes
+- CAT (categorical AD) for discrete state longitudinal outcomes
+
+## Production-Readiness Matrix
+
+| Model | Data type | Complete-data fit/logLik | Missing-data fit/logLik | Missing-data CI/LRT | Notes |
+|---|---|---|---|---|---|
+| AD | Continuous | Ready | Ready (`fit_ad`, `logL_ad`) | Not yet implemented | Missing-data fit supports EM / observed-data likelihood modes |
+| INAD | Counts | Ready | Ready (`fit_inad`, `logL_inad`) | Not yet implemented | Missing-data fit supports `na_action = "marginalize"` |
+| CAT | Categorical states | Ready | Ready (`fit_cat`, `logL_cat`) | Not yet implemented | Missing-data fit supports orders 0, 1, 2 |
+
+## Complete-Data Example
+
 ```{r, warning=FALSE, message=FALSE}
 library(antedep)
-data("bolus_inad")
-plot_profile(bolus_inad$y)
+set.seed(1)
+
+y_ad <- simulate_ad(n_subjects = 80, n_time = 5, order = 1)
+fit_ad1 <- fit_ad(y_ad, order = 1)
+fit_ad1$log_l
 ```
 
-## Fitting a Model
-```{r}
-fit <- fit_inad(bolus_inad$y, order = 1)
-fit$log_l
+## Missing-Data Examples
+
+```{r, warning=FALSE, message=FALSE}
+set.seed(2)
+y_inad <- simulate_inad(n_subjects = 60, n_time = 5, order = 1)
+y_inad[sample(length(y_inad), 20)] <- NA
+fit_inad_miss <- fit_inad(y_inad, order = 1, na_action = "marginalize")
+fit_inad_miss$log_l
+```
+
+```{r eval=FALSE}
+set.seed(3)
+y_cat <- simulate_cat(n_subjects = 120, n_time = 5, order = 1, n_categories = 3)
+y_cat[sample(length(y_cat), 25)] <- NA
+fit_cat_miss <- fit_cat(y_cat, order = 1, na_action = "marginalize")
+fit_cat_miss$log_l
+```
+
+## Known Limitations
+
+- Missing-data CI/LRT inference is not implemented yet for AD/INAD/CAT (`ci_*`, `lrt_*` on incomplete data).
+- Current order support is up to order 2 for AD, INAD, and CAT.
+- CAT missing-data marginalization currently supports orders 0, 1, and 2.
+
+## Recommended Check Command
+
+Use the local one-command workflow before pushing:
+
+```{r eval=FALSE}
+Rscript scripts/check-package.R --as-cran --no-manual
 ```
