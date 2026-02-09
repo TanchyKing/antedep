@@ -1,0 +1,28 @@
+url: https://tanchyking.github.io/antedep/
+
+template:
+  bootstrap: 5
+
+development:
+  mode: auto
+
+navbar:
+  structure:
+    left: [intro, reference, articles]
+    right: [search, github]
+  components:
+    articles:
+      text: Articles
+      menu:
+      - text: Introduction to antedep
+        href: articles/antedep-intro.html
+    github:
+      icon: fa-github
+      href: https://github.com/TanchyKing/antedep
+      aria-label: GitHub repository
+
+articles:
+- title: Vignettes
+  navbar: ~
+  contents:
+  - antedep-intro

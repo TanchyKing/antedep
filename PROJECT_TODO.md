@@ -87,6 +87,12 @@
     - A one-command local check is available with cleanup of `*.Rcheck` directories.
     - The team has documented which NOTE/WARNING messages are expected in directory-mode checks.
 
+- [ ] Implement missing-data CI/LRT inference for AD/INAD/CAT
+  - Scope: support `ci_*` and `lrt_*` on incomplete data (or model-specific documented approximations).
+  - Done when:
+    - Missing-data inference paths are implemented and tested for AD, INAD, and CAT.
+    - README/vignette limitations section is updated accordingly.
+
 ## Suggested execution order
 
 1. P0 documentation and check cleanup.

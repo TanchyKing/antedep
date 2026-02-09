@@ -7,6 +7,12 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+library(antedep)
+set.seed(123)
+```
+
 ## Overview
 
 `antedep` supports three model families:
@@ -17,39 +23,164 @@ vignette: >
 
 ## Production-Readiness Matrix
 
-| Model | Data type | Complete-data fit/logLik | Missing-data fit/logLik | Missing-data CI/LRT | Notes |
-|---|---|---|---|---|---|
-| AD | Continuous | Ready | Ready (`fit_ad`, `logL_ad`) | Not yet implemented | Missing-data fit supports EM / observed-data likelihood modes |
-| INAD | Counts | Ready | Ready (`fit_inad`, `logL_inad`) | Not yet implemented | Missing-data fit supports `na_action = "marginalize"` |
-| CAT | Categorical states | Ready | Ready (`fit_cat`, `logL_cat`) | Not yet implemented | Missing-data fit supports orders 0, 1, 2 |
+| Model | Data type | Complete-data fit/logLik | Missing-data fit/logLik | Notes |
+|---|---|---|---|---|
+| AD | Continuous | Ready | Ready (`fit_ad`, `logL_ad`) | Missing-data fit supports EM / observed-data likelihood modes |
+| INAD | Counts | Ready | Ready (`fit_inad`, `logL_inad`) | Missing-data fit supports `na_action = "marginalize"` |
+| CAT | Categorical states | Ready | Ready (`fit_cat`, `logL_cat`) | Missing-data fit supports orders 0, 1, 2 |
 
-## Complete-Data Example
+## Visualizing Longitudinal Data
 
-```{r, warning=FALSE, message=FALSE}
-library(antedep)
-set.seed(1)
-
-y_ad <- simulate_ad(n_subjects = 80, n_time = 5, order = 1)
-fit_ad1 <- fit_ad(y_ad, order = 1)
-fit_ad1$log_l
-```
-
-## Missing-Data Examples
-
-```{r, warning=FALSE, message=FALSE}
-set.seed(2)
-y_inad <- simulate_inad(n_subjects = 60, n_time = 5, order = 1)
-y_inad[sample(length(y_inad), 20)] <- NA
-fit_inad_miss <- fit_inad(y_inad, order = 1, na_action = "marginalize")
-fit_inad_miss$log_l
+```{r, warning=FALSE, message=FALSE, fig.width=10, fig.height=4.5, out.width='100%'}
+data("bolus_inad")
+plot_profile(
+  bolus_inad$y,
+  blocks = bolus_inad$blocks,
+  block_labels = c("Group 1", "Group 2"),
+  title = "Bolus Longitudinal Profiles"
+)
 ```
 
 ```{r eval=FALSE}
-set.seed(3)
-y_cat <- simulate_cat(n_subjects = 120, n_time = 5, order = 1, n_categories = 3)
-y_cat[sample(length(y_cat), 25)] <- NA
-fit_cat_miss <- fit_cat(y_cat, order = 1, na_action = "marginalize")
+# More detailed dependence diagnostic
+plot_prism(bolus_inad$y)
+```
+
+## AD Workflow (Continuous Outcomes)
+
+### Complete-data fit and order comparison
+
+```{r, warning=FALSE, message=FALSE}
+y_ad <- simulate_ad(n_subjects = 80, n_time = 6, order = 1, phi = 0.5)
+fit_ad1 <- fit_ad(y_ad, order = 1)
+fit_ad2 <- fit_ad(y_ad, order = 2)
+
+c(order1_logLik = fit_ad1$log_l, order2_logLik = fit_ad2$log_l)
+bic_order_ad(y_ad, max_order = 2)$table
+```
+
+```{r}
+# Example AD order test
+lrt_order_ad(y_ad, p = 0, q = 1)$p_value
+```
+
+### Missing-data AD fit
+
+```{r}
+y_ad_miss <- y_ad
+y_ad_miss[sample(length(y_ad_miss), 24)] <- NA
+
+fit_ad_em <- fit_ad(y_ad_miss, order = 1, na_action = "em", em_max_iter = 40)
+fit_ad_cc <- fit_ad(y_ad_miss, order = 1, na_action = "complete")
+
+c(em_logLik = fit_ad_em$log_l, complete_case_logLik = fit_ad_cc$log_l)
+fit_ad_em$pct_missing
+```
+
+### AD mean and covariance structure tests (complete data)
+
+These AD inference tests currently require complete data.
+
+```{r}
+# One-sample and two-sample mean-profile tests
+mu0 <- colMeans(y_ad)
+blocks_ad <- rep(1:2, each = nrow(y_ad) / 2)
+
+lrt_one_sample_ad(y_ad, mu0 = mu0, p = 1)$p_value
+lrt_two_sample_ad(y_ad, blocks = blocks_ad, p = 1)$p_value
+```
+
+```{r}
+# Wald contrast test: H0 that adjacent means are equal
+C <- diff(diag(ncol(y_ad)))
+lrt_contrast_ad(y_ad, C = C, p = 1)$p_value
+```
+
+```{r}
+# Covariance homogeneity across groups
+lrt_homogeneity_ad(y_ad, blocks = blocks_ad, p = 1)$p_value
+```
+
+## INAD Workflow (Count Outcomes)
+
+### Complete-data INAD fit
+
+```{r}
+y_inad <- simulate_inad(
+  n_subjects = 80,
+  n_time = 6,
+  order = 1,
+  thinning = "binom",
+  innovation = "pois",
+  alpha = 0.4,
+  theta = 3
+)
+
+fit_inad1 <- fit_inad(y_inad, order = 1, thinning = "binom", innovation = "pois")
+fit_inad1$log_l
+bic_order_inad(y_inad, max_order = 2, thinning = "binom", innovation = "pois")$table
+```
+
+### Missing-data INAD fit
+
+```{r}
+y_inad_miss <- y_inad
+y_inad_miss[sample(length(y_inad_miss), 30)] <- NA
+
+fit_inad_miss <- fit_inad(
+  y_inad_miss,
+  order = 1,
+  thinning = "binom",
+  innovation = "pois",
+  na_action = "marginalize",
+  max_iter = 20
+)
+
+fit_inad_miss$log_l
+fit_inad_miss$pct_missing
+```
+
+## CAT Workflow (Categorical Outcomes)
+
+### Complete-data CAT fit and inference
+
+```{r}
+y_cat <- simulate_cat(n_subjects = 150, n_time = 6, order = 1, n_categories = 3)
+fit_cat1 <- fit_cat(y_cat, order = 1)
+fit_cat1$log_l
+
+# Wald CIs (complete data)
+ci_cat1 <- ci_cat(fit_cat1, parameters = "marginal")
+head(ci_cat1$marginal, 3)
+```
+
+```{r}
+# Order tests for CAT
+run_order_tests_cat(y_cat, max_order = 2)$table
+```
+
+### Missing-data CAT fit
+
+```{r}
+y_cat_miss <- y_cat
+y_cat_miss[sample(length(y_cat_miss), 35)] <- NA
+
+fit_cat_miss <- fit_cat(y_cat_miss, order = 1, na_action = "marginalize")
 fit_cat_miss$log_l
+fit_cat_miss$settings$na_action_effective
+```
+
+## Additional Inference Helpers (Complete Data)
+
+```{r eval=FALSE}
+# INAD homogeneity/stationarity tools
+blocks <- rep(1:2, each = nrow(y_inad) / 2)
+run_homogeneity_tests_inad(y_inad, blocks = blocks, order = 1)
+run_stationarity_tests_inad(y_inad, order = 1, blocks = blocks)
+
+# CAT stationarity/time-invariance tools
+lrt_timeinvariance_cat(y_cat, order = 1)
+lrt_stationarity_cat(y_cat, order = 1)
 ```
 
 ## Known Limitations

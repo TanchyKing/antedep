@@ -15,11 +15,11 @@ remotes::install_github("TanchyKing/antedep")
 
 ## Production-Readiness Matrix
 
-| Model | Data type | Complete-data fit/logLik | Missing-data fit/logLik | Missing-data CI/LRT | Notes |
-|---|---|---|---|---|---|
-| AD | Continuous | Ready | Ready (`fit_ad`, `logL_ad`) | Not yet implemented | Missing-data fit uses EM or observed-data likelihood modes |
-| INAD | Counts | Ready | Ready (`fit_inad`, `logL_inad`) | Not yet implemented | Missing-data fit supports `na_action = "marginalize"` |
-| CAT | Categorical states | Ready | Ready (`fit_cat`, `logL_cat`) | Not yet implemented | Missing-data fit supports orders 0, 1, 2 |
+| Model | Data type | Complete-data fit/logLik | Missing-data fit/logLik | Notes |
+|---|---|---|---|---|
+| AD | Continuous | Ready | Ready (`fit_ad`, `logL_ad`) | Missing-data fit uses EM or observed-data likelihood modes |
+| INAD | Counts | Ready | Ready (`fit_inad`, `logL_inad`) | Missing-data fit supports `na_action = "marginalize"` |
+| CAT | Categorical states | Ready | Ready (`fit_cat`, `logL_cat`) | Missing-data fit supports orders 0, 1, 2 |
 
 ## Quick Start
 
@@ -57,3 +57,8 @@ fit_miss$log_l
 ## Vignette
 
 See `vignettes/antedep-intro.Rmd` for a compact workflow guide and usage matrix.
+
+## Function Reference Site (pkgdown)
+
+- Local build: `Rscript -e "pkgdown::build_site(preview = FALSE)"`
+- CI deployment: `.github/workflows/pkgdown.yml` (GitHub Pages via Actions)

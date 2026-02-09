@@ -14,3 +14,5 @@
 ^\.codex_.*\.R$
 ^\.github$
 ^scripts$
+^_pkgdown\.yml$
+^docs$
