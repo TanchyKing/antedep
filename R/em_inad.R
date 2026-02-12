@@ -3,7 +3,7 @@
 #' Fits INAD models using the Expectation-Maximization algorithm.
 #' This is an alternative to direct likelihood optimization.
 #'
-#' For Gaussian and CAT EM entry points, see \code{\link{em_ad}} and
+#' For Gaussian and CAT EM entry points, see \code{\link{em_gau}} and
 #' \code{\link{em_cat}}. For CAT specifically, \code{fit_cat()} supports
 #' \code{na_action = "em"} for orders 0/1 and \code{na_action = "marginalize"}
 #' for order 2 missing-data fits.
@@ -23,7 +23,7 @@
 #' @param verbose Logical; if TRUE, print iteration progress.
 #'
 #' @return A list with class "inad_fit" containing estimated parameters.
-#' @seealso \code{\link{em_ad}}, \code{\link{em_cat}}, \code{\link{fit_inad}},
+#' @seealso \code{\link{em_gau}}, \code{\link{em_cat}}, \code{\link{fit_inad}},
 #'   \code{\link{fit_cat}}
 #' @export
 em_inad <- function(y, order = 1, thinning = "binom", innovation = "pois",

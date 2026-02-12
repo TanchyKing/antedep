@@ -7,11 +7,11 @@ This implementation provides comprehensive missing data support for the AD (Gaus
 ## Files Created (61 KB total)
 
 1. **missing_utils.R** (5.3K) - Core utility functions
-2. **logL_ad_missing.R** (4.9K) - Observed-data likelihood via MVN marginalization  
-3. **fit_ad_em.R** (11K) - EM algorithm implementation
-4. **logL_ad_modified.R** (5.7K) - Modified logL_ad with na_action parameter
-5. **fit_ad_modified.R** (7.7K) - Modified fit_ad with EM support
-6. **test-missing_ad.R** (11K) - Comprehensive test suite
+2. **logL_gau_missing.R** (4.9K) - Observed-data likelihood via MVN marginalization  
+3. **fit_gau_em.R** (11K) - EM algorithm implementation
+4. **logL_gau_modified.R** (5.7K) - Modified logL_gau with na_action parameter
+5. **fit_gau_modified.R** (7.7K) - Modified fit_gau with EM support
+6. **test-missing_gau.R** (11K) - Comprehensive test suite
 7. **example_missing_data.R** (6.8K) - Usage examples
 8. **MISSING_DATA_IMPLEMENTATION_SUMMARY.md** (9.3K) - Detailed documentation
 
@@ -44,10 +44,10 @@ This implementation provides comprehensive missing data support for the AD (Gaus
 ```r
 # Source the files in your R session
 source("missing_utils.R")
-source("logL_ad_missing.R")
-source("fit_ad_em.R")
-source("logL_ad_modified.R")
-source("fit_ad_modified.R")
+source("logL_gau_missing.R")
+source("fit_gau_em.R")
+source("logL_gau_modified.R")
+source("fit_gau_modified.R")
 ```
 
 ### Basic Usage
@@ -58,7 +58,7 @@ y <- matrix(rnorm(50), nrow = 10, ncol = 5)
 y[sample(50, 5)] <- NA
 
 # Fit with EM (default for missing data)
-fit <- fit_ad(y, order = 1)
+fit <- fit_gau(y, order = 1)
 
 # Check convergence
 print(fit$em_converged)      # TRUE
@@ -70,10 +70,10 @@ plot(fit$em_ll_trace)        # Convergence plot
 ### Compare Methods
 ```r
 # EM: uses all data
-fit_em <- fit_ad(y, order = 1, na_action = "em")
+fit_em <- fit_gau(y, order = 1, na_action = "em")
 
 # Complete-case: removes incomplete subjects
-fit_cc <- fit_ad(y, order = 1, na_action = "complete")
+fit_cc <- fit_gau(y, order = 1, na_action = "complete")
 
 # Compare sample sizes
 print(c(em = fit_em$n_obs, cc = fit_cc$n_obs))
@@ -84,7 +84,7 @@ print(c(em = fit_em$n_obs, cc = fit_cc$n_obs))
 Run the comprehensive test suite:
 ```r
 # Source all files first
-testthat::test_file("test-missing_ad.R")
+testthat::test_file("test-missing_gau.R")
 ```
 
 Test coverage includes:
@@ -137,17 +137,17 @@ To integrate these files into the antedep package:
 ```bash
 # 1. Copy utility and implementation files to R/ directory
 cp missing_utils.R /path/to/antedep/R/
-cp logL_ad_missing.R /path/to/antedep/R/
-cp fit_ad_em.R /path/to/antedep/R/
+cp logL_gau_missing.R /path/to/antedep/R/
+cp fit_gau_em.R /path/to/antedep/R/
 
 # 2. Replace existing files (backup first!)
-cp /path/to/antedep/R/logL_ad.R /path/to/antedep/R/logL_ad.R.backup
-cp /path/to/antedep/R/fit_ad.R /path/to/antedep/R/fit_ad.R.backup
-cp logL_ad_modified.R /path/to/antedep/R/logL_ad.R
-cp fit_ad_modified.R /path/to/antedep/R/fit_ad.R
+cp /path/to/antedep/R/logL_gau.R /path/to/antedep/R/logL_gau.R.backup
+cp /path/to/antedep/R/fit_gau.R /path/to/antedep/R/fit_gau.R.backup
+cp logL_gau_modified.R /path/to/antedep/R/logL_gau.R
+cp fit_gau_modified.R /path/to/antedep/R/fit_gau.R
 
 # 3. Copy test file
-cp test-missing_ad.R /path/to/antedep/tests/testthat/
+cp test-missing_gau.R /path/to/antedep/tests/testthat/
 
 # 4. Update package documentation
 cd /path/to/antedep
@@ -191,8 +191,8 @@ $$S_{tt'} = \frac{1}{N}\sum_s E[Y_t^{(s)}Y_{t'}^{(s)} | Y_{O_s}^{(s)}]$$
    - Fallback to marginal estimates
 
 3. **Default na_action**:
-   - `logL_ad`: "marginalize" (correct likelihood)
-   - `fit_ad`: "em" (uses all data)
+   - `logL_gau`: "marginalize" (correct likelihood)
+   - `fit_gau`: "em" (uses all data)
 
 4. **Numerical Stability**:
    - Cholesky for MVN densities
@@ -256,7 +256,7 @@ For large datasets with intermittent missing:
 For questions or issues with this implementation:
 - See DESIGN_PROPOSAL_MISSING.md for design details
 - See AI_ASSISTANT_GUIDE.md for package context
-- Check test-missing_ad.R for usage examples
+- Check test-missing_gau.R for usage examples
 
 ---
 

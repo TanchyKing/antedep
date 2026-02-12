@@ -4,7 +4,7 @@
 
 - Package: `antedep` (`DESCRIPTION` version `0.1.0`).
 - Main modules implemented: AD (Gaussian), INAD (count), CAT (categorical).
-- Missing-data support is integrated for AD (`fit_ad`, `logL_ad`, EM + marginal likelihood helpers),
+- Missing-data support is integrated for AD (`fit_gau`, `logL_gau`, EM + marginal likelihood helpers),
   INAD, and CAT (`fit_cat`, `logL_cat` with `na_action`).
 
 ## Key findings from audit

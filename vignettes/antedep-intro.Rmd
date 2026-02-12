@@ -27,7 +27,7 @@ Packaged datasets include `bolus_inad`, `cattle_growth`, `cochlear_implant`, and
 
 | Model | Data type | Complete-data fit/logLik | Missing-data fit/logLik | Notes |
 |---|---|---|---|---|
-| AD | Continuous | Ready | Ready (`fit_ad`, `logL_ad`) | Missing-data fit supports EM / observed-data likelihood modes |
+| AD | Continuous | Ready | Ready (`fit_gau`, `logL_gau`) | Missing-data fit supports EM / observed-data likelihood modes |
 | INAD | Counts | Ready | Ready (`fit_inad`, `logL_inad`) | Missing-data fit supports `na_action = "marginalize"` |
 | CAT | Categorical states | Ready | Ready (`fit_cat`, `logL_cat`) | Missing-data fit supports orders 0, 1, 2 |
 
@@ -53,30 +53,30 @@ plot_prism(bolus_inad$y)
 ### Complete-data fit and order comparison
 
 ```{r, warning=FALSE, message=FALSE}
-y_ad <- simulate_ad(n_subjects = 80, n_time = 6, order = 1, phi = 0.5)
-fit_ad1 <- fit_ad(y_ad, order = 1)
-fit_ad2 <- fit_ad(y_ad, order = 2)
+y_gau <- simulate_gau(n_subjects = 80, n_time = 6, order = 1, phi = 0.5)
+fit_gau1 <- fit_gau(y_gau, order = 1)
+fit_gau2 <- fit_gau(y_gau, order = 2)
 
-c(order1_logLik = fit_ad1$log_l, order2_logLik = fit_ad2$log_l)
-bic_order_ad(y_ad, max_order = 2)$table
+c(order1_logLik = fit_gau1$log_l, order2_logLik = fit_gau2$log_l)
+bic_order_gau(y_gau, max_order = 2)$table
 ```
 
 ```{r}
 # Example AD order test
-lrt_order_ad(y_ad, p = 0, q = 1)$p_value
+lrt_order_gau(y_gau, p = 0, q = 1)$p_value
 ```
 
 ### Missing-data AD fit
 
 ```{r}
-y_ad_miss <- y_ad
-y_ad_miss[sample(length(y_ad_miss), 24)] <- NA
+y_gau_miss <- y_gau
+y_gau_miss[sample(length(y_gau_miss), 24)] <- NA
 
-fit_ad_em <- fit_ad(y_ad_miss, order = 1, na_action = "em", em_max_iter = 40)
-fit_ad_cc <- fit_ad(y_ad_miss, order = 1, na_action = "complete")
+fit_gau_em <- fit_gau(y_gau_miss, order = 1, na_action = "em", em_max_iter = 40)
+fit_gau_cc <- fit_gau(y_gau_miss, order = 1, na_action = "complete")
 
-c(em_logLik = fit_ad_em$log_l, complete_case_logLik = fit_ad_cc$log_l)
-fit_ad_em$pct_missing
+c(em_logLik = fit_gau_em$log_l, complete_case_logLik = fit_gau_cc$log_l)
+fit_gau_em$pct_missing
 ```
 
 ### AD mean and covariance structure tests (complete data)
@@ -85,22 +85,22 @@ These AD inference tests currently require complete data.
 
 ```{r}
 # One-sample and two-sample mean-profile tests
-mu0 <- colMeans(y_ad)
-blocks_ad <- rep(1:2, each = nrow(y_ad) / 2)
+mu0 <- colMeans(y_gau)
+blocks_gau <- rep(1:2, each = nrow(y_gau) / 2)
 
-lrt_one_sample_ad(y_ad, mu0 = mu0, p = 1)$p_value
-lrt_two_sample_ad(y_ad, blocks = blocks_ad, p = 1)$p_value
+lrt_one_sample_gau(y_gau, mu0 = mu0, p = 1)$p_value
+lrt_two_sample_gau(y_gau, blocks = blocks_gau, p = 1)$p_value
 ```
 
 ```{r}
 # Wald contrast test: H0 that adjacent means are equal
-C <- diff(diag(ncol(y_ad)))
-lrt_contrast_ad(y_ad, C = C, p = 1)$p_value
+C <- diff(diag(ncol(y_gau)))
+lrt_contrast_gau(y_gau, C = C, p = 1)$p_value
 ```
 
 ```{r}
 # Covariance homogeneity across groups
-lrt_homogeneity_ad(y_ad, blocks = blocks_ad, p = 1)$p_value
+lrt_homogeneity_gau(y_gau, blocks = blocks_gau, p = 1)$p_value
 ```
 
 ## INAD Workflow (Count Outcomes)
@@ -207,9 +207,9 @@ lrt_stationarity_cat(y_cat, order = 1)
 
 ## Known Limitations
 
-- EM entry points: `em_ad` (Gaussian), `em_inad` (INAD), and `em_cat` (CAT, orders 0/1) are available; for CAT order 2 with missing data, use `fit_cat(na_action = "marginalize")`.
+- EM entry points: `em_gau` (Gaussian), `em_inad` (INAD), and `em_cat` (CAT, orders 0/1) are available; for CAT order 2 with missing data, use `fit_cat(na_action = "marginalize")`.
 - For CAT missingness, `fit_cat(na_action = "marginalize")` supports orders 0/1/2, while `fit_cat(na_action = "em")` (or `em_cat`) supports orders 0/1 with optional safeguard step-halving.
-- Missing-data confidence intervals are not implemented yet (`ci_ad`, `ci_inad`, `ci_cat` require complete-data fits).
+- Missing-data confidence intervals are not implemented yet (`ci_gau`, `ci_inad`, `ci_cat` require complete-data fits).
 - AD missing-data LRT/mean/covariance tests are not implemented yet.
 - CAT missing-data time-invariance/stationarity tests (`lrt_timeinvariance_cat`, `lrt_stationarity_cat`, `run_stationarity_tests_cat`) are not implemented yet.
 - Current order support is up to order 2 for AD, INAD, and CAT.

@@ -31,31 +31,31 @@ reference:
 - title: AD (Gaussian models)
   desc: Fitting, simulation, model selection, and inference for continuous outcomes.
   contents:
-  - aic_ad
   - aic_gau
-  - bic_ad
+  - aic_gau
   - bic_gau
-  - bic_order_ad
+  - bic_gau
   - bic_order_gau
-  - ci_ad
+  - bic_order_gau
   - ci_gau
-  - em_ad
+  - ci_gau
   - em_gau
-  - fit_ad
+  - em_gau
   - fit_gau
-  - logL_ad
+  - fit_gau
   - logL_gau
-  - lrt_contrast_ad
+  - logL_gau
   - lrt_contrast_gau
-  - lrt_homogeneity_ad
+  - lrt_contrast_gau
   - lrt_homogeneity_gau
-  - lrt_one_sample_ad
+  - lrt_homogeneity_gau
   - lrt_one_sample_gau
-  - lrt_order_ad
+  - lrt_one_sample_gau
   - lrt_order_gau
-  - lrt_two_sample_ad
+  - lrt_order_gau
   - lrt_two_sample_gau
-  - simulate_ad
+  - lrt_two_sample_gau
+  - simulate_gau
   - simulate_gau
 
 - title: INAD (Count models)
