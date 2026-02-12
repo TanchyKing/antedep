@@ -24,6 +24,8 @@ test_that("em_cat fits missing-data order 0 model", {
   expect_true(is.finite(fit$log_l))
   expect_equal(fit$settings$order, 0)
   expect_true(all(vapply(fit$marginal, function(x) abs(sum(x) - 1) < 1e-8, logical(1))))
+  expect_false(is.null(fit$cell_counts))
+  expect_equal(names(fit$cell_counts), paste0("t", 1:ncol(y)))
 })
 
 
@@ -39,6 +41,24 @@ test_that("em_cat handles non-sequential block IDs and stores block levels", {
   expect_equal(sort(fit$settings$block_levels), c("2", "5"))
   expect_equal(length(fit$marginal), 2)
   expect_equal(length(fit$transition), 2)
+  expect_equal(names(fit$cell_counts), c("block_1", "block_2"))
+  expect_true("t1_to_t1" %in% names(fit$cell_counts$block_1))
+})
+
+
+test_that("em_cat returns fit_cat-style order 1 cell_counts usable by ci_cat", {
+  set.seed(1307)
+  y <- simulate_cat(n_subjects = 120, n_time = 5, order = 1, n_categories = 2)
+  y[sample(length(y), 70)] <- NA
+
+  fit <- em_cat(y, order = 1, max_iter = 40, tol = 1e-6)
+
+  expected_names <- c("t1_to_t1", paste0("t", 1:4, "_to_t", 2:5))
+  expect_equal(names(fit$cell_counts), expected_names)
+  expect_true(is.matrix(fit$cell_counts$t1_to_t2))
+
+  ci <- ci_cat(fit)
+  expect_s3_class(ci, "cat_ci")
 })
 
 

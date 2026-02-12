@@ -31,9 +31,8 @@
 #' sufficient statistics with a forward-backward E-step, then updates
 #' probabilities by normalized expected counts in the M-step.
 #'
-#' If EM stops at \code{max_iter} without satisfying the tolerance criterion,
-#' a final E-step is run so that returned \code{log_l}/AIC/BIC match the
-#' returned parameter values.
+#' A final E-step is run before returning so that \code{log_l}/AIC/BIC and
+#' expected cell counts correspond exactly to the returned parameter values.
 #'
 #' @seealso \code{\link{fit_cat}}, \code{\link{logL_cat}}
 #' @export
@@ -140,19 +139,24 @@ em_cat <- function(y, order = 1, blocks = NULL, homogeneous = TRUE,
     transition <- params_new$transition
   }
 
-  # If max_iter was reached, recompute observed-data log-likelihood under
-  # final returned parameters to keep fit metrics consistent.
-  if (!converged) {
-    e_final <- .e_step_cat_em(
-      y = y, order = p, marginal = marginal, transition = transition,
-      blocks_id = blocks_id, homogeneous = homogeneous, c = c
-    )
-    if (isTRUE(e_final$failed)) {
-      stop(sprintf("Final likelihood evaluation failed: %s", e_final$message))
-    }
-    logL_current <- e_final$log_likelihood
-    delta_logL <- logL_current - logL_prev
+  # Final E-step ensures returned fit metrics/cell counts correspond exactly
+  # to returned parameter values, including max_iter exits.
+  e_final <- .e_step_cat_em(
+    y = y, order = p, marginal = marginal, transition = transition,
+    blocks_id = blocks_id, homogeneous = homogeneous, c = c
+  )
+  if (isTRUE(e_final$failed)) {
+    stop(sprintf("Final likelihood evaluation failed: %s", e_final$message))
   }
+  logL_current <- e_final$log_likelihood
+  delta_logL <- logL_current - logL_prev
+  cell_counts <- .expected_counts_to_cell_counts_cat_em(
+    counts = e_final$counts,
+    order = p,
+    n_time = n_time,
+    n_blocks = n_blocks,
+    homogeneous = homogeneous
+  )
 
   if (!converged && iter == max_iter && abs(delta_logL) >= tol) {
     warning(sprintf("EM did not converge after %d iterations (change = %.6f).", max_iter, delta_logL))
@@ -176,7 +180,7 @@ em_cat <- function(y, order = 1, blocks = NULL, homogeneous = TRUE,
     aic = as.numeric(aic),
     bic = as.numeric(bic),
     n_params = as.integer(n_params),
-    cell_counts = NULL,
+    cell_counts = cell_counts,
     convergence = if (converged) 0L else 1L,
     settings = list(
       order = p,
@@ -553,6 +557,66 @@ em_cat <- function(y, order = 1, blocks = NULL, homogeneous = TRUE,
     log_likelihood = total_log_likelihood,
     failed = FALSE
   )
+}
+
+
+#' Convert EM expected counts to fit_cat-style cell_counts
+#'
+#' @param counts Expected counts from the E-step.
+#' @param order Model order.
+#' @param n_time Number of time points.
+#' @param n_blocks Number of blocks.
+#' @param homogeneous Logical; whether parameters are shared across blocks.
+#'
+#' @return A list shaped like \code{fit_cat(...)} \code{cell_counts}.
+#'
+#' @keywords internal
+.expected_counts_to_cell_counts_cat_em <- function(counts, order, n_time, n_blocks, homogeneous) {
+  if (order == 0L) {
+    if (homogeneous || n_blocks == 1L) {
+      out <- list()
+      for (t in seq_len(n_time)) {
+        out[[paste0("t", t)]] <- as.numeric(counts$marginal[t, ])
+      }
+      return(out)
+    }
+
+    out <- vector("list", n_blocks)
+    for (b in seq_len(n_blocks)) {
+      out_b <- list()
+      for (t in seq_len(n_time)) {
+        out_b[[paste0("t", t)]] <- as.numeric(counts$marginal[b, t, ])
+      }
+      out[[b]] <- out_b
+    }
+    names(out) <- paste0("block_", seq_len(n_blocks))
+    return(out)
+  }
+
+  if (order == 1L) {
+    if (homogeneous || n_blocks == 1L) {
+      out <- list()
+      out[["t1_to_t1"]] <- as.numeric(counts$marginal)
+      for (t in 2:n_time) {
+        out[[paste0("t", t - 1L, "_to_t", t)]] <- unname(counts$transition[t - 1L, , ])
+      }
+      return(out)
+    }
+
+    out <- vector("list", n_blocks)
+    for (b in seq_len(n_blocks)) {
+      out_b <- list()
+      out_b[["t1_to_t1"]] <- as.numeric(counts$marginal[b, ])
+      for (t in 2:n_time) {
+        out_b[[paste0("t", t - 1L, "_to_t", t)]] <- unname(counts$transition[b, t - 1L, , ])
+      }
+      out[[b]] <- out_b
+    }
+    names(out) <- paste0("block_", seq_len(n_blocks))
+    return(out)
+  }
+
+  stop("Only orders 0 and 1 are supported in em_cat")
 }
 
 

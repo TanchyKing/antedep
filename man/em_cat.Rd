@@ -56,9 +56,8 @@ For missing data and orders 0/1, each EM iteration computes expected
 sufficient statistics with a forward-backward E-step, then updates
 probabilities by normalized expected counts in the M-step.
 
-If EM stops at \code{max_iter} without satisfying the tolerance criterion,
-a final E-step is run so that returned \code{log_l}/AIC/BIC match the
-returned parameter values.
+A final E-step is run before returning so that \code{log_l}/AIC/BIC and
+expected cell counts correspond exactly to the returned parameter values.
 }
 \seealso{
 \code{\link{fit_cat}}, \code{\link{logL_cat}}
