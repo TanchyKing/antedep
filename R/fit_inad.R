@@ -374,7 +374,15 @@ fit_inad <- function(
         n_missing = sum(is.na(y)),
         pct_missing = mean(is.na(y)) * 100,
         convergence = list(code = opt$convergence, message = opt$message, method = opt$method),
-        settings = list(order = order, thinning = thinning, innovation = innovation, blocks = blocks, na_action = "marginalize")
+        settings = list(
+            order = order,
+            thinning = thinning,
+            innovation = innovation,
+            blocks = blocks,
+            n_subjects = n,
+            n_time = N,
+            na_action = "marginalize"
+        )
     )
 }
 
@@ -848,7 +856,14 @@ fit_inad_no_fe <- function(
         log_l = sum(loglik_i),
         loglik_i = loglik_i,
         convergence = list(per_time = conv),
-        settings = list(order = order, thinning = thinning, innovation = innovation, blocks = NULL)
+        settings = list(
+            order = order,
+            thinning = thinning,
+            innovation = innovation,
+            blocks = NULL,
+            n_subjects = nrow(y),
+            n_time = ncol(y)
+        )
     )
 }
 
@@ -1195,7 +1210,14 @@ fit_inad_fe <- function(
         tau = tau,
         nb_inno_size = nb_inno_size,
         log_l = log_old,
-        settings = list(order = order, thinning = thinning, innovation = innovation, blocks = blocks)
+        settings = list(
+            order = order,
+            thinning = thinning,
+            innovation = innovation,
+            blocks = blocks,
+            n_subjects = n,
+            n_time = N
+        )
     )
 }
 

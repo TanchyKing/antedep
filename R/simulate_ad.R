@@ -30,6 +30,7 @@
 #' @param tau group effect vector indexed by block; `tau[1]` is forced to 0.
 #'   If scalar x, it is expanded to `c(0, x, ..., x)` with length equal to the
 #'   number of blocks
+#' @param seed optional random seed for reproducibility
 #'
 #' @return numeric matrix with dimension `n_subjects` by `n_time`
 #' @export
@@ -40,7 +41,10 @@ simulate_ad <- function(n_subjects,
                         phi = NULL,
                         sigma = NULL,
                         blocks = NULL,
-                        tau = 0) {
+                        tau = 0,
+                        seed = NULL) {
+
+    if (!is.null(seed)) set.seed(seed)
 
     if (!order %in% c(0L, 1L, 2L)) {
         stop("order must be 0, 1 or 2")
@@ -61,10 +65,10 @@ simulate_ad <- function(n_subjects,
         if (length(blocks) != n_subjects) {
             stop("blocks must have length n_subjects")
         }
-        blocks <- as.integer(blocks)
-        if (any(is.na(blocks)) || any(blocks <= 0L)) {
-            stop("blocks must be positive integers with no missing values")
+        if (any(is.na(blocks))) {
+            stop("blocks must have no missing values")
         }
+        blocks <- as.integer(factor(blocks))
         B <- max(blocks)
         if (length(tau) == 1L) {
             tau <- c(0, rep(as.numeric(tau), max(B - 1L, 0L)))

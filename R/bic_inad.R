@@ -4,7 +4,9 @@
 #' respects structural zeros and identifiability constraints.
 #'
 #' @param fit A fitted model object returned by \code{\link{fit_inad}}.
-#' @param n_subjects Number of subjects, typically \code{nrow(y)}.
+#' @param n_subjects Number of subjects, typically \code{nrow(y)}. If
+#'   \code{NULL}, inferred from \code{fit$settings$n_subjects} or legacy
+#'   \code{length(fit$settings$blocks)} when available (with a warning).
 #'
 #' @return A numeric scalar BIC value.
 #'
@@ -14,8 +16,18 @@
 #' where \eqn{\ell} is the log-likelihood, \eqn{k} is the number of free parameters,
 #' and \eqn{N} is the number of subjects.
 #' @export
-bic_inad <- function(fit, n_subjects) {
-    if (missing(n_subjects) || length(n_subjects) != 1 || !is.finite(n_subjects) || n_subjects <= 0) {
+bic_inad <- function(fit, n_subjects = NULL) {
+    if (is.null(n_subjects)) {
+        n_subjects <- fit$settings$n_subjects
+        if (is.null(n_subjects) && !is.null(fit$settings$blocks)) {
+            warning(
+                "n_subjects inferred from legacy fit$settings$blocks; please refit or pass n_subjects explicitly.",
+                call. = FALSE
+            )
+            n_subjects <- length(fit$settings$blocks)
+        }
+    }
+    if (is.null(n_subjects) || length(n_subjects) != 1 || !is.finite(n_subjects) || n_subjects <= 0) {
         stop("n_subjects must be a positive finite scalar")
     }
 

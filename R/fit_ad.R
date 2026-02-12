@@ -4,6 +4,12 @@
 #' by maximum likelihood. Missing values can be handled by complete-case
 #' deletion or by EM (see \code{\link{em_ad}} for an explicit EM wrapper).
 #'
+#' @details
+#' For missing data with \code{na_action = "em"}, AD orders 0 and 1 are the
+#' primary production path. AD order 2 is available, but the current EM
+#' implementation uses simplified second-order updates and should be treated as
+#' provisional for high-stakes inference.
+#'
 #' @param y Numeric matrix (n_subjects x n_time). May contain NA.
 #' @param order Integer 0, 1, or 2.
 #' @param blocks Optional vector of block membership (length n_subjects).

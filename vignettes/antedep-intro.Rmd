@@ -180,6 +180,12 @@ fit_cat_miss$settings$na_action_effective
 ```
 
 ```{r}
+# EM alternative for CAT missing data (orders 0/1)
+fit_cat_miss_em <- fit_cat(y_cat_miss, order = 1, na_action = "em", em_max_iter = 80)
+fit_cat_miss_em$log_l
+```
+
+```{r}
 # Missing-data order/homogeneity tests are supported
 blocks_cat <- rep(1:2, each = nrow(y_cat_miss) / 2)
 lrt_order_cat(y_cat_miss, order_null = 0, order_alt = 1)$p_value
@@ -202,6 +208,7 @@ lrt_stationarity_cat(y_cat, order = 1)
 ## Known Limitations
 
 - EM entry points: `em_ad` (Gaussian), `em_inad` (INAD), and `em_cat` (CAT, orders 0/1) are available; for CAT order 2 with missing data, use `fit_cat(na_action = "marginalize")`.
+- For CAT missingness, `fit_cat(na_action = "marginalize")` supports orders 0/1/2, while `fit_cat(na_action = "em")` (or `em_cat`) supports orders 0/1 with optional safeguard step-halving.
 - Missing-data confidence intervals are not implemented yet (`ci_ad`, `ci_inad`, `ci_cat` require complete-data fits).
 - AD missing-data LRT/mean/covariance tests are not implemented yet.
 - CAT missing-data time-invariance/stationarity tests (`lrt_timeinvariance_cat`, `lrt_stationarity_cat`, `run_stationarity_tests_cat`) are not implemented yet.

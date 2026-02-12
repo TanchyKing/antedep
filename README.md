@@ -55,10 +55,32 @@ fit_miss <- fit_inad(y, order = 1, na_action = "marginalize")
 fit_miss$log_l
 ```
 
+### CAT missing-data workflow
+
+```r
+library(antedep)
+set.seed(1)
+
+y_cat <- simulate_cat(n_subjects = 80, n_time = 5, order = 1, n_categories = 3)
+y_cat[sample(length(y_cat), 30)] <- NA
+
+# Observed-data likelihood (orders 0/1/2)
+fit_cat_marg <- fit_cat(y_cat, order = 1, na_action = "marginalize")
+
+# EM (orders 0/1) via explicit entry point or fit_cat dispatch
+fit_cat_em1 <- em_cat(y_cat, order = 1, max_iter = 80)
+fit_cat_em2 <- fit_cat(y_cat, order = 1, na_action = "em", em_max_iter = 80)
+```
+
+If EM becomes unstable or converges slowly, try increasing `epsilon`, increasing
+`max_iter`, and using `safeguard = TRUE`.
+
 ## Known Limitations
 
 - EM entry points: `em_ad` (Gaussian), `em_inad` (INAD), and `em_cat` (CAT, orders 0/1) are available; for CAT order 2 with missing data, use `fit_cat(na_action = "marginalize")`.
+- For CAT models, `fit_cat()` supports both observed-data likelihood (`na_action = "marginalize"`) and EM (`na_action = "em"` for orders 0/1).
 - Missing-data confidence intervals are not yet implemented (`ci_ad`, `ci_inad`, `ci_cat` require complete-data fits).
+- AD missing-data EM for order 2 is currently available with simplified updates and should be treated as provisional.
 - AD missing-data LRT/mean/covariance tests remain complete-data only.
 - CAT missing-data stationarity/time-invariance tests (`lrt_stationarity_cat`, `lrt_timeinvariance_cat`, `run_stationarity_tests_cat`) remain complete-data only.
 - INAD missing-data LRTs and CAT missing-data order/homogeneity LRTs are supported via observed-data likelihood (`na_action = "marginalize"`).

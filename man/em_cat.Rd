@@ -13,6 +13,7 @@ em_cat(
   max_iter = 100,
   tol = 1e-06,
   epsilon = 1e-08,
+  safeguard = TRUE,
   verbose = FALSE
 )
 }
@@ -39,10 +40,15 @@ observed data.}
 \item{epsilon}{Small positive constant used for smoothing and numerical
 stability.}
 
+\item{safeguard}{Logical; if \code{TRUE}, apply step-halving when an M-step
+update decreases observed-data log-likelihood.}
+
 \item{verbose}{Logical; if \code{TRUE}, print EM progress.}
 }
 \value{
 A \code{cat_fit} object with fields matching \code{\link{fit_cat}}.
+In EM mode, \code{cell_counts} stores expected counts from the final
+E-step, with \code{settings$cell_counts_type = "expected"}.
 }
 \description{
 Fits categorical antedependence models with missing outcomes using the
@@ -55,6 +61,8 @@ For complete data (no missing values), this function defers to
 For missing data and orders 0/1, each EM iteration computes expected
 sufficient statistics with a forward-backward E-step, then updates
 probabilities by normalized expected counts in the M-step.
+If \code{safeguard = TRUE}, a step-halving line search is applied to the
+M-step update whenever the observed-data likelihood decreases.
 
 A final E-step is run before returning so that \code{log_l}/AIC/BIC and
 expected cell counts correspond exactly to the returned parameter values.

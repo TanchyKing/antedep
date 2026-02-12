@@ -19,9 +19,13 @@
 #' @param tol Convergence tolerance on absolute log-likelihood change.
 #' @param epsilon Small positive constant used for smoothing and numerical
 #'   stability.
+#' @param safeguard Logical; if \code{TRUE}, apply step-halving when an M-step
+#'   update decreases observed-data log-likelihood.
 #' @param verbose Logical; if \code{TRUE}, print EM progress.
 #'
 #' @return A \code{cat_fit} object with fields matching \code{\link{fit_cat}}.
+#'   In EM mode, \code{cell_counts} stores expected counts from the final
+#'   E-step, with \code{settings$cell_counts_type = "expected"}.
 #'
 #' @details
 #' For complete data (no missing values), this function defers to
@@ -30,6 +34,8 @@
 #' For missing data and orders 0/1, each EM iteration computes expected
 #' sufficient statistics with a forward-backward E-step, then updates
 #' probabilities by normalized expected counts in the M-step.
+#' If \code{safeguard = TRUE}, a step-halving line search is applied to the
+#' M-step update whenever the observed-data likelihood decreases.
 #'
 #' A final E-step is run before returning so that \code{log_l}/AIC/BIC and
 #' expected cell counts correspond exactly to the returned parameter values.
@@ -38,7 +44,7 @@
 #' @export
 em_cat <- function(y, order = 1, blocks = NULL, homogeneous = TRUE,
                    n_categories = NULL, max_iter = 100, tol = 1e-6,
-                   epsilon = 1e-8, verbose = FALSE) {
+                   epsilon = 1e-8, safeguard = TRUE, verbose = FALSE) {
   validated <- .validate_y_cat(y, n_categories = n_categories, allow_na = TRUE)
   y <- validated$y
   c <- validated$n_categories
@@ -52,6 +58,9 @@ em_cat <- function(y, order = 1, blocks = NULL, homogeneous = TRUE,
   if (max_iter < 1) stop("max_iter must be >= 1")
   if (!is.finite(tol) || tol <= 0) stop("tol must be a positive finite number")
   if (!is.finite(epsilon) || epsilon <= 0) stop("epsilon must be a positive finite number")
+  if (!is.logical(safeguard) || length(safeguard) != 1L || is.na(safeguard)) {
+    stop("safeguard must be TRUE or FALSE")
+  }
 
   if (p == 2L) {
     stop(
@@ -66,6 +75,7 @@ em_cat <- function(y, order = 1, blocks = NULL, homogeneous = TRUE,
   blocks_id <- block_info$blocks_id
   block_levels <- block_info$block_levels
   n_blocks <- block_info$n_blocks
+  homogeneous_effective <- isTRUE(homogeneous) || n_blocks == 1L
 
   # Complete data: defer to closed-form MLEs.
   if (!any(is.na(y))) {
@@ -84,7 +94,7 @@ em_cat <- function(y, order = 1, blocks = NULL, homogeneous = TRUE,
   }
 
   init <- .initialize_parameters_cat_em(
-    y = y, order = p, blocks_id = blocks_id, homogeneous = homogeneous,
+    y = y, order = p, blocks_id = blocks_id, homogeneous = homogeneous_effective,
     c = c, n_time = n_time, epsilon = epsilon, verbose = verbose
   )
   marginal <- init$marginal
@@ -100,7 +110,7 @@ em_cat <- function(y, order = 1, blocks = NULL, homogeneous = TRUE,
   for (iter in seq_len(max_iter)) {
     e_result <- .e_step_cat_em(
       y = y, order = p, marginal = marginal, transition = transition,
-      blocks_id = blocks_id, homogeneous = homogeneous, c = c
+      blocks_id = blocks_id, homogeneous = homogeneous_effective, c = c
     )
 
     if (isTRUE(e_result$failed)) {
@@ -133,17 +143,43 @@ em_cat <- function(y, order = 1, blocks = NULL, homogeneous = TRUE,
 
     params_new <- .m_step_cat_em(
       counts = e_result$counts, order = p, c = c, n_time = n_time,
-      n_blocks = n_blocks, homogeneous = homogeneous, epsilon = epsilon
+      n_blocks = n_blocks, homogeneous = homogeneous_effective, epsilon = epsilon
     )
-    marginal <- params_new$marginal
-    transition <- params_new$transition
+
+    if (isTRUE(safeguard)) {
+      safeguarded <- .safeguard_update_cat_em(
+        y = y,
+        order = p,
+        old_marginal = marginal,
+        old_transition = transition,
+        new_marginal = params_new$marginal,
+        new_transition = params_new$transition,
+        blocks_id = blocks_id,
+        homogeneous = homogeneous_effective,
+        c = c,
+        logL_old = logL_current,
+        n_time = n_time,
+        n_blocks = n_blocks
+      )
+      marginal <- safeguarded$marginal
+      transition <- safeguarded$transition
+      if (verbose && safeguarded$step < 1) {
+        message(sprintf("Iteration %d: safeguard step-halving accepted (step = %.6f).", iter, safeguarded$step))
+      }
+      if (!safeguarded$accepted) {
+        warning(sprintf("Iteration %d: safeguard rejected M-step update; keeping previous parameters.", iter))
+      }
+    } else {
+      marginal <- params_new$marginal
+      transition <- params_new$transition
+    }
   }
 
   # Final E-step ensures returned fit metrics/cell counts correspond exactly
   # to returned parameter values, including max_iter exits.
   e_final <- .e_step_cat_em(
     y = y, order = p, marginal = marginal, transition = transition,
-    blocks_id = blocks_id, homogeneous = homogeneous, c = c
+    blocks_id = blocks_id, homogeneous = homogeneous_effective, c = c
   )
   if (isTRUE(e_final$failed)) {
     stop(sprintf("Final likelihood evaluation failed: %s", e_final$message))
@@ -155,7 +191,7 @@ em_cat <- function(y, order = 1, blocks = NULL, homogeneous = TRUE,
     order = p,
     n_time = n_time,
     n_blocks = n_blocks,
-    homogeneous = homogeneous
+    homogeneous = homogeneous_effective
   )
 
   if (!converged && iter == max_iter && abs(delta_logL) >= tol) {
@@ -165,9 +201,9 @@ em_cat <- function(y, order = 1, blocks = NULL, homogeneous = TRUE,
   n_params <- .count_params_cat(
     order = p,
     n_categories = c,
-    n_time = n_time,
-    n_blocks = n_blocks,
-    homogeneous = homogeneous
+      n_time = n_time,
+      n_blocks = n_blocks,
+      homogeneous = homogeneous_effective
   )
 
   aic <- -2 * logL_current + 2 * n_params
@@ -189,6 +225,7 @@ em_cat <- function(y, order = 1, blocks = NULL, homogeneous = TRUE,
       n_subjects = n_subjects,
       blocks = if (n_blocks > 1) blocks_id else NULL,
       homogeneous = homogeneous,
+      homogeneous_effective = homogeneous_effective,
       n_blocks = n_blocks,
       na_action = "em",
       na_action_effective = "em",
@@ -196,10 +233,12 @@ em_cat <- function(y, order = 1, blocks = NULL, homogeneous = TRUE,
       max_iter = max_iter,
       tol = tol,
       epsilon = epsilon,
+      safeguard = safeguard,
       n_iter = as.integer(iter),
       converged = converged,
       delta_log_l = as.numeric(delta_logL),
-      block_levels = block_levels
+      block_levels = block_levels,
+      cell_counts_type = "expected"
     )
   )
 
@@ -617,6 +656,148 @@ em_cat <- function(y, order = 1, blocks = NULL, homogeneous = TRUE,
   }
 
   stop("Only orders 0 and 1 are supported in em_cat")
+}
+
+
+#' Safeguard M-step update via step-halving
+#'
+#' @param y Data matrix.
+#' @param order Model order.
+#' @param old_marginal Previous marginal parameters.
+#' @param old_transition Previous transition parameters.
+#' @param new_marginal Proposed marginal parameters from M-step.
+#' @param new_transition Proposed transition parameters from M-step.
+#' @param blocks_id Normalized block ids.
+#' @param homogeneous Whether parameters are shared across blocks.
+#' @param c Number of categories.
+#' @param logL_old Observed-data log-likelihood at old parameters.
+#' @param n_time Number of time points.
+#' @param n_blocks Number of blocks.
+#'
+#' @return List with safeguarded parameters, acceptance flag, and step size.
+#'
+#' @keywords internal
+.safeguard_update_cat_em <- function(y, order, old_marginal, old_transition,
+                                     new_marginal, new_transition,
+                                     blocks_id, homogeneous, c, logL_old,
+                                     n_time, n_blocks) {
+  # Try full update first.
+  e_new <- .e_step_cat_em(
+    y = y, order = order, marginal = new_marginal, transition = new_transition,
+    blocks_id = blocks_id, homogeneous = homogeneous, c = c
+  )
+  if (!isTRUE(e_new$failed) && (e_new$log_likelihood + 1e-10 >= logL_old)) {
+    return(list(marginal = new_marginal, transition = new_transition, accepted = TRUE, step = 1))
+  }
+
+  # Step-halving fallback.
+  step <- 0.5
+  while (step >= (1 / 1024)) {
+    blended <- .blend_cat_params_em(
+      old_marginal = old_marginal,
+      old_transition = old_transition,
+      new_marginal = new_marginal,
+      new_transition = new_transition,
+      step = step,
+      order = order,
+      n_time = n_time,
+      n_blocks = n_blocks,
+      homogeneous = homogeneous
+    )
+    e_try <- .e_step_cat_em(
+      y = y, order = order, marginal = blended$marginal, transition = blended$transition,
+      blocks_id = blocks_id, homogeneous = homogeneous, c = c
+    )
+    if (!isTRUE(e_try$failed) && (e_try$log_likelihood + 1e-10 >= logL_old)) {
+      return(list(marginal = blended$marginal, transition = blended$transition, accepted = TRUE, step = step))
+    }
+    step <- step / 2
+  }
+
+  list(marginal = old_marginal, transition = old_transition, accepted = FALSE, step = 0)
+}
+
+
+#' Blend old/new CAT parameters and renormalize probabilities
+#'
+#' @param old_marginal Previous marginal parameters.
+#' @param old_transition Previous transition parameters.
+#' @param new_marginal Proposed marginal parameters.
+#' @param new_transition Proposed transition parameters.
+#' @param step Step size in (0, 1].
+#' @param order Model order.
+#' @param n_time Number of time points.
+#' @param n_blocks Number of blocks.
+#' @param homogeneous Whether parameters are shared across blocks.
+#'
+#' @return List with blended \code{marginal} and \code{transition}.
+#'
+#' @keywords internal
+.blend_cat_params_em <- function(old_marginal, old_transition, new_marginal, new_transition,
+                                 step, order, n_time, n_blocks, homogeneous) {
+  blend_vec <- function(v_old, v_new) {
+    v <- (1 - step) * as.numeric(v_old) + step * as.numeric(v_new)
+    v <- pmax(v, 1e-12)
+    v / sum(v)
+  }
+
+  blend_mat <- function(m_old, m_new) {
+    m <- (1 - step) * m_old + step * m_new
+    m <- pmax(m, 1e-12)
+    sweep(m, 1, rowSums(m), "/")
+  }
+
+  if (order == 0L) {
+    if (homogeneous || n_blocks == 1L) {
+      marginal <- list()
+      for (t in seq_len(n_time)) {
+        nm <- paste0("t", t)
+        marginal[[nm]] <- blend_vec(old_marginal[[nm]], new_marginal[[nm]])
+      }
+      return(list(marginal = marginal, transition = list()))
+    }
+
+    marginal <- vector("list", n_blocks)
+    transition <- vector("list", n_blocks)
+    for (b in seq_len(n_blocks)) {
+      marg_b <- list()
+      for (t in seq_len(n_time)) {
+        nm <- paste0("t", t)
+        marg_b[[nm]] <- blend_vec(old_marginal[[b]][[nm]], new_marginal[[b]][[nm]])
+      }
+      marginal[[b]] <- marg_b
+      transition[[b]] <- list()
+    }
+    names(marginal) <- paste0("block_", seq_len(n_blocks))
+    names(transition) <- paste0("block_", seq_len(n_blocks))
+    return(list(marginal = marginal, transition = transition))
+  }
+
+  if (homogeneous || n_blocks == 1L) {
+    marginal <- list(t1 = blend_vec(old_marginal$t1, new_marginal$t1))
+    transition <- list()
+    for (t in 2:n_time) {
+      nm <- paste0("t", t)
+      transition[[nm]] <- blend_mat(old_transition[[nm]], new_transition[[nm]])
+    }
+    return(list(marginal = marginal, transition = transition))
+  }
+
+  marginal <- vector("list", n_blocks)
+  transition <- vector("list", n_blocks)
+  for (b in seq_len(n_blocks)) {
+    marginal[[b]] <- list(t1 = blend_vec(old_marginal[[b]]$t1, new_marginal[[b]]$t1))
+    trans_b <- list()
+    for (t in 2:n_time) {
+      nm <- paste0("t", t)
+      trans_b[[nm]] <- blend_mat(old_transition[[b]][[nm]], new_transition[[b]][[nm]])
+    }
+    transition[[b]] <- trans_b
+  }
+  names(marginal) <- paste0("block_", seq_len(n_blocks))
+  names(transition) <- paste0("block_", seq_len(n_blocks))
+
+  list(marginal = marginal, transition = transition)
 }
 
 

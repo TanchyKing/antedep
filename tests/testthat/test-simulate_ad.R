@@ -20,6 +20,10 @@ testthat::test_that("simulate_ad is reproducible given the same seed", {
     y2 <- simulate_ad(20, 6, order = 2)
 
     testthat::expect_equal(y1, y2)
+
+    y3 <- simulate_ad(20, 6, order = 2, seed = 999)
+    y4 <- simulate_ad(20, 6, order = 2, seed = 999)
+    testthat::expect_equal(y3, y4)
 })
 
 testthat::test_that("simulate_ad works for order 0, 1, 2", {
@@ -47,7 +51,8 @@ testthat::test_that("simulate_ad validates key inputs", {
     testthat::expect_error(simulate_ad(10, 5, sigma = c(1, 1, -1, 1, 1)))
 
     testthat::expect_error(simulate_ad(10, 5, blocks = 1:9))
-    testthat::expect_error(simulate_ad(10, 5, blocks = c(rep(1, 9), 0)))
+    y_nonseq_ok <- simulate_ad(10, 5, blocks = c(rep(1, 9), 0))
+    testthat::expect_equal(dim(y_nonseq_ok), c(10, 5))
 })
 
 testthat::test_that("simulate_ad enforces phi shape rules for order 2", {
@@ -108,4 +113,18 @@ testthat::test_that("simulate_ad handles blocks and tau as intended for order 0"
         blocks = blocks,
         tau = c(0, 1, 2)
     ))
+
+    blocks_nonseq <- c(rep(2, 5), rep(5, 5))
+    set.seed(12)
+    y_nonseq <- simulate_ad(
+        n_subjects = 10,
+        n_time = 3,
+        order = 0,
+        mu = 0,
+        sigma = 1e-10,
+        blocks = blocks_nonseq,
+        tau = c(0, 2)
+    )
+    d_nonseq <- mean(y_nonseq[blocks_nonseq == 5, 1]) - mean(y_nonseq[blocks_nonseq == 2, 1])
+    testthat::expect_equal(d_nonseq, 2, tolerance = 1e-6)
 })

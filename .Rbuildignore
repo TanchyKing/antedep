@@ -18,3 +18,4 @@
 ^docs$
 ^LOCAL_CHECKS\.md$
 ^antedep-reference-manual\.pdf$
+^antedep-reference-manual-.*\.pdf$

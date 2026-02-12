@@ -152,6 +152,13 @@ test_that("fit_cat missing-data modes behave correctly", {
   fit_marg_no_missing <- fit_cat(y, order = 1, na_action = "marginalize")
   expect_equal(as.numeric(fit_marg_no_missing$log_l), as.numeric(fit_full$log_l), tolerance = 1e-10)
   expect_equal(fit_marg_no_missing$settings$na_action_effective, "complete")
+
+  # EM entry point via fit_cat should be available for order 1.
+  fit_em_mode <- fit_cat(y_miss, order = 1, na_action = "em", em_max_iter = 60)
+  fit_em_direct <- em_cat(y_miss, order = 1, max_iter = 60)
+  expect_equal(as.numeric(fit_em_mode$log_l), as.numeric(fit_em_direct$log_l), tolerance = 1e-8)
+  expect_equal(fit_em_mode$settings$na_action, "em")
+  expect_equal(fit_em_mode$settings$method, fit_em_direct$settings$method)
 })
 
 
@@ -179,6 +186,11 @@ test_that("fit_cat marginalize handles missingness for order 2", {
   
   expect_true(is.finite(fit_miss$log_l))
   expect_true(is.finite(ll_miss))
+
+  expect_error(
+    fit_cat(y_miss, order = 2, na_action = "em"),
+    "currently supports order 0 and 1"
+  )
 })
 
 

@@ -35,6 +35,9 @@ on the intervenor set \verb{Y[i+1], ..., Y[j-1]}.
 For adjacent time points (|i-j| = 1), the partial correlation equals the
 ordinary correlation since there are no intervenors.
 
+The diagonal of both returned matrices contains variances (not correlations).
+This keeps scale information available alongside correlation structure.
+
 The significance test uses an approximate threshold of 2/sqrt(n_eff), which
 corresponds roughly to a 95\% confidence bound under normality. This is a
 rough screening tool, not a formal hypothesis test.
@@ -46,6 +49,9 @@ pc <- partial_corr(bolus_inad$y, test = TRUE)
 
 # View partial correlations (lower triangle)
 pc$partial_correlation
+
+# Extract variances from the diagonal
+variances <- diag(pc$partial_correlation)
 
 # Check which are "significant" (rough screen for AD order)
 pc$significant

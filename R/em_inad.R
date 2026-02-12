@@ -4,7 +4,9 @@
 #' This is an alternative to direct likelihood optimization.
 #'
 #' For Gaussian and CAT EM entry points, see \code{\link{em_ad}} and
-#' \code{\link{em_cat}}.
+#' \code{\link{em_cat}}. For CAT specifically, \code{fit_cat()} supports
+#' \code{na_action = "em"} for orders 0/1 and \code{na_action = "marginalize"}
+#' for order 2 missing-data fits.
 #'
 #' @param y Integer matrix with n_subjects rows and n_time columns.
 #' @param order Model order (1 or 2). Order 0 does not require EM.
@@ -36,7 +38,10 @@ em_inad <- function(y, order = 1, thinning = "binom", innovation = "pois",
   thinning <- match.arg(thinning, c("binom", "pois", "nbinom"))
   innovation <- match.arg(innovation, c("pois", "bell", "nbinom"))
   if (is.null(blocks)) blocks <- rep(1L, n_subjects)
-  n_blocks <- length(unique(blocks))
+  if (length(blocks) != n_subjects) stop("blocks must have length n_subjects")
+  if (any(is.na(blocks))) stop("blocks must not contain missing values")
+  blocks <- as.integer(factor(blocks))
+  n_blocks <- max(blocks)
   
   if (!(thinning == "binom" && innovation == "pois")) {
     warning("EM is optimized for binom-pois. Other combinations use approximations.")

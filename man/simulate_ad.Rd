@@ -12,7 +12,8 @@ simulate_ad(
   phi = NULL,
   sigma = NULL,
   blocks = NULL,
-  tau = 0
+  tau = 0,
+  seed = NULL
 )
 }
 \arguments{
@@ -36,6 +37,8 @@ for each subject; if \code{NULL}, no block effect is applied}
 \item{tau}{group effect vector indexed by block; \code{tau[1]} is forced to 0.
 If scalar x, it is expanded to \code{c(0, x, ..., x)} with length equal to the
 number of blocks}
+
+\item{seed}{optional random seed for reproducibility}
 }
 \value{
 numeric matrix with dimension \code{n_subjects} by \code{n_time}

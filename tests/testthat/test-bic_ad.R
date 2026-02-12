@@ -16,11 +16,13 @@ test_that("bic_ad matches manual formula for order 1 without blocks", {
 
     fit <- fit_ad(y, order = 1, estimate_mu = TRUE)
     b1 <- bic_ad(fit, n_subjects = nrow(y))
+    b2 <- bic_ad(fit)
 
     N <- ncol(y)
     k <- N + N + (N - 1)
 
     expect_equal(b1, -2 * fit$log_l + k * log(nrow(y)))
+    expect_equal(b2, b1)
 })
 
 test_that("bic_ad counts tau and order 2 antedependence parameters", {

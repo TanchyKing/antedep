@@ -4,12 +4,13 @@
 \alias{bic_ad}
 \title{Bayesian information criterion for fitted Gaussian AD models}
 \usage{
-bic_ad(fit, n_subjects)
+bic_ad(fit, n_subjects = NULL)
 }
 \arguments{
 \item{fit}{A fitted model object returned by \code{\link{fit_ad}}.}
 
-\item{n_subjects}{Number of subjects, typically \code{nrow(y)}.}
+\item{n_subjects}{Number of subjects, typically \code{nrow(y)}. If
+\code{NULL}, inferred from \code{fit$settings$n_subjects}.}
 }
 \value{
 A numeric scalar BIC value.

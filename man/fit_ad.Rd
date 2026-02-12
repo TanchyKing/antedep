@@ -43,6 +43,12 @@ Fits an AD(0), AD(1), or AD(2) model for Gaussian longitudinal data
 by maximum likelihood. Missing values can be handled by complete-case
 deletion or by EM (see \code{\link{em_ad}} for an explicit EM wrapper).
 }
+\details{
+For missing data with \code{na_action = "em"}, AD orders 0 and 1 are the
+primary production path. AD order 2 is available, but the current EM
+implementation uses simplified second-order updates and should be treated as
+provisional for high-stakes inference.
+}
 \seealso{
 \code{\link{em_ad}}, \code{\link{fit_gau}},
 \code{\link{fit_cat}}, \code{\link{fit_inad}}

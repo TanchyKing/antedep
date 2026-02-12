@@ -7,7 +7,8 @@
 #' parameters.
 #'
 #' @param fit A fitted model object returned by \code{\link{fit_ad}}.
-#' @param n_subjects Number of subjects, typically \code{nrow(y)}.
+#' @param n_subjects Number of subjects, typically \code{nrow(y)}. If
+#'   \code{NULL}, inferred from \code{fit$settings$n_subjects}.
 #'
 #' @return A numeric scalar BIC value.
 #'
@@ -21,8 +22,9 @@
 #' For categorical and INAD models, use \code{\link{bic_cat}} and
 #' \code{\link{bic_inad}}.
 #' @export
-bic_ad <- function(fit, n_subjects) {
-    if (missing(n_subjects) || length(n_subjects) != 1 || !is.finite(n_subjects) || n_subjects <= 0) {
+bic_ad <- function(fit, n_subjects = NULL) {
+    if (is.null(n_subjects)) n_subjects <- fit$settings$n_subjects
+    if (is.null(n_subjects) || length(n_subjects) != 1 || !is.finite(n_subjects) || n_subjects <= 0) {
         stop("n_subjects must be a positive finite scalar")
     }
 

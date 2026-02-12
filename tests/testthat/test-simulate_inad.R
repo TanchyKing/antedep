@@ -9,6 +9,10 @@ test_that("simulate_inad basic structure and defaults", {
     expect_equal(dim(y), c(5L, 7L))
     expect_true(is.integer(y))
     expect_true(all(y >= 0))
+
+    y_seed1 <- simulate_inad(n_subjects = 5, n_time = 7, seed = 777)
+    y_seed2 <- simulate_inad(n_subjects = 5, n_time = 7, seed = 777)
+    expect_equal(y_seed1, y_seed2)
 })
 
 test_that("order 0 ignores thinning choice", {
@@ -173,4 +177,19 @@ test_that("blocks and tau affect innovations as intended", {
     m2b <- mean(y1[blocks == 2L, ])
     expect_true(abs(m1b - 10) < 1.5)
     expect_true(m2b > m1b)
+
+    blocks_nonseq <- c(rep(2L, n_sub / 2), rep(5L, n_sub / 2))
+    set.seed(12)
+    y_nonseq <- simulate_inad(
+        n_subjects = n_sub,
+        n_time = n_time,
+        order = 0,
+        innovation = "pois",
+        theta = 10,
+        blocks = blocks_nonseq,
+        tau = c(0, 3)
+    )
+    mn1 <- mean(y_nonseq[blocks_nonseq == 2L, ])
+    mn2 <- mean(y_nonseq[blocks_nonseq == 5L, ])
+    expect_true(mn2 > mn1)
 })

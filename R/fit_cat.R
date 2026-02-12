@@ -19,7 +19,14 @@
 #' @param na_action Handling of missing values in \code{y}. One of
 #'   \code{"fail"} (default, error if any missing), \code{"complete"}
 #'   (drop subjects with any missing values), or \code{"marginalize"}
-#'   (maximize observed-data likelihood by integrating over missing outcomes).
+#'   (maximize observed-data likelihood by integrating over missing outcomes),
+#'   or \code{"em"} (use \code{\link{em_cat}} for orders 0 and 1).
+#' @param em_max_iter Maximum EM iterations used when \code{na_action = "em"}.
+#' @param em_tol EM convergence tolerance used when \code{na_action = "em"}.
+#' @param em_epsilon Numerical smoothing constant used when \code{na_action = "em"}.
+#' @param em_safeguard Logical; if \code{TRUE}, use step-halving safeguard in
+#'   \code{\link{em_cat}} when \code{na_action = "em"}.
+#' @param em_verbose Logical; print EM progress when \code{na_action = "em"}.
 #'
 #' @return A list of class \code{"cat_fit"} containing:
 #'   \item{marginal}{List of marginal/joint probabilities for initial time points}
@@ -28,7 +35,10 @@
 #'   \item{aic}{Akaike Information Criterion}
 #'   \item{bic}{Bayesian Information Criterion}
 #'   \item{n_params}{Number of free parameters}
-#'   \item{cell_counts}{List of observed cell counts}
+#'   \item{cell_counts}{List of cell counts: observed counts for closed-form fits
+#'   (\code{na_action = "fail"/"complete"}), expected counts from the final E-step
+#'   for EM fits (\code{na_action = "em"}), and \code{NULL} for
+#'   \code{na_action = "marginalize"}}
 #'   \item{convergence}{Optimizer convergence code (0 for closed-form solutions)}
 #'   \item{settings}{List of model settings}
 #'
@@ -43,6 +53,14 @@
 #' }
 #'
 #' Empty cells receive probability 0 (if denominator is also 0).
+#'
+#' When \code{na_action = "em"}, \code{fit_cat()} dispatches to
+#' \code{\link{em_cat}}. In that case, \code{em_safeguard} controls step-halving
+#' protection against likelihood-decreasing updates, and returned
+#' \code{log_l}/AIC/BIC/\code{cell_counts} are synchronized via a final E-step
+#' under the returned parameters.
+#' For \code{order = 2}, \code{na_action = "em"} is not available and errors
+#' explicitly; use \code{na_action = "marginalize"}.
 #'
 #' @examples
 #' \dontrun{
@@ -59,6 +77,19 @@
 #' fit1 <- fit_cat(y, order = 1)
 #' fit2 <- fit_cat(y, order = 2)
 #' c(AIC_0 = fit0$aic, AIC_1 = fit1$aic, AIC_2 = fit2$aic)
+#'
+#' # EM fit with missing data
+#' y_miss <- y
+#' y_miss[sample(length(y_miss), size = round(0.15 * length(y_miss)))] <- NA
+#' fit_em <- fit_cat(
+#'   y_miss,
+#'   order = 1,
+#'   na_action = "em",
+#'   em_max_iter = 80,
+#'   em_tol = 1e-6
+#' )
+#' fit_em$settings$n_iter
+#' fit_em$settings$cell_counts_type
 #' }
 #'
 #' @references
@@ -69,8 +100,11 @@
 #' @export
 fit_cat <- function(y, order = 1, blocks = NULL, homogeneous = TRUE, 
                     n_categories = NULL,
-                    na_action = c("fail", "complete", "marginalize")) {
+                    na_action = c("fail", "complete", "marginalize", "em"),
+                    em_max_iter = 100, em_tol = 1e-6, em_epsilon = 1e-8,
+                    em_safeguard = TRUE, em_verbose = FALSE) {
   na_action <- match.arg(na_action)
+  blocks_input <- blocks
   
 
   # Validate inputs
@@ -92,6 +126,24 @@ fit_cat <- function(y, order = 1, blocks = NULL, homogeneous = TRUE,
   
   # Validate and process blocks
   blocks <- .validate_blocks_cat(blocks, n_subjects)
+
+  if (na_action == "em") {
+    if (p == 2L) {
+      stop("na_action = 'em' currently supports order 0 and 1; use na_action = 'marginalize' for order 2")
+    }
+    return(em_cat(
+      y = y,
+      order = p,
+      blocks = blocks_input,
+      homogeneous = homogeneous,
+      n_categories = c,
+      max_iter = em_max_iter,
+      tol = em_tol,
+      epsilon = em_epsilon,
+      safeguard = em_safeguard,
+      verbose = em_verbose
+    ))
+  }
   
   # Handle complete-case filtering if requested
   if (na_action == "complete") {
@@ -190,7 +242,8 @@ fit_cat <- function(y, order = 1, blocks = NULL, homogeneous = TRUE,
       homogeneous = homogeneous,
       n_blocks = n_blocks,
       na_action = na_action,
-      na_action_effective = effective_na_action
+      na_action_effective = effective_na_action,
+      cell_counts_type = if (identical(effective_na_action, "marginalize")) "none" else "observed"
     )
   )
   

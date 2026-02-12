@@ -42,9 +42,34 @@ test_that("bic_inad matches manual formula on bolus_inad", {
 
     bic_manual <- -2 * fit$log_l + k_manual(fit) * log(n_subjects)
     bic_pkg <- bic_inad(fit = fit, n_subjects = n_subjects)
+    bic_pkg_infer <- bic_inad(fit = fit)
 
     expect_true(is.numeric(bic_pkg))
     expect_equal(length(bic_pkg), 1)
     expect_true(is.finite(bic_pkg))
     expect_equal(bic_pkg, bic_manual, tolerance = 0)
+    expect_equal(bic_pkg_infer, bic_pkg, tolerance = 0)
+})
+
+test_that("bic_inad warns on legacy n_subjects fallback via settings$blocks", {
+    fit_legacy <- list(
+        log_l = -100,
+        theta = c(1, 1, 1),
+        tau = NULL,
+        nb_inno_size = NULL,
+        settings = list(
+            order = 1,
+            innovation = "pois",
+            blocks = rep(1, 25)
+        )
+    )
+
+    expect_warning(
+        bic_legacy <- bic_inad(fit_legacy),
+        "legacy fit\\$settings\\$blocks"
+    )
+
+    k_manual <- length(fit_legacy$theta) + (length(fit_legacy$theta) - 1)
+    bic_manual <- -2 * fit_legacy$log_l + k_manual * log(length(fit_legacy$settings$blocks))
+    expect_equal(as.numeric(bic_legacy), as.numeric(bic_manual), tolerance = 1e-12)
 })

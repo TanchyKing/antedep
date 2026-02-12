@@ -73,6 +73,48 @@ test_that("em_cat order 1 does not report immediate convergence on first iterati
 })
 
 
+test_that("em_cat transition probabilities are valid for order 1", {
+  set.seed(1308)
+  y <- simulate_cat(n_subjects = 100, n_time = 5, order = 1, n_categories = 3)
+  y[sample(length(y), 60)] <- NA
+
+  fit <- em_cat(y, order = 1, max_iter = 40)
+
+  for (t in 2:ncol(y)) {
+    trans_t <- fit$transition[[paste0("t", t)]]
+    expect_true(all(trans_t >= 0))
+    expect_equal(rowSums(trans_t), rep(1, nrow(trans_t)), tolerance = 1e-8)
+  }
+})
+
+
+test_that("em_cat homogeneous and one-block heterogeneous fits agree", {
+  set.seed(1309)
+  y <- simulate_cat(n_subjects = 110, n_time = 5, order = 1, n_categories = 2)
+  y[sample(length(y), 55)] <- NA
+  blocks_one <- rep(5, nrow(y))
+
+  fit_h <- em_cat(y, order = 1, homogeneous = TRUE, max_iter = 40)
+  fit_het_one <- em_cat(y, order = 1, blocks = blocks_one, homogeneous = FALSE, max_iter = 40)
+
+  expect_equal(as.numeric(fit_h$log_l), as.numeric(fit_het_one$log_l), tolerance = 1e-8)
+  expect_equal(as.numeric(fit_h$marginal$t1), as.numeric(fit_het_one$marginal$t1), tolerance = 1e-8)
+})
+
+
+test_that("em_cat accepts safeguard argument", {
+  set.seed(1310)
+  y <- simulate_cat(n_subjects = 100, n_time = 5, order = 1, n_categories = 2)
+  y[sample(length(y), 45)] <- NA
+
+  fit_safe <- em_cat(y, order = 1, safeguard = TRUE, max_iter = 30)
+  fit_no_safe <- em_cat(y, order = 1, safeguard = FALSE, max_iter = 30)
+
+  expect_s3_class(fit_safe, "cat_fit")
+  expect_s3_class(fit_no_safe, "cat_fit")
+})
+
+
 test_that("em_cat order 2 reports not implemented", {
   set.seed(1305)
   y <- simulate_cat(n_subjects = 40, n_time = 5, order = 2, n_categories = 2)

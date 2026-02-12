@@ -56,7 +56,9 @@ This is an alternative to direct likelihood optimization.
 }
 \details{
 For Gaussian and CAT EM entry points, see \code{\link{em_ad}} and
-\code{\link{em_cat}}.
+\code{\link{em_cat}}. For CAT specifically, \code{fit_cat()} supports
+\code{na_action = "em"} for orders 0/1 and \code{na_action = "marginalize"}
+for order 2 missing-data fits.
 }
 \seealso{
 \code{\link{em_ad}}, \code{\link{em_cat}}, \code{\link{fit_inad}},

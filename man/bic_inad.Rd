@@ -4,12 +4,14 @@
 \alias{bic_inad}
 \title{Bayesian information criterion for fitted INAD models}
 \usage{
-bic_inad(fit, n_subjects)
+bic_inad(fit, n_subjects = NULL)
 }
 \arguments{
 \item{fit}{A fitted model object returned by \code{\link{fit_inad}}.}
 
-\item{n_subjects}{Number of subjects, typically \code{nrow(y)}.}
+\item{n_subjects}{Number of subjects, typically \code{nrow(y)}. If
+\code{NULL}, inferred from \code{fit$settings$n_subjects} or legacy
+\code{length(fit$settings$blocks)} when available (with a warning).}
 }
 \value{
 A numeric scalar BIC value.

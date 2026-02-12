@@ -14,7 +14,8 @@ simulate_inad(
   theta = NULL,
   nb_inno_size = NULL,
   blocks = NULL,
-  tau = 0
+  tau = 0,
+  seed = NULL
 )
 }
 \arguments{
@@ -47,6 +48,8 @@ membership for each subject; if \code{NULL}, no block effect is applied}
 \item{tau}{group effect vector indexed by block; \code{tau[1]} is forced to 0.
 If scalar x, it is expanded to c(0, x, ..., x) with length equal to the
 number of blocks}
+
+\item{seed}{optional random seed for reproducibility}
 }
 \value{
 integer matrix of counts with dimension \code{n_subjects} by \code{n_time}

@@ -9,7 +9,8 @@ ci_cat(fit, y = NULL, level = 0.95, parameters = "all")
 \arguments{
 \item{fit}{A fitted model object of class \code{"cat_fit"} from \code{fit_cat()}.}
 
-\item{y}{Optional data matrix. If NULL, cell counts from fit are used.}
+\item{y}{Optional data matrix. If NULL, \code{fit$cell_counts} is used
+(observed counts for closed-form fits; expected counts for EM fits).}
 
 \item{level}{Confidence level (default 0.95).}
 
@@ -42,6 +43,9 @@ The confidence interval is then:
 \deqn{\hat{\pi} \pm z_{\alpha/2} \times SE(\hat{\pi})}
 
 Note: CIs are truncated to the interval from 0 to 1 when they exceed these bounds.
+
+Missing-data fits with \code{na_action = "marginalize"} are not currently
+supported because observed cell counts are not stored for that path.
 }
 \examples{
 \dontrun{
