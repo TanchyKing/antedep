@@ -80,6 +80,7 @@ reference:
   desc: Fitting, simulation, order/stationarity tests, and confidence intervals for categorical outcomes.
   contents:
   - fit_cat
+  - em_cat
   - logL_cat
   - simulate_cat
   - ci_cat
