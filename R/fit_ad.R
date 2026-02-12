@@ -1,7 +1,8 @@
-#' Fit Gaussian antedependence model
+#' Fit Gaussian antedependence model by maximum likelihood
 #'
-#' Fits an AD(0), AD(1), or AD(2) model for Gaussian longitudinal data.
-#' Missing values can be handled by complete-case deletion or by EM.
+#' Fits an AD(0), AD(1), or AD(2) model for Gaussian longitudinal data
+#' by maximum likelihood. Missing values can be handled by complete-case
+#' deletion or by EM (see \code{\link{em_ad}} for an explicit EM wrapper).
 #'
 #' @param y Numeric matrix (n_subjects x n_time). May contain NA.
 #' @param order Integer 0, 1, or 2.
@@ -14,6 +15,9 @@
 #' @param ... Passed through to the EM fitter.
 #'
 #' @return A list with components including mu, phi, sigma, tau, log_l, n_obs, n_missing.
+#'
+#' @seealso \code{\link{em_ad}}, \code{\link{fit_gau}},
+#'   \code{\link{fit_cat}}, \code{\link{fit_inad}}
 #' @export
 fit_ad <- function(y, order = 1, blocks = NULL,
                    na_action = c("fail", "complete", "em"),

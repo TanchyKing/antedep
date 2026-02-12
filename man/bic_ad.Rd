@@ -2,7 +2,7 @@
 % Please edit documentation in R/bic_ad.R
 \name{bic_ad}
 \alias{bic_ad}
-\title{Bayesian information criterion for fitted antedependence models}
+\title{Bayesian information criterion for fitted Gaussian AD models}
 \usage{
 bic_ad(fit, n_subjects)
 }
@@ -16,5 +16,16 @@ A numeric scalar BIC value.
 }
 \description{
 Computes BIC using the fitted log likelihood and a parameter count that
-respects identifiability constraints for the antedependence parameters.
+respects identifiability constraints for the Gaussian antedependence
+parameters.
+}
+\details{
+The BIC is computed as:
+\deqn{BIC = -2 \times \ell + k \times \log(N)}
+where \eqn{\ell} is the log-likelihood, \eqn{k} is the number of free parameters,
+and \eqn{N} is the number of subjects.
+
+This function applies to Gaussian AD fits from \code{\link{fit_ad}}.
+For categorical and INAD models, use \code{\link{bic_cat}} and
+\code{\link{bic_inad}}.
 }

@@ -18,3 +18,9 @@ A numeric scalar BIC value.
 Computes BIC using the fitted log likelihood and a parameter count that
 respects structural zeros and identifiability constraints.
 }
+\details{
+The BIC is computed as:
+\deqn{BIC = -2 \times \ell + k \times \log(N)}
+where \eqn{\ell} is the log-likelihood, \eqn{k} is the number of free parameters,
+and \eqn{N} is the number of subjects.
+}

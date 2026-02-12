@@ -12,7 +12,7 @@ bic_cat(fit, n_subjects = NULL)
 \item{n_subjects}{Number of subjects. If NULL, extracted from fit.}
 }
 \value{
-Scalar BIC value.
+A numeric scalar BIC value.
 }
 \description{
 Calculates the Bayesian Information Criterion for a fitted AD(p) model

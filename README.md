@@ -23,6 +23,13 @@ remotes::install_github("TanchyKing/antedep")
 
 ## Quick Start
 
+Included datasets:
+
+- `bolus_inad` (morphine bolus counts)
+- `cattle_growth` (book companion cattle growth data; continuous)
+- `cochlear_implant` (book companion speech recognition/cochlear data; continuous)
+- `cochlear_implant_cat` (categorical version for CAT workflows)
+
 ### AD example (continuous)
 
 ```r
@@ -50,7 +57,8 @@ fit_miss$log_l
 
 ## Known Limitations
 
-- Missing-data confidence intervals are not yet implemented (`ci_inad`, `ci_cat` require complete-data fits).
+- EM entry points: `em_ad` (Gaussian) and `em_inad` (INAD) are available; CAT missing-data fitting uses observed-data likelihood in `fit_cat(na_action = "marginalize")` (no separate `em_cat` helper).
+- Missing-data confidence intervals are not yet implemented (`ci_ad`, `ci_inad`, `ci_cat` require complete-data fits).
 - AD missing-data LRT/mean/covariance tests remain complete-data only.
 - CAT missing-data stationarity/time-invariance tests (`lrt_stationarity_cat`, `lrt_timeinvariance_cat`, `run_stationarity_tests_cat`) remain complete-data only.
 - INAD missing-data LRTs and CAT missing-data order/homogeneity LRTs are supported via observed-data likelihood (`na_action = "marginalize"`).

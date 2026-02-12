@@ -31,16 +31,32 @@ reference:
 - title: AD (Gaussian models)
   desc: Fitting, simulation, model selection, and inference for continuous outcomes.
   contents:
-  - fit_ad
-  - logL_ad
-  - simulate_ad
+  - aic_ad
+  - aic_gau
   - bic_ad
+  - bic_gau
   - bic_order_ad
-  - lrt_order_ad
-  - lrt_one_sample_ad
-  - lrt_two_sample_ad
+  - bic_order_gau
+  - ci_ad
+  - ci_gau
+  - em_ad
+  - em_gau
+  - fit_ad
+  - fit_gau
+  - logL_ad
+  - logL_gau
   - lrt_contrast_ad
+  - lrt_contrast_gau
   - lrt_homogeneity_ad
+  - lrt_homogeneity_gau
+  - lrt_one_sample_ad
+  - lrt_one_sample_gau
+  - lrt_order_ad
+  - lrt_order_gau
+  - lrt_two_sample_ad
+  - lrt_two_sample_gau
+  - simulate_ad
+  - simulate_gau
 
 - title: INAD (Count models)
   desc: Fitting, simulation, likelihood, and inferential tools for integer-valued outcomes.
@@ -51,6 +67,7 @@ reference:
   - simulate_inad
   - em_inad
   - ci_inad
+  - aic_inad
   - bic_inad
   - bic_order_inad
   - lrt_order_inad
@@ -91,6 +108,9 @@ reference:
   - rbell
   - Bz
   - bolus_inad
+  - cattle_growth
+  - cochlear_implant
+  - cochlear_implant_cat
 
 - title: Methods and internal topics
   desc: S3 methods and developer-facing helper functions.

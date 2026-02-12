@@ -1,6 +1,6 @@
 # fit_cat.R - Maximum likelihood estimation for categorical antedependence models
 
-#' Fit a categorical antedependence model
+#' Fit a categorical antedependence model by maximum likelihood
 #'
 #' Computes maximum likelihood estimates for the parameters of an AD(p) model
 #' for categorical longitudinal data. The model is parameterized by transition

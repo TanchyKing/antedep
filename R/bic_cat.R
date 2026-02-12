@@ -8,7 +8,7 @@
 #' @param fit A fitted model object of class \code{"cat_fit"} from \code{fit_cat()}.
 #' @param n_subjects Number of subjects. If NULL, extracted from fit.
 #'
-#' @return Scalar BIC value.
+#' @return A numeric scalar BIC value.
 #'
 #' @details
 #' The BIC is computed as:

@@ -1,5 +1,70 @@
 # antedep TODO Roadmap (as of 2026-02-08)
 
+## Immediate focus - Reviewer feedback sprint (effort ascending)
+
+- [x] (XS) Unify BIC documentation style across model families (Comment 2)
+  - Scope: `bic_cat`, `bic_ad`, `bic_inad` docs.
+  - Actions:
+    - Add consistent `@details` text to `bic_ad` and `bic_inad` (same formula-style level as `bic_cat`).
+    - Standardize `@return` wording to "A numeric scalar BIC value." for all three.
+  - Done when:
+    - `man/bic_*.Rd` pages show matching `Value` phrasing and parallel `Details` sections.
+
+- [x] (XS) Standardize maximum-likelihood wording in `fit_*` descriptions (Comment 6)
+  - Scope: `fit_ad`, `fit_cat`, `fit_inad` docs.
+  - Actions:
+    - Ensure each `fit_*` help page explicitly states that estimation is likelihood-based / MLE.
+    - Keep wording parallel so users can compare model families quickly.
+  - Done when:
+    - All three `man/fit_*.Rd` descriptions use consistent estimation language.
+
+- [x] (S) Clarify Gaussian-specific scope and naming strategy for AD helpers (Comment 1)
+  - Scope: `fit_ad`, `bic_ad`, `bic_order_ad` and related docs.
+  - Actions:
+    - Explicitly document that `*_ad` currently refers to Gaussian AD functions.
+    - Decide non-breaking naming plan: keep existing names and optionally add alias wrappers (`fit_gau`, `bic_gau`, `bic_order_gau`).
+  - Done when:
+    - No ambiguity remains about overlap with CAT/INAD function families.
+
+- [x] (S) Improve EM interface uniformity/discoverability across families (Comment 5)
+  - Scope: `em_inad`, AD EM pathway, docs/examples.
+  - Actions:
+    - Document clearly that Gaussian EM is available via `fit_ad(..., na_action = "em")`.
+    - Decide whether to export `em_ad` wrapper for symmetry (without changing AD internals).
+    - Record explicit rationale for CAT (no separate EM helper yet, or planned roadmap).
+  - Done when:
+    - Users can immediately see where EM is available for each data type.
+
+- [x] (M) Add AIC counterparts for AD and INAD (Comment 3)
+  - Scope: `aic_ad`, `aic_inad`, exports, docs, tests.
+  - Actions:
+    - Implement and export `aic_ad` and `aic_inad` to mirror `aic_cat`.
+    - Add unit tests against manual formulas and include examples in docs.
+  - Done when:
+    - AIC API is symmetric across Gaussian/CAT/INAD model families.
+
+- [x] (L) Add Gaussian confidence-interval helper (`ci_ad`) (Comment 4)
+  - Scope: new `ci_ad` API, docs, tests.
+  - Actions:
+    - Define CI target parameters (e.g., `mu`, `phi`, `sigma`, optional `tau`) and method (Wald/profile/bootstrap where feasible).
+    - Implement `ci_ad` with guardrails for unsupported modes and missing-data behavior.
+    - Add documentation/examples and tests for standard usage.
+  - Done when:
+    - CI coverage exists for Gaussian/CAT/INAD families with clearly documented scope.
+
+- [x] (XL) Add additional datasets from book/paper sources (Comment 7)
+  - Scope: package data inventory, `data-raw/`, docs, vignettes.
+  - Progress (2026-02-11):
+    - Added book companion datasets: `cattle_growth` and `cochlear_implant` (source: `stat.uiowa.edu/~dzimmer/Data-for-AD/`).
+    - Added categorical cochlear variant `cochlear_implant_cat` for CAT workflows tied to the Xie-Zimmerman application context.
+    - Added reproducible raw-data scripts in `data-raw/` and packaged `.rda` objects with documentation.
+  - Actions:
+    - Add candidate datasets (e.g., cattle, cochlear implant, 2013 Xie-Zimmerman categorical data), subject to redistribution rights.
+    - Add dataset documentation (`.Rd`), provenance, preprocessing scripts, and reproducible loaders.
+    - Integrate examples into README/vignette so each model family has real-data workflows.
+  - Done when:
+    - `data/` includes multiple documented datasets beyond `bolus_inad` with clear licensing/source notes.
+
 ## P0 - Release blockers
 
 - [x] Clean Git workspace hygiene (post-checkpoint)
@@ -104,9 +169,10 @@
 
 ## Suggested execution order
 
-1. P0 documentation and check cleanup.
-2. P0 example/test layout fixes.
-3. P1 AD order-2 completion.
-4. P1 INAD missing-data support.
-5. P1 CAT missing-data support.
-6. P2 inference + CI hardening.
+1. Immediate focus: reviewer feedback sprint (7 comments, XS -> XL).
+2. P0 documentation and check cleanup.
+3. P0 example/test layout fixes.
+4. P1 AD order-2 completion.
+5. P1 INAD missing-data support.
+6. P1 CAT missing-data support.
+7. P2 inference + CI hardening.

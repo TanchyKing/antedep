@@ -2,7 +2,7 @@
 % Please edit documentation in R/fit_ad.R
 \name{fit_ad}
 \alias{fit_ad}
-\title{Fit Gaussian antedependence model}
+\title{Fit Gaussian antedependence model by maximum likelihood}
 \usage{
 fit_ad(
   y,
@@ -39,6 +39,11 @@ fit_ad(
 A list with components including mu, phi, sigma, tau, log_l, n_obs, n_missing.
 }
 \description{
-Fits an AD(0), AD(1), or AD(2) model for Gaussian longitudinal data.
-Missing values can be handled by complete-case deletion or by EM.
+Fits an AD(0), AD(1), or AD(2) model for Gaussian longitudinal data
+by maximum likelihood. Missing values can be handled by complete-case
+deletion or by EM (see \code{\link{em_ad}} for an explicit EM wrapper).
+}
+\seealso{
+\code{\link{em_ad}}, \code{\link{fit_gau}},
+\code{\link{fit_cat}}, \code{\link{fit_inad}}
 }

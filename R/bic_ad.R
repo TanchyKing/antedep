@@ -1,22 +1,62 @@
 # File: R/bic_ad.R
 
-#' Bayesian information criterion for fitted antedependence models
+#' Bayesian information criterion for fitted Gaussian AD models
 #'
 #' Computes BIC using the fitted log likelihood and a parameter count that
-#' respects identifiability constraints for the antedependence parameters.
+#' respects identifiability constraints for the Gaussian antedependence
+#' parameters.
 #'
 #' @param fit A fitted model object returned by \code{\link{fit_ad}}.
 #' @param n_subjects Number of subjects, typically \code{nrow(y)}.
 #'
 #' @return A numeric scalar BIC value.
+#'
+#' @details
+#' The BIC is computed as:
+#' \deqn{BIC = -2 \times \ell + k \times \log(N)}
+#' where \eqn{\ell} is the log-likelihood, \eqn{k} is the number of free parameters,
+#' and \eqn{N} is the number of subjects.
+#'
+#' This function applies to Gaussian AD fits from \code{\link{fit_ad}}.
+#' For categorical and INAD models, use \code{\link{bic_cat}} and
+#' \code{\link{bic_inad}}.
 #' @export
 bic_ad <- function(fit, n_subjects) {
-    if (is.null(fit$log_l) || !is.finite(fit$log_l)) stop("fit$log_l must be finite")
-    if (is.null(fit$settings$order)) stop("fit$settings$order is missing")
-
     if (missing(n_subjects) || length(n_subjects) != 1 || !is.finite(n_subjects) || n_subjects <= 0) {
         stop("n_subjects must be a positive finite scalar")
     }
+
+    k <- .count_params_ad_fit(fit)
+    -2 * fit$log_l + k * log(n_subjects)
+}
+
+#' Akaike information criterion for fitted Gaussian AD models
+#'
+#' Computes AIC using the fitted log likelihood and a parameter count that
+#' respects identifiability constraints for the Gaussian antedependence
+#' parameters.
+#'
+#' @param fit A fitted model object returned by \code{\link{fit_ad}}.
+#'
+#' @return A numeric scalar AIC value.
+#'
+#' @details
+#' The AIC is computed as:
+#' \deqn{AIC = -2 \times \ell + 2k}
+#' where \eqn{\ell} is the log-likelihood and \eqn{k} is the number of free
+#' parameters.
+#'
+#' This function applies to Gaussian AD fits from \code{\link{fit_ad}}.
+#' @export
+aic_ad <- function(fit) {
+    k <- .count_params_ad_fit(fit)
+    -2 * fit$log_l + 2 * k
+}
+
+#' @keywords internal
+.count_params_ad_fit <- function(fit) {
+    if (is.null(fit$log_l) || !is.finite(fit$log_l)) stop("fit$log_l must be finite")
+    if (is.null(fit$settings$order)) stop("fit$settings$order is missing")
 
     ord <- fit$settings$order
     if (!(ord %in% c(0, 1, 2))) stop("fit$settings$order must be 0, 1, or 2")
@@ -44,5 +84,5 @@ bic_ad <- function(fit, n_subjects) {
         if (B >= 1) k <- k + (B - 1)
     }
 
-    -2 * fit$log_l + k * log(n_subjects)
+    k
 }

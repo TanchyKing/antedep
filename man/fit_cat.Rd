@@ -2,7 +2,7 @@
 % Please edit documentation in R/fit_cat.R
 \name{fit_cat}
 \alias{fit_cat}
-\title{Fit a categorical antedependence model}
+\title{Fit a categorical antedependence model by maximum likelihood}
 \usage{
 fit_cat(
   y,

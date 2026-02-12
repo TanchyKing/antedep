@@ -57,10 +57,12 @@ For order 2 matrix n_time by 2 or list(alpha1, alpha2).}
 A list with estimators, log likelihood, and settings.
 }
 \description{
-No fixed effect: time separable optimization using logL_inad_i with theta eliminated
-by moment equations for order 1 and 2.
+Fits INAD models by maximum likelihood.
 }
 \details{
+No fixed effect: time separable optimization using logL_inad_i with theta eliminated
+by moment equations for order 1 and 2.
+
 Fixed effect: block coordinate descent using nloptr BOBYQA, updating tau, alpha,
 theta, and nb_inno_size if needed.
 }

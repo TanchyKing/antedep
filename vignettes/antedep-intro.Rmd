@@ -21,6 +21,8 @@ set.seed(123)
 - INAD for count longitudinal outcomes
 - CAT (categorical AD) for discrete state longitudinal outcomes
 
+Packaged datasets include `bolus_inad`, `cattle_growth`, `cochlear_implant`, and `cochlear_implant_cat`.
+
 ## Production-Readiness Matrix
 
 | Model | Data type | Complete-data fit/logLik | Missing-data fit/logLik | Notes |
@@ -199,7 +201,8 @@ lrt_stationarity_cat(y_cat, order = 1)
 
 ## Known Limitations
 
-- Missing-data confidence intervals are not implemented yet (`ci_inad`, `ci_cat` require complete-data fits).
+- EM entry points: `em_ad` (Gaussian) and `em_inad` (INAD) are available; CAT missing-data fitting uses observed-data likelihood in `fit_cat(na_action = "marginalize")` (no separate `em_cat` helper).
+- Missing-data confidence intervals are not implemented yet (`ci_ad`, `ci_inad`, `ci_cat` require complete-data fits).
 - AD missing-data LRT/mean/covariance tests are not implemented yet.
 - CAT missing-data time-invariance/stationarity tests (`lrt_timeinvariance_cat`, `lrt_stationarity_cat`, `run_stationarity_tests_cat`) are not implemented yet.
 - Current order support is up to order 2 for AD, INAD, and CAT.

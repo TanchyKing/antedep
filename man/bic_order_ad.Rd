@@ -25,3 +25,7 @@ A list with class \code{ad_bic_order} containing:
 \description{
 Fits AD models of increasing orders and selects the best by BIC.
 }
+\seealso{
+\code{\link{bic_order_gau}}, \code{\link{bic_order_cat}},
+\code{\link{bic_order_inad}}
+}

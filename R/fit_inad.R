@@ -1,5 +1,7 @@
 #' Fit INAD model by maximum likelihood
 #'
+#' Fits INAD models by maximum likelihood.
+#'
 #' No fixed effect: time separable optimization using logL_inad_i with theta eliminated
 #' by moment equations for order 1 and 2.
 #'

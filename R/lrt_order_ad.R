@@ -198,6 +198,9 @@ lrt_order_ad <- function(y, p = 0L, q = 1L, mu = NULL, use_modified = TRUE) {
 #'   \item{table}{Summary table}
 #' }
 #'
+#' @seealso \code{\link{bic_order_gau}}, \code{\link{bic_order_cat}},
+#'   \code{\link{bic_order_inad}}
+#'
 #' @export
 bic_order_ad <- function(y, max_order = 2L, ...) {
 
