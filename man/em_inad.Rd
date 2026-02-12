@@ -55,10 +55,10 @@ Fits INAD models using the Expectation-Maximization algorithm.
 This is an alternative to direct likelihood optimization.
 }
 \details{
-For Gaussian AD models, see \code{\link{em_ad}}. For CAT models, missing-data
-fitting currently uses observed-data likelihood marginalization via
-\code{\link{fit_cat}} rather than a separate \code{em_cat} helper.
+For Gaussian and CAT EM entry points, see \code{\link{em_ad}} and
+\code{\link{em_cat}}.
 }
 \seealso{
-\code{\link{em_ad}}, \code{\link{fit_inad}}, \code{\link{fit_cat}}
+\code{\link{em_ad}}, \code{\link{em_cat}}, \code{\link{fit_inad}},
+\code{\link{fit_cat}}
 }

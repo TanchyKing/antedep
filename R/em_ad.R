@@ -17,11 +17,10 @@
 #'
 #' @details
 #' This is an alias-style helper for users who prefer explicit \code{em_*}
-#' entry points across model families. For CAT models, missing-data fitting
-#' currently uses observed-data likelihood marginalization in
-#' \code{\link{fit_cat}} (no separate \code{em_cat} helper).
+#' entry points across model families.
 #'
-#' @seealso \code{\link{fit_ad}}, \code{\link{em_inad}}, \code{\link{fit_cat}}
+#' @seealso \code{\link{fit_ad}}, \code{\link{em_inad}}, \code{\link{em_cat}},
+#'   \code{\link{fit_cat}}
 #' @export
 em_ad <- function(y, order = 1, blocks = NULL, estimate_mu = TRUE,
                   max_iter = 100, tol = 1e-6, verbose = FALSE, ...) {

@@ -57,7 +57,7 @@ fit_miss$log_l
 
 ## Known Limitations
 
-- EM entry points: `em_ad` (Gaussian) and `em_inad` (INAD) are available; CAT missing-data fitting uses observed-data likelihood in `fit_cat(na_action = "marginalize")` (no separate `em_cat` helper).
+- EM entry points: `em_ad` (Gaussian), `em_inad` (INAD), and `em_cat` (CAT, orders 0/1) are available; for CAT order 2 with missing data, use `fit_cat(na_action = "marginalize")`.
 - Missing-data confidence intervals are not yet implemented (`ci_ad`, `ci_inad`, `ci_cat` require complete-data fits).
 - AD missing-data LRT/mean/covariance tests remain complete-data only.
 - CAT missing-data stationarity/time-invariance tests (`lrt_stationarity_cat`, `lrt_timeinvariance_cat`, `run_stationarity_tests_cat`) remain complete-data only.
