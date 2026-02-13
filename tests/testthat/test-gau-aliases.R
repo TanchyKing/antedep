@@ -86,6 +86,21 @@ test_that("logL_gau is an alias of logL_ad", {
   expect_equal(ll2, ll1)
 })
 
+test_that("logL_gau defaults to marginalize when y has missing values", {
+  set.seed(1291)
+  y <- simulate_ad(n_subjects = 35, n_time = 5, order = 1, phi = c(0, rep(0.25, 4)))
+  fit <- fit_ad(y, order = 1)
+  y[1, 1] <- NA_real_
+
+  ll_default <- logL_gau(y, order = 1, mu = fit$mu, phi = fit$phi, sigma = fit$sigma)
+  ll_marginalize <- logL_gau(
+    y, order = 1, mu = fit$mu, phi = fit$phi, sigma = fit$sigma, na_action = "marginalize"
+  )
+
+  expect_equal(ll_default, ll_marginalize)
+  expect_true(is.finite(ll_default))
+})
+
 test_that("simulate_gau is an alias of simulate_ad", {
   set.seed(130)
   y1 <- simulate_ad(n_subjects = 30, n_time = 5, order = 1, phi = c(0, rep(0.2, 4)))

@@ -22,6 +22,7 @@
 #' @keywords internal
 .thin_vec <- function(k_vals, yprev, a, thinning) {
     if (!is.finite(a) || a < 0) return(rep(0, length(k_vals)))
+    if (!is.finite(yprev) || yprev < 0) return(rep(0, length(k_vals)))
 
     if (thinning == "binom") {
         if (a > 1) return(rep(0, length(k_vals)))
@@ -34,6 +35,9 @@
 
     # nbinom thinning: alpha * Y | Y ~ NegBin(Y, 1/(1+alpha))
     # See Supplement A.1 of the paper
+    if (yprev == 0) {
+        return(as.numeric(k_vals == 0))
+    }
     p_nb <- 1 / (1 + a)
     stats::dnbinom(k_vals, size = yprev, prob = p_nb)
 }

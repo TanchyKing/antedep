@@ -206,6 +206,20 @@ simulate_inad <- function(n_subjects,
         }
     }
 
+    draw_nbinom_thinning <- function(y_prev, alpha_t) {
+        prob_nb <- 1 / (1 + alpha_t)
+        thinned <- integer(n_subjects)
+        idx_pos <- y_prev > 0L
+        if (any(idx_pos)) {
+            thinned[idx_pos] <- stats::rnbinom(
+                n = sum(idx_pos),
+                size = y_prev[idx_pos],
+                prob = prob_nb
+            )
+        }
+        thinned
+    }
+
     if (order == 0L) {
         for (t in seq_len(n_time)) {
             y[, t] <- as.integer(draw_innovation(t))
@@ -236,12 +250,7 @@ simulate_inad <- function(n_subjects,
                         )
                     } else {
                         # nbinom thinning: alpha * Y | Y ~ NegBin(Y, 1/(1+alpha))
-                        prob_nb1 <- 1 / (1 + alpha_t1)
-                        thinned1 <- stats::rnbinom(
-                            n = n_subjects,
-                            size = y_prev1,
-                            prob = prob_nb1
-                        )
+                        thinned1 <- draw_nbinom_thinning(y_prev1, alpha_t1)
                     }
                     thinned_total <- thinned_total + thinned1
                 }
@@ -263,12 +272,7 @@ simulate_inad <- function(n_subjects,
                             lambda = alpha_t2 * y_prev2
                         )
                     } else {
-                        prob_nb2 <- 1 / (1 + alpha_t2)
-                        thinned2 <- stats::rnbinom(
-                            n = n_subjects,
-                            size = y_prev2,
-                            prob = prob_nb2
-                        )
+                        thinned2 <- draw_nbinom_thinning(y_prev2, alpha_t2)
                     }
                     thinned_total <- thinned_total + thinned2
                 }

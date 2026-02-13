@@ -100,7 +100,10 @@ testthat::test_that("logL_ad input validation behavior", {
 
     y_bad <- y
     y_bad[1, 1] <- NA
-    testthat::expect_equal(logL_ad(y_bad, order = 0), -Inf)
+    ll_default <- logL_ad(y_bad, order = 0)
+    ll_marginalize <- logL_ad(y_bad, order = 0, na_action = "marginalize")
+    testthat::expect_equal(ll_default, ll_marginalize)
+    testthat::expect_true(is.finite(ll_default))
 })
 
 testthat::test_that("logL_ad is higher near the generating parameters", {
