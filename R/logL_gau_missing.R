@@ -50,20 +50,18 @@
     Sigma_obs <- Sigma[obs_idx, obs_idx, drop = FALSE]
     
     # Compute MVN density on observed values
-    tryCatch({
+    log_lik_s <- tryCatch({
       # Use Cholesky decomposition for numerical stability
       L <- chol(Sigma_obs)
       z <- backsolve(L, y_obs - mu_obs, transpose = TRUE)
       log_det <- 2 * sum(log(diag(L)))
-      
-      log_lik_s <- -0.5 * (length(obs_idx) * log(2 * pi) + log_det + sum(z^2))
-      log_lik <- log_lik + log_lik_s
+      -0.5 * (length(obs_idx) * log(2 * pi) + log_det + sum(z^2))
     }, error = function(e) {
-      # If Cholesky fails, return -Inf
-      log_lik <<- -Inf
+      NA_real_
     })
-    
-    if (!is.finite(log_lik)) break
+
+    if (!is.finite(log_lik_s)) return(-Inf)
+    log_lik <- log_lik + log_lik_s
   }
   
   return(log_lik)
