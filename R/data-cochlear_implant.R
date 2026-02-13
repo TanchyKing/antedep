@@ -15,5 +15,5 @@
 #'     \item{time}{integer vector of measurement occasions}
 #'   }
 #'
-#' @source \url{https://www.stat.uiowa.edu/~dzimmer/Data-for-AD/speech_recognition_data.txt}
+#' @source \url{https://homepage.divms.uiowa.edu/~dzimmer/Data-for-AD/speech_recognition_data.txt}
 "cochlear_implant"

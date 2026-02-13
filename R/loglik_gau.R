@@ -22,7 +22,7 @@
 #'
 #' @details
 #' For complete data (no NA), all three na_action options give the same result.
-#' 
+#'
 #' For missing data:
 #' \itemize{
 #'   \item marginalize: Uses MVN marginalization to compute P(Y_obs). This is
@@ -30,6 +30,12 @@
 #'   \item complete: Removes subjects with any missing values. May lose information.
 #'   \item fail: Stops with error. Useful to ensure no missing data present.
 #' }
+#'
+#' @examples
+#' set.seed(1)
+#' y <- simulate_gau(n_subjects = 30, n_time = 5, order = 1, phi = 0.3)
+#' fit <- fit_gau(y, order = 1)
+#' logL_gau(y, order = 1, mu = fit$mu, phi = fit$phi, sigma = fit$sigma)
 #'
 #' @export
 #' @importFrom stats dnorm

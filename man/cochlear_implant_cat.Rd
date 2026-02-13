@@ -18,7 +18,7 @@ A list with seven components:
 }
 \source{
 Raw percentages from
-\url{https://www.stat.uiowa.edu/~dzimmer/Data-for-AD/speech_recognition_data.txt};
+\url{https://homepage.divms.uiowa.edu/~dzimmer/Data-for-AD/speech_recognition_data.txt};
 categorical mapping performed in \code{data-raw/cochlear_implant_cat.R}.
 }
 \usage{

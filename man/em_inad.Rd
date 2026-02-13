@@ -60,6 +60,20 @@ For Gaussian and CAT EM entry points, see \code{\link{em_gau}} and
 \code{na_action = "em"} for orders 0/1 and \code{na_action = "marginalize"}
 for order 2 missing-data fits.
 }
+\examples{
+set.seed(1)
+y <- simulate_inad(
+  n_subjects = 50,
+  n_time = 5,
+  order = 1,
+  thinning = "binom",
+  innovation = "pois",
+  alpha = 0.25,
+  theta = 2
+)
+fit <- em_inad(y, order = 1, thinning = "binom", innovation = "pois", max_iter = 20, tol = 1e-6)
+fit$log_l
+}
 \seealso{
 \code{\link{em_gau}}, \code{\link{em_cat}}, \code{\link{fit_inad}},
 \code{\link{fit_cat}}

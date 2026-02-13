@@ -44,6 +44,14 @@ Convenience wrapper around \code{\link{fit_gau}} with
 This is an alias-style helper for users who prefer explicit \code{em_*}
 entry points across model families.
 }
+\examples{
+set.seed(1)
+y <- simulate_gau(n_subjects = 35, n_time = 5, order = 1, phi = 0.3)
+y[sample(length(y), 8)] <- NA
+fit <- em_gau(y, order = 1, max_iter = 20, tol = 1e-5)
+fit$settings$na_action
+
+}
 \seealso{
 \code{\link{fit_gau}}, \code{\link{em_inad}}, \code{\link{em_cat}},
 \code{\link{fit_cat}}

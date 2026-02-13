@@ -35,6 +35,19 @@
 #' @param seed optional random seed for reproducibility
 #'
 #' @return integer matrix of counts with dimension `n_subjects` by `n_time`
+#'
+#' @examples
+#' y <- simulate_inad(
+#'   n_subjects = 20,
+#'   n_time = 6,
+#'   order = 1,
+#'   thinning = "binom",
+#'   innovation = "pois",
+#'   alpha = 0.3,
+#'   theta = 2,
+#'   seed = 42
+#' )
+#' dim(y)
 #' @export
 simulate_inad <- function(n_subjects,
                           n_time,

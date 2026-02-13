@@ -61,3 +61,7 @@ For \code{order = 2}, for \code{t >= 3}:
 If \code{blocks} is provided, each subject s belongs to a block and receives a
 mean shift \code{tau[blocks[s]]}. \code{tau[1]} is forced to 0.
 }
+\examples{
+y <- simulate_gau(n_subjects = 20, n_time = 6, order = 1, phi = 0.4, seed = 42)
+dim(y)
+}

@@ -13,7 +13,7 @@
 #'     \item{time}{integer vector of measurement occasions}
 #'   }
 #'
-#' @source \url{https://www.stat.uiowa.edu/~dzimmer/Data-for-AD/cattle_growth_data_Treatment%20A.txt}
+#' @source \url{https://homepage.divms.uiowa.edu/~dzimmer/Data-for-AD/cattle_growth_data_Treatment%20A.txt}
 #'   and
-#'   \url{https://www.stat.uiowa.edu/~dzimmer/Data-for-AD/cattle_growth_data_Treatment%20B.txt}
+#'   \url{https://homepage.divms.uiowa.edu/~dzimmer/Data-for-AD/cattle_growth_data_Treatment%20B.txt}
 "cattle_growth"

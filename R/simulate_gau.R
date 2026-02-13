@@ -33,6 +33,10 @@
 #' @param seed optional random seed for reproducibility
 #'
 #' @return numeric matrix with dimension `n_subjects` by `n_time`
+#'
+#' @examples
+#' y <- simulate_gau(n_subjects = 20, n_time = 6, order = 1, phi = 0.4, seed = 42)
+#' dim(y)
 #' @export
 simulate_gau <- function(n_subjects,
                         n_time,

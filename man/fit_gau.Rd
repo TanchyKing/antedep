@@ -49,6 +49,18 @@ primary production path. AD order 2 is available, but the current EM
 implementation uses simplified second-order updates and should be treated as
 provisional for high-stakes inference.
 }
+\examples{
+set.seed(1)
+y <- simulate_gau(n_subjects = 30, n_time = 5, order = 1, phi = 0.3)
+fit <- fit_gau(y, order = 1)
+fit$log_l
+
+y_miss <- y
+y_miss[1, 2] <- NA
+fit_em <- fit_gau(y_miss, order = 1, na_action = "em", em_max_iter = 20)
+fit_em$settings$na_action
+
+}
 \seealso{
 \code{\link{em_gau}}, \code{\link{fit_gau}},
 \code{\link{fit_cat}}, \code{\link{fit_inad}}

@@ -16,7 +16,7 @@ A list with six components:
 }
 }
 \source{
-\url{https://www.stat.uiowa.edu/~dzimmer/Data-for-AD/speech_recognition_data.txt}
+\url{https://homepage.divms.uiowa.edu/~dzimmer/Data-for-AD/speech_recognition_data.txt}
 }
 \usage{
 cochlear_implant
