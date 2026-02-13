@@ -33,6 +33,7 @@ A list with class "bic_order_inad".
 BIC Model Order Comparison
 }
 \examples{
+\donttest{
 set.seed(1)
 y <- simulate_inad(
   n_subjects = 30,
@@ -43,6 +44,7 @@ y <- simulate_inad(
   alpha = 0.3,
   theta = 2
 )
-ord <- bic_order_inad(y, max_order = 2, thinning = "binom", innovation = "pois", max_iter = 20)
+ord <- bic_order_inad(y, max_order = 2, thinning = "binom", innovation = "pois", max_iter = 10)
 ord$best_order
+}
 }

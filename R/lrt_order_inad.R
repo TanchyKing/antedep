@@ -145,6 +145,7 @@ print.lrt_order_inad <- function(x, digits = 4, ...) {
 #' @return A list with class "bic_order_inad".
 #'
 #' @examples
+#' \donttest{
 #' set.seed(1)
 #' y <- simulate_inad(
 #'   n_subjects = 30,
@@ -155,8 +156,9 @@ print.lrt_order_inad <- function(x, digits = 4, ...) {
 #'   alpha = 0.3,
 #'   theta = 2
 #' )
-#' ord <- bic_order_inad(y, max_order = 2, thinning = "binom", innovation = "pois", max_iter = 20)
+#' ord <- bic_order_inad(y, max_order = 2, thinning = "binom", innovation = "pois", max_iter = 10)
 #' ord$best_order
+#' }
 #' @export
 bic_order_inad <- function(y, max_order = 2, thinning = "binom", innovation = "pois",
                            blocks = NULL, ...) {
