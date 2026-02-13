@@ -35,8 +35,6 @@
 #' @importFrom stats dnorm
 logL_gau <- function(y, order, mu = NULL, phi = NULL, sigma = NULL, blocks = NULL, tau = 0,
                     na_action = c("marginalize", "complete", "fail")) {
-
-  na_action_was_missing <- missing(na_action)
   na_action <- match.arg(na_action)
 
   if (!is.matrix(y)) y <- as.matrix(y)
@@ -114,10 +112,6 @@ logL_gau <- function(y, order, mu = NULL, phi = NULL, sigma = NULL, blocks = NUL
   has_missing <- any(is.na(y))
 
   if (has_missing) {
-    if (na_action_was_missing) {
-      return(-Inf)
-    }
-
     if (na_action == "fail") {
       stop("y contains NA values. Use na_action = 'marginalize' or 'complete'",
            call. = FALSE)

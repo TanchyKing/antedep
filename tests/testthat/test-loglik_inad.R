@@ -225,3 +225,9 @@ test_that("logL_inad with na_action='marginalize' handles monotone and intermitt
     expect_true(is.finite(ll_mon))
     expect_true(is.finite(ll_int))
 })
+
+test_that(".thin_vec nbinom thinning is degenerate at zero lag count", {
+    k_vals <- 0:6
+    probs <- .thin_vec(k_vals, yprev = 0, a = 0.4, thinning = "nbinom")
+    expect_equal(probs, c(1, rep(0, length(k_vals) - 1)))
+})
