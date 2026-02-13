@@ -25,3 +25,9 @@ parameters.
 
 This function applies to Gaussian AD fits from \code{\link{fit_gau}}.
 }
+\examples{
+set.seed(1)
+y <- simulate_gau(n_subjects = 30, n_time = 5, order = 1, phi = 0.3)
+fit <- fit_gau(y, order = 1)
+aic_gau(fit)
+}

@@ -30,3 +30,9 @@ This function applies to Gaussian AD fits from \code{\link{fit_gau}}.
 For categorical and INAD models, use \code{\link{bic_cat}} and
 \code{\link{bic_inad}}.
 }
+\examples{
+set.seed(1)
+y <- simulate_gau(n_subjects = 30, n_time = 5, order = 1, phi = 0.3)
+fit <- fit_gau(y, order = 1)
+bic_gau(fit, n_subjects = nrow(y))
+}

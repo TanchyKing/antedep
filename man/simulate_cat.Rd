@@ -73,6 +73,11 @@ rows are previous values and columns are current values (rows sum to 1)
 first two indices are conditioning values and third is outcome
 }
 }
+\examples{
+y <- simulate_cat(n_subjects = 30, n_time = 5, order = 1, n_categories = 3, seed = 1)
+dim(y)
+
+}
 \references{
 Xie, Y. and Zimmerman, D. L. (2013). Antedependence models for nonstationary
 categorical longitudinal data with ignorable missingness: likelihood-based

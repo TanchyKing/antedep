@@ -224,6 +224,28 @@ logL_inad <- function(
 #' @param nb_inno_size Size parameter for innovation "nbinom". Numeric length 1 or n_time.
 #'
 #' @return A scalar log likelihood contribution for time i.
+#'
+#' @examples
+#' set.seed(1)
+#' y <- simulate_inad(
+#'   n_subjects = 50,
+#'   n_time = 5,
+#'   order = 1,
+#'   thinning = "binom",
+#'   innovation = "pois",
+#'   alpha = 0.3,
+#'   theta = 2
+#' )
+#' fit <- fit_inad(y, order = 1, thinning = "binom", innovation = "pois", max_iter = 20)
+#' logL_inad_i(
+#'   y = y,
+#'   i = 3,
+#'   order = 1,
+#'   thinning = "binom",
+#'   innovation = "pois",
+#'   alpha = fit$alpha,
+#'   theta = fit$theta
+#' )
 #' @export
 logL_inad_i <- function(
         y,

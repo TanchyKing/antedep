@@ -17,6 +17,27 @@
 #' @param ... Additional arguments passed to fit_inad.
 #'
 #' @return A list with class "lrt_order_inad".
+#'
+#' @examples
+#' set.seed(1)
+#' y <- simulate_inad(
+#'   n_subjects = 40,
+#'   n_time = 5,
+#'   order = 1,
+#'   thinning = "binom",
+#'   innovation = "pois",
+#'   alpha = 0.3,
+#'   theta = 2
+#' )
+#' out <- lrt_order_inad(
+#'   y,
+#'   order_null = 0,
+#'   order_alt = 1,
+#'   thinning = "binom",
+#'   innovation = "pois",
+#'   max_iter = 20
+#' )
+#' out$lrt_stat
 #' @export
 lrt_order_inad <- function(y, order_null = 1, order_alt = 2,
                            thinning = "binom", innovation = "pois",
@@ -122,6 +143,20 @@ print.lrt_order_inad <- function(x, digits = 4, ...) {
 #' @param blocks Optional block assignments.
 #' @param ... Additional arguments.
 #' @return A list with class "bic_order_inad".
+#'
+#' @examples
+#' set.seed(1)
+#' y <- simulate_inad(
+#'   n_subjects = 30,
+#'   n_time = 5,
+#'   order = 1,
+#'   thinning = "binom",
+#'   innovation = "pois",
+#'   alpha = 0.3,
+#'   theta = 2
+#' )
+#' ord <- bic_order_inad(y, max_order = 2, thinning = "binom", innovation = "pois", max_iter = 20)
+#' ord$best_order
 #' @export
 bic_order_inad <- function(y, max_order = 2, thinning = "binom", innovation = "pois",
                            blocks = NULL, ...) {

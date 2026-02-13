@@ -16,6 +16,27 @@
 #' @param ... Additional arguments.
 #'
 #' @return A list with class "lrt_stationarity_inad".
+#'
+#' @examples
+#' set.seed(1)
+#' y <- simulate_inad(
+#'   n_subjects = 30,
+#'   n_time = 5,
+#'   order = 1,
+#'   thinning = "binom",
+#'   innovation = "pois",
+#'   alpha = 0.3,
+#'   theta = 2
+#' )
+#' out <- lrt_stationarity_inad(
+#'   y,
+#'   order = 1,
+#'   thinning = "binom",
+#'   innovation = "pois",
+#'   constrain = "both",
+#'   max_iter = 20
+#' )
+#' out$p_value
 #' @export
 lrt_stationarity_inad <- function(y, order = 1, thinning = "binom", innovation = "pois",
                                   blocks = NULL, constrain = "both",
@@ -236,6 +257,27 @@ print.lrt_stationarity_inad <- function(x, digits = 4, ...) {
 #' @param verbose Logical.
 #' @param ... Additional arguments.
 #' @return A list with class "stationarity_tests_inad".
+#'
+#' @examples
+#' set.seed(1)
+#' y <- simulate_inad(
+#'   n_subjects = 25,
+#'   n_time = 5,
+#'   order = 1,
+#'   thinning = "binom",
+#'   innovation = "pois",
+#'   alpha = 0.3,
+#'   theta = 2
+#' )
+#' out <- run_stationarity_tests_inad(
+#'   y,
+#'   order = 1,
+#'   thinning = "binom",
+#'   innovation = "pois",
+#'   verbose = FALSE,
+#'   max_iter = 15
+#' )
+#' out$summary
 #' @export
 run_stationarity_tests_inad <- function(y, order = 1, thinning = "binom", innovation = "pois",
                                         blocks = NULL, verbose = TRUE, ...) {

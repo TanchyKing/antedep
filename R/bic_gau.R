@@ -21,6 +21,12 @@
 #' This function applies to Gaussian AD fits from \code{\link{fit_gau}}.
 #' For categorical and INAD models, use \code{\link{bic_cat}} and
 #' \code{\link{bic_inad}}.
+#'
+#' @examples
+#' set.seed(1)
+#' y <- simulate_gau(n_subjects = 30, n_time = 5, order = 1, phi = 0.3)
+#' fit <- fit_gau(y, order = 1)
+#' bic_gau(fit, n_subjects = nrow(y))
 #' @export
 bic_gau <- function(fit, n_subjects = NULL) {
     if (is.null(n_subjects)) n_subjects <- fit$settings$n_subjects
@@ -49,6 +55,12 @@ bic_gau <- function(fit, n_subjects = NULL) {
 #' parameters.
 #'
 #' This function applies to Gaussian AD fits from \code{\link{fit_gau}}.
+#'
+#' @examples
+#' set.seed(1)
+#' y <- simulate_gau(n_subjects = 30, n_time = 5, order = 1, phi = 0.3)
+#' fit <- fit_gau(y, order = 1)
+#' aic_gau(fit)
 #' @export
 aic_gau <- function(fit) {
     k <- .count_params_gau_fit(fit)
