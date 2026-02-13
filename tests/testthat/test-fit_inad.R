@@ -14,6 +14,12 @@ test_that("fit_inad works for bolus_inad without fixed effect", {
     expect_equal(length(fit$theta), ncol(y))
 
     expect_true(is.finite(fit$log_l))
+    expect_true(is.finite(fit$aic))
+    expect_true(is.finite(fit$bic))
+    expect_true(is.integer(fit$n_params) || is.numeric(fit$n_params))
+    expect_equal(fit$n_obs, length(y))
+    expect_equal(fit$n_missing, 0)
+    expect_true(is.integer(fit$convergence))
 
     expect_equal(fit$alpha[1], 0, tolerance = 1e-12)
     expect_true(all(is.finite(fit$alpha)))
@@ -87,6 +93,7 @@ test_that("fit_inad works with fixed effect and tau normalization", {
     expect_true(is.finite(fit1$log_l))
     expect_true(!is.null(fit1$tau))
     expect_equal(fit1$tau[1], 0, tolerance = 1e-12)
+    expect_equal(sort(fit1$settings$block_levels), c("1", "2"))
 
     B <- max(as.integer(blocks))
     expect_equal(length(fit1$tau), B)
@@ -102,6 +109,26 @@ test_that("fit_inad works with fixed effect and tau normalization", {
     )
 
     expect_equal(fit2$tau[1], 0, tolerance = 1e-12)
+})
+
+test_that("fit_inad preserves original block labels in settings", {
+    skip_if_not_installed("nloptr")
+
+    data("bolus_inad", package = "antedep", envir = environment())
+    y <- bolus_inad$y
+    blocks_labeled <- ifelse(bolus_inad$blocks == 1, 5, 2)
+
+    fit <- fit_inad(
+        y,
+        order = 1,
+        thinning = "binom",
+        innovation = "bell",
+        blocks = blocks_labeled,
+        max_iter = 5
+    )
+
+    expect_equal(sort(fit$settings$block_levels), c("2", "5"))
+    expect_equal(length(fit$tau), 2)
 })
 
 test_that("fit_inad works for innovation nbinom and returns nb_inno_size", {
@@ -198,6 +225,9 @@ test_that("fit_inad marginalize handles monotone MAR missingness", {
 
     expect_true(is.finite(fit_marg$log_l))
     expect_gt(fit_marg$n_missing, 0)
+    expect_true(is.finite(fit_marg$aic))
+    expect_true(is.finite(fit_marg$bic))
+    expect_true(is.integer(fit_marg$convergence))
     expect_true(all(is.finite(fit_marg$alpha)))
     expect_true(all(is.finite(fit_marg$theta)))
     expect_equal(fit_marg$theta, fit_full$theta, tolerance = 1.2)
@@ -237,6 +267,9 @@ test_that("fit_inad marginalize handles intermittent MAR missingness", {
 
     expect_true(is.finite(fit_marg$log_l))
     expect_gt(fit_marg$n_missing, 0)
+    expect_true(is.finite(fit_marg$aic))
+    expect_true(is.finite(fit_marg$bic))
+    expect_true(is.integer(fit_marg$convergence))
     expect_true(all(is.finite(fit_marg$alpha)))
     expect_true(all(is.finite(fit_marg$theta)))
     expect_true(!is.null(fit_marg$settings$na_action))

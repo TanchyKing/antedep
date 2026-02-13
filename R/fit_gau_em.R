@@ -104,7 +104,8 @@
     log_l = ll,
     aic = -2 * ll + 2 * n_params,
     bic = -2 * ll + n_params * log(n_subjects),
-    convergence = if (converged) 0 else 1,
+    n_params = as.integer(n_params),
+    convergence = if (converged) 0L else 1L,
     message = if (converged) "EM converged" else "EM did not converge",
     
     # Missing data info

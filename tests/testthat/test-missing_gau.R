@@ -414,13 +414,17 @@ test_that("fit_gau EM order 2 converges and recovers dependence parameters", {
   missing_idx <- sample(length(y_missing), size = round(0.12 * length(y_missing)))
   y_missing[missing_idx] <- NA
 
-  fit_em <- fit_gau(
-    y_missing,
-    order = 2,
-    na_action = "em",
-    em_max_iter = 120,
-    em_tol = 1e-6,
-    em_verbose = FALSE
+  fit_em <- NULL
+  expect_warning(
+    fit_em <- fit_gau(
+      y_missing,
+      order = 2,
+      na_action = "em",
+      em_max_iter = 120,
+      em_tol = 1e-6,
+      em_verbose = FALSE
+    ),
+    "provisional implementation"
   )
   fit_complete <- fit_gau(y_complete, order = 2, na_action = "fail")
 

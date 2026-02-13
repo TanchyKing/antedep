@@ -140,3 +140,27 @@ NULL
         n_removed = n_total - n_complete
     )
 }
+
+.normalize_blocks <- function(blocks, n_subjects) {
+    if (is.null(blocks)) {
+        return(list(
+            blocks_id = rep(1L, n_subjects),
+            block_levels = "1",
+            n_blocks = 1L
+        ))
+    }
+
+    if (length(blocks) != n_subjects) {
+        stop("blocks must have length equal to number of subjects (", n_subjects, ")", call. = FALSE)
+    }
+    if (any(is.na(blocks))) {
+        stop("blocks must not contain missing values", call. = FALSE)
+    }
+
+    block_fac <- factor(blocks)
+    list(
+        blocks_id = as.integer(block_fac),
+        block_levels = levels(block_fac),
+        n_blocks = nlevels(block_fac)
+    )
+}

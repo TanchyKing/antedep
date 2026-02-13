@@ -125,7 +125,9 @@ fit_cat <- function(y, order = 1, blocks = NULL, homogeneous = TRUE,
   }
   
   # Validate and process blocks
-  blocks <- .validate_blocks_cat(blocks, n_subjects)
+  block_info <- .normalize_blocks(blocks, n_subjects)
+  blocks <- block_info$blocks_id
+  block_levels <- block_info$block_levels
 
   if (na_action == "em") {
     if (p == 2L) {
@@ -149,11 +151,17 @@ fit_cat <- function(y, order = 1, blocks = NULL, homogeneous = TRUE,
   if (na_action == "complete") {
     keep <- stats::complete.cases(y)
     y <- y[keep, , drop = FALSE]
-    blocks <- blocks[keep]
+    if (!is.null(blocks_input)) {
+      block_info <- .normalize_blocks(blocks_input[keep], nrow(y))
+      blocks <- block_info$blocks_id
+      block_levels <- block_info$block_levels
+    } else {
+      blocks <- rep(1L, nrow(y))
+      block_levels <- "1"
+    }
     if (nrow(y) == 0) {
       stop("No complete subjects remain after na_action = 'complete'")
     }
-    blocks <- .validate_blocks_cat(blocks, nrow(y))
   }
   
   n_subjects <- nrow(y)
@@ -231,6 +239,9 @@ fit_cat <- function(y, order = 1, blocks = NULL, homogeneous = TRUE,
     aic = aic,
     bic = bic,
     n_params = n_params,
+    n_obs = sum(!is.na(y)),
+    n_missing = sum(is.na(y)),
+    pct_missing = mean(is.na(y)) * 100,
     cell_counts = cell_counts,
     convergence = convergence,
     settings = list(
@@ -239,6 +250,7 @@ fit_cat <- function(y, order = 1, blocks = NULL, homogeneous = TRUE,
       n_time = n_time,
       n_subjects = n_subjects,
       blocks = if (n_blocks > 1) blocks else NULL,
+      block_levels = block_levels,
       homogeneous = homogeneous,
       n_blocks = n_blocks,
       na_action = na_action,

@@ -30,6 +30,7 @@ fit_gau <- function(y, order = 1, blocks = NULL,
                    estimate_mu = TRUE,
                    em_max_iter = 100, em_tol = 1e-6, em_verbose = FALSE, ...) {
     na_action <- match.arg(na_action)
+    blocks_input <- blocks
 
     if (!is.matrix(y)) y <- as.matrix(y)
     storage.mode(y) <- "double"
@@ -38,11 +39,8 @@ fit_gau <- function(y, order = 1, blocks = NULL,
         stop("order must be 0, 1, or 2.", call. = FALSE)
     }
 
-    if (!is.null(blocks)) {
-        if (length(blocks) != nrow(y)) {
-            stop("blocks must have length n_subjects.", call. = FALSE)
-        }
-        blocks <- as.integer(factor(blocks))
+    if (!is.null(blocks) && length(blocks) != nrow(y)) {
+        stop("blocks must have length n_subjects.", call. = FALSE)
     }
 
     has_missing <- any(is.na(y))
@@ -60,28 +58,45 @@ fit_gau <- function(y, order = 1, blocks = NULL,
         }
 
         if (na_action == "em") {
-            return(.fit_gau_em(
+            block_info <- .normalize_blocks(blocks, nrow(y))
+            blocks_id <- if (is.null(blocks_input)) NULL else block_info$blocks_id
+            if (order == 2L) {
+                warning(
+                    "na_action = 'em' with order = 2 uses a provisional implementation; validate results with care.",
+                    call. = FALSE
+                )
+            }
+            fit <- .fit_gau_em(
                 y = y,
                 order = order,
-                blocks = blocks,
+                blocks = blocks_id,
                 estimate_mu = estimate_mu,
                 max_iter = em_max_iter,
                 tol = em_tol,
                 verbose = em_verbose,
                 ...
-            ))
+            )
+            if (!is.null(blocks_input)) {
+                fit$settings$block_levels <- block_info$block_levels
+            }
+            return(fit)
         }
     }
 
     if (!is.matrix(y)) y <- as.matrix(y)
     n_subjects <- nrow(y)
     n_time <- ncol(y)
+    block_levels <- NULL
 
     if (n_subjects < 2) {
         stop("Need at least 2 subjects to fit the model.", call. = FALSE)
     }
 
     if (!is.null(blocks)) {
+        block_info <- .normalize_blocks(blocks, n_subjects)
+        blocks <- block_info$blocks_id
+        block_levels <- block_info$block_levels
+
         k <- length(unique(blocks))
         tau <- numeric(k)
         tau[1] <- 0
@@ -210,6 +225,8 @@ fit_gau <- function(y, order = 1, blocks = NULL,
         log_l = log_l,
         aic = -2 * log_l + 2 * n_params,
         bic = -2 * log_l + n_params * log(n_subjects),
+        n_params = as.integer(n_params),
+        convergence = 0L,
         n_obs = sum(!is.na(y)),
         n_missing = sum(is.na(y)),
         pct_missing = mean(is.na(y)) * 100,
@@ -219,6 +236,7 @@ fit_gau <- function(y, order = 1, blocks = NULL,
             n_time = n_time,
             n_subjects = n_subjects,
             blocks = blocks,
+            block_levels = block_levels,
             estimate_mu = estimate_mu,
             na_action = na_action
         )
@@ -226,4 +244,28 @@ fit_gau <- function(y, order = 1, blocks = NULL,
 
     class(result) <- c("gau_fit", "list")
     result
+}
+
+#' Print method for gau_fit objects
+#'
+#' @param x A \code{gau_fit} object.
+#' @param ... Additional arguments (ignored).
+#'
+#' @export
+print.gau_fit <- function(x, ...) {
+    cat("Gaussian Antedependence Model Fit\n")
+    cat("=================================\n\n")
+
+    cat("Order:", x$settings$order, "\n")
+    cat("Time points:", x$settings$n_time, "\n")
+    cat("Subjects:", x$settings$n_subjects, "\n")
+    cat("Missing values:", x$n_missing, "(", round(x$pct_missing, 2), "%)\n")
+
+    cat("\nLog-likelihood:", round(x$log_l, 4), "\n")
+    if (!is.null(x$aic)) cat("AIC:", round(x$aic, 4), "\n")
+    if (!is.null(x$bic)) cat("BIC:", round(x$bic, 4), "\n")
+    if (!is.null(x$n_params)) cat("Parameters:", x$n_params, "\n")
+    if (!is.null(x$convergence)) cat("Convergence code:", x$convergence, "\n")
+
+    invisible(x)
 }

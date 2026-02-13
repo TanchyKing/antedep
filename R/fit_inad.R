@@ -70,12 +70,14 @@ fit_inad <- function(
         }
 
         if (na_action == "marginalize" && has_missing) {
-            return(.fit_inad_missing(
+            block_info <- .normalize_blocks(blocks, nrow(y))
+            blocks_id <- if (is.null(blocks)) NULL else block_info$blocks_id
+            fit <- .fit_inad_missing(
                 y = y,
                 order = order,
                 thinning = thinning,
                 innovation = innovation,
-                blocks = blocks,
+                blocks = blocks_id,
                 max_iter = max_iter,
                 tol = tol,
                 verbose = verbose,
@@ -83,12 +85,17 @@ fit_inad <- function(
                 init_theta = init_theta,
                 init_tau = init_tau,
                 init_nb_inno_size = init_nb_inno_size
+            )
+            return(.finalize_inad_fit(
+                fit, y = y, na_action = na_action,
+                blocks_id = blocks_id,
+                block_levels = if (is.null(blocks)) NULL else block_info$block_levels
             ))
         }
     }
 
     if (is.null(blocks)) {
-        return(fit_inad_no_fe(
+        fit <- fit_inad_no_fe(
             y = y,
             order = order,
             thinning = thinning,
@@ -96,15 +103,18 @@ fit_inad <- function(
             init_alpha = init_alpha,
             init_theta = init_theta,
             init_nb_inno_size = init_nb_inno_size
-        ))
+        )
+        return(.finalize_inad_fit(fit, y = y, na_action = na_action, blocks_id = NULL, block_levels = NULL))
     }
 
-    fit_inad_fe(
+    block_info <- .normalize_blocks(blocks, nrow(y))
+    blocks_id <- block_info$blocks_id
+    fit <- fit_inad_fe(
         y = y,
         order = order,
         thinning = thinning,
         innovation = innovation,
-        blocks = blocks,
+        blocks = blocks_id,
         max_iter = max_iter,
         tol = tol,
         verbose = verbose,
@@ -113,6 +123,66 @@ fit_inad <- function(
         init_tau = init_tau,
         init_nb_inno_size = init_nb_inno_size
     )
+    .finalize_inad_fit(
+        fit, y = y, na_action = na_action,
+        blocks_id = blocks_id,
+        block_levels = block_info$block_levels
+    )
+}
+
+#' @keywords internal
+.finalize_inad_fit <- function(fit, y, na_action = NULL, blocks_id = NULL, block_levels = NULL) {
+    if (is.null(fit$settings)) fit$settings <- list()
+    if (is.null(fit$settings$n_subjects)) fit$settings$n_subjects <- nrow(y)
+    if (is.null(fit$settings$n_time)) fit$settings$n_time <- ncol(y)
+    if (!is.null(na_action)) fit$settings$na_action <- na_action
+    if (!is.null(blocks_id)) {
+        n_blocks <- length(unique(blocks_id))
+        fit$settings$blocks <- if (n_blocks > 1L) blocks_id else NULL
+        fit$settings$n_blocks <- n_blocks
+        fit$settings$block_levels <- block_levels
+    }
+
+    fit$n_obs <- sum(!is.na(y))
+    fit$n_missing <- sum(is.na(y))
+    fit$pct_missing <- mean(is.na(y)) * 100
+
+    # Keep detailed convergence diagnostics while exposing a comparable code.
+    if (is.list(fit$convergence)) {
+        fit$convergence_info <- fit$convergence
+        if (!is.null(fit$convergence$code)) {
+            fit$convergence <- as.integer(fit$convergence$code)
+        } else if (!is.null(fit$convergence$per_time)) {
+            per_time <- as.integer(fit$convergence$per_time)
+            if (length(per_time) == 0L || all(is.na(per_time))) {
+                fit$convergence <- NA_integer_
+            } else {
+                fit$convergence <- as.integer(max(per_time, na.rm = TRUE))
+            }
+        } else {
+            fit$convergence <- NA_integer_
+        }
+    } else if (is.null(fit$convergence)) {
+        fit$convergence <- NA_integer_
+    } else {
+        fit$convergence <- as.integer(fit$convergence)
+    }
+
+    fit$n_params <- tryCatch(
+        as.integer(.count_params_inad_fit(fit)),
+        error = function(e) NA_integer_
+    )
+
+    if (is.finite(fit$log_l) && is.finite(fit$n_params)) {
+        fit$aic <- -2 * fit$log_l + 2 * fit$n_params
+        fit$bic <- -2 * fit$log_l + fit$n_params * log(fit$settings$n_subjects)
+    } else {
+        fit$aic <- NA_real_
+        fit$bic <- NA_real_
+    }
+
+    class(fit) <- "inad_fit"
+    fit
 }
 
 .fit_inad_missing <- function(
@@ -1004,6 +1074,7 @@ fit_inad_fe <- function(
         tau = tau
     )
 
+    converged <- FALSE
     for (iter in seq_len(max_iter)) {
         if (verbose) message("iter ", iter, " logL=", log_old)
 
@@ -1198,6 +1269,7 @@ fit_inad_fe <- function(
 
         if (!is.finite(log_new)) break
         if (abs(log_new - log_old) < tol) {
+            converged <- TRUE
             log_old <- log_new
             break
         }
@@ -1210,6 +1282,8 @@ fit_inad_fe <- function(
         tau = tau,
         nb_inno_size = nb_inno_size,
         log_l = log_old,
+        convergence = if (converged) 0L else 1L,
+        convergence_info = list(converged = converged, max_iter = max_iter),
         settings = list(
             order = order,
             thinning = thinning,
