@@ -118,7 +118,9 @@ lrt_one_sample_gau <- function(y, mu0, p = 1L, use_modified = TRUE) {
         }
 
         if (denominator > 0) {
-            statistic_modified <- n * numerator / denominator
+            # Eq. 7.7: leading factor is n_time (number of time points), not N_subjects.
+            # Analogous to Eq. 6.9 where Σ diff_i = n_time for the mean test (each diff = 1).
+            statistic_modified <- n_time * numerator / denominator
             p_value_modified <- stats::pchisq(statistic_modified, df = df, lower.tail = FALSE)
         }
     }
@@ -284,7 +286,9 @@ lrt_two_sample_gau <- function(y, blocks, p = 1L, use_modified = TRUE) {
         }
 
         if (denominator > 0) {
-            statistic_modified <- n * numerator / denominator
+            # Eq. 7.11: leading factor is n_time (number of time points), not N_subjects.
+            # Analogous to Eq. 6.9 where Σ diff_i = n_time for the mean test (each diff = 1).
+            statistic_modified <- n_time * numerator / denominator
             p_value_modified <- stats::pchisq(statistic_modified, df = df, lower.tail = FALSE)
         }
     }

@@ -117,7 +117,7 @@ test_that("AD likelihood-ratio utilities reject missing-data inference clearly",
   blocks <- c(1, 1, 2, 2)
 
   expect_error(lrt_order_gau(y_miss, p = 0, q = 1), "complete data only")
-  expect_error(lrt_homogeneity_gau(y_miss, blocks = blocks, p = 1), "complete data only")
+  expect_error(lrt_homogeneity_gau(y_miss, blocks = blocks, p = 1), "monotone dropout")
   expect_error(
     lrt_one_sample_gau(y_miss, mu0 = c(0, 0, 0), p = 1),
     "complete data only"

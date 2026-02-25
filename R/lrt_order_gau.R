@@ -137,10 +137,12 @@ lrt_order_gau <- function(y, p = 0L, q = 1L, mu = NULL, use_modified = TRUE) {
         rss_pq <- .rss_vector_gau(y, p + q, mu = mu)
 
         # Modified statistic (6.9):
-        # sum_{i=p+2}^{n} [(p+q)_i - p] * [log RSS_i(p) - log RSS_i(p+q)]
-        # divided by sum_{i=p+2}^{n} psi((p+q)_i - p, N - m - (p+q)_i)
+        # G~^2 = [sum_i diff_i] * [sum_i log(RSS_i(p)/RSS_i(p+q))] / sum_i psi_i
+        # where diff_i = (p+q)_i - p_i  (additional parameters at time i)
+        # This is a product of two separate sums (not an inner product).
 
-        numerator <- 0
+        sum_diff <- 0
+        sum_lr   <- 0
         denominator <- 0
 
         for (i in (p + 2):n_time) {
@@ -150,7 +152,8 @@ lrt_order_gau <- function(y, p = 0L, q = 1L, mu = NULL, use_modified = TRUE) {
 
             if (diff_order > 0 && rss_p[i] > 0 && rss_pq[i] > 0) {
                 log_ratio <- log(rss_p[i]) - log(rss_pq[i])
-                numerator <- numerator + diff_order * log_ratio
+                sum_diff <- sum_diff + diff_order
+                sum_lr   <- sum_lr   + log_ratio
 
                 # m = number of mean parameters (1 for saturated within each regression)
                 m <- 1
@@ -160,7 +163,8 @@ lrt_order_gau <- function(y, p = 0L, q = 1L, mu = NULL, use_modified = TRUE) {
         }
 
         if (denominator > 0) {
-            statistic_modified <- n * numerator / denominator
+            # Eq. 6.9: [Σ diff_i] × [Σ log-ratio_i] / Σ psi_i
+            statistic_modified <- sum_diff * sum_lr / denominator
             p_value_modified <- stats::pchisq(statistic_modified, df = df, lower.tail = FALSE)
         }
     }

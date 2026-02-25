@@ -162,9 +162,16 @@
         }
     }
 
-    # Regress y_i and y_j on intervenors
-    fit_i <- stats::lm.fit(cbind(1, Z), y_i)
-    fit_j <- stats::lm.fit(cbind(1, Z), y_j)
+    # Regress y_i and y_j on intervenors.
+    # When mu is provided the data is already centered, so no intercept is needed.
+    # When mu is NULL the data is centered by column means, so an intercept is included.
+    if (!is.null(mu)) {
+        fit_i <- stats::lm.fit(Z, y_i)
+        fit_j <- stats::lm.fit(Z, y_j)
+    } else {
+        fit_i <- stats::lm.fit(cbind(1, Z), y_i)
+        fit_j <- stats::lm.fit(cbind(1, Z), y_j)
+    }
 
     # Partial correlation is correlation of residuals
     stats::cor(fit_i$residuals, fit_j$residuals)

@@ -69,13 +69,7 @@
 lrt_homogeneity_gau <- function(y, blocks, p = 1L, use_modified = TRUE) {
 
     if (!is.matrix(y)) y <- as.matrix(y)
-    if (anyNA(y)) {
-        stop(
-            "lrt_homogeneity_gau currently supports complete data only. Missing-data AD likelihood-ratio tests are not implemented yet.",
-            call. = FALSE
-        )
-    }
-    if (any(!is.finite(y))) stop("y must contain finite values")
+    if (any(!is.finite(y[!is.na(y)]))) stop("y must contain finite values")
 
     n <- nrow(y)  # Total N
     n_time <- ncol(y)  # n in the book
@@ -90,6 +84,29 @@ lrt_homogeneity_gau <- function(y, blocks, p = 1L, use_modified = TRUE) {
 
     p <- as.integer(p)
     if (p < 0 || p >= n_time) stop("p must be in [0, n_time - 1)")
+
+    missing_info <- .validate_missing(y)
+    has_missing <- isTRUE(missing_info$has_missing)
+
+    if (has_missing) {
+        allowed_patterns <- c("complete", "dropout", "all_missing")
+        bad_patterns <- setdiff(unique(missing_info$patterns), allowed_patterns)
+        if (length(bad_patterns) > 0) {
+            stop(
+                paste0(
+                    "lrt_homogeneity_gau with missing data currently supports monotone dropout only ",
+                    "(missing values allowed only at the end of each subject profile). ",
+                    "Found unsupported patterns: ",
+                    paste(bad_patterns, collapse = ", "),
+                    "."
+                ),
+                call. = FALSE
+            )
+        }
+        if (sum(missing_info$patterns != "all_missing") == 0L) {
+            stop("At least one subject must have observed data.", call. = FALSE)
+        }
+    }
 
     # Relabel blocks to 1, 2, ..., G
     block_map <- setNames(seq_along(unique_blocks), unique_blocks)
@@ -117,43 +134,100 @@ lrt_homogeneity_gau <- function(y, blocks, p = 1L, use_modified = TRUE) {
         colMeans(y[group_indices[[g]], , drop = FALSE])
     })
 
-    # Pooled RSS (from pooled covariance estimate)
-    # This requires computing RSS using pooled phi estimates
-    # For simplicity, we compute the LRT via the determinant ratio approach
-
     # Within-group innovation variance estimates
-    delta2_g <- matrix(NA, nrow = G, ncol = n_time)
-    for (g in 1:G) {
-        y_g <- y[group_indices[[g]], , drop = FALSE]
-        mu_g <- group_means[[g]]
-        rss_g <- .rss_vector_gau(y_g, p, mu = mu_g)
-        delta2_g[g, ] <- rss_g / group_sizes[g]
-    }
-
-    # Pooled innovation variance estimates
-    # Weighted average of within-group estimates
-    delta2_pooled <- numeric(n_time)
-    for (i in 1:n_time) {
-        # Pooled RSS
-        rss_pooled <- 0
+    delta2_g <- matrix(NA_real_, nrow = G, ncol = n_time)
+    if (!has_missing) {
         for (g in 1:G) {
             y_g <- y[group_indices[[g]], , drop = FALSE]
             mu_g <- group_means[[g]]
-            rss_pooled <- rss_pooled + .rss_gau(y_g, i, p, mu = mu_g)
+            rss_g <- .rss_vector_gau(y_g, p, mu = mu_g)
+            delta2_g[g, ] <- rss_g / group_sizes[g]
         }
-        delta2_pooled[i] <- rss_pooled / n
+    }
+
+    # Pooled innovation variance estimates under H0 (common covariance structure).
+    # For complete data: center by group means across all subjects and estimate common phi.
+    # For monotone dropout: apply theorem adaptation using subjects complete through time i.
+    delta2_pooled <- rep(NA_real_, n_time)
+    Nig_mat <- matrix(NA_integer_, nrow = G, ncol = n_time)
+
+    for (i in 1:n_time) {
+        p_i <- min(p, i - 1L)
+
+        if (has_missing) {
+            keep_i <- rowSums(is.na(y[, 1:i, drop = FALSE])) == 0L
+        } else {
+            keep_i <- rep(TRUE, n)
+        }
+
+        if (!any(keep_i)) {
+            next
+        }
+
+        y_i <- y[keep_i, 1:i, drop = FALSE]
+        blocks_i <- blocks[keep_i]
+        N_i <- nrow(y_i)
+        # Group means at time i based on subjects complete through i.
+        group_means_i <- vector("list", G)
+        for (g in 1:G) {
+            idx_g <- which(blocks_i == g)
+            N_ig <- length(idx_g)
+            Nig_mat[g, i] <- N_ig
+            if (N_ig > 0) {
+                group_means_i[[g]] <- colMeans(y_i[idx_g, , drop = FALSE])
+            } else {
+                group_means_i[[g]] <- rep(NA_real_, i)
+            }
+        }
+
+        # Pooled RSS under H0: center by group means and fit one common regression.
+        y_centered_i <- y_i
+        for (g in 1:G) {
+            idx_g <- which(blocks_i == g)
+            if (length(idx_g) > 0) {
+                y_centered_i[idx_g, ] <- sweep(
+                    y_i[idx_g, , drop = FALSE],
+                    2,
+                    group_means_i[[g]]
+                )
+            }
+        }
+
+        rss_pooled_i <- .rss_gau(y_centered_i, i = i, p = p_i, mu = rep(0, i))
+        delta2_pooled[i] <- rss_pooled_i / N_i
+
+        # Within-group RSS under H1.
+        for (g in 1:G) {
+            idx_g <- which(blocks_i == g)
+            N_ig <- length(idx_g)
+            if (N_ig <= 0) {
+                next
+            }
+            y_g <- y_i[idx_g, , drop = FALSE]
+            mu_g <- group_means_i[[g]]
+            rss_g <- .rss_gau(y_g, i = i, p = p_i, mu = mu_g)
+            delta2_g[g, i] <- rss_g / N_ig
+        }
     }
 
     # LRT statistic (Theorem 6.6 part a)
-    # sum_g N(g) * sum_i [log(RSS_i(p)/N) - log(RSS_ig(p)/N(g))]
-    # = sum_g N(g) * sum_i [log delta2_pooled[i] - log delta2_g[g, i]]
+    # complete: sum_g N(g) * sum_i [log(RSS_i(p)/N) - log(RSS_ig(p)/N(g))]
+    # dropout: replace N and N(g) by N_i and N_i(g) at each time i
 
     statistic <- 0
-    for (g in 1:G) {
-        for (i in 1:n_time) {
-            if (delta2_pooled[i] > 0 && delta2_g[g, i] > 0) {
-                statistic <- statistic + group_sizes[g] * (log(delta2_pooled[i]) - log(delta2_g[g, i]))
+    for (i in 1:n_time) {
+        if (!is.finite(delta2_pooled[i]) || delta2_pooled[i] <= 0) {
+            next
+        }
+        for (g in 1:G) {
+            if (!is.finite(delta2_g[g, i]) || delta2_g[g, i] <= 0) {
+                next
             }
+            weight <- if (has_missing) Nig_mat[g, i] else group_sizes[g]
+            if (!is.finite(weight) || weight <= 0) {
+                next
+            }
+            statistic <- statistic + weight * (log(delta2_pooled[i]) - log(delta2_g[g, i]))
         }
     }
 
@@ -168,37 +242,38 @@ lrt_homogeneity_gau <- function(y, blocks, p = 1L, use_modified = TRUE) {
     p_value_modified <- NULL
 
     if (use_modified) {
-        # The modified statistic adjusts for small-sample bias
-        # Using formula (6.13) from the book
+        # Modified statistic — Eq. (6.13) of Zimmerman & Núñez-Antón (2009):
+        #
+        #   G̃² = df × G² / Σ_i Σ_g N_ig [ψ(N_i - N_ig - G + 1, N_ig - p_i - 1) - log(N_i / N_ig)]
+        #
+        # where df = (G-1)(2n-p)(p+1)/2, G² is the standard statistic,
+        # N_i  = total subjects observed through time i (= N for complete data),
+        # N_ig = subjects in group g observed through time i (= N_g for complete data).
+        # With monotone dropout, N_i and N_ig are the time-varying effective counts
+        # already stored in Nig_mat.
 
-        # Compute the modification factor
-        # This involves the psi function and sample sizes
-
-        numerator <- 0
         denominator <- 0
 
         for (i in 1:n_time) {
-            p_i <- min(p, i - 1)
+            p_i    <- min(p, i - 1L)
+            N_i    <- if (has_missing) sum(Nig_mat[, i], na.rm = TRUE) else n
 
-            # Contribution from this time point
-            log_term <- 0
             for (g in 1:G) {
-                if (delta2_pooled[i] > 0 && delta2_g[g, i] > 0) {
-                    log_term <- log_term + group_sizes[g] * (log(delta2_pooled[i]) - log(delta2_g[g, i]))
+                N_ig <- if (has_missing) Nig_mat[g, i] else group_sizes[g]
+                if (!is.finite(N_ig) || N_ig <= 0L) next
+
+                arg1 <- N_i - N_ig - G + 1L
+                arg2 <- N_ig - p_i - 1L
+                if (arg1 > 1L && arg2 > 1L) {
+                    psi_val  <- .psi_kenward(arg1, arg2)
+                    log_term <- log(N_i / N_ig)
+                    denominator <- denominator + N_ig * (psi_val - log_term)
                 }
             }
-            numerator <- numerator + log_term
-
-            # Psi term for denominator
-            psi_val <- 0
-            for (g in 1:G) {
-                psi_val <- psi_val + .psi_kenward(p_i + 1, group_sizes[g] - p_i - 1)
-            }
-            denominator <- denominator + psi_val
         }
 
         if (denominator > 0) {
-            statistic_modified <- numerator / denominator * n_time
+            statistic_modified <- df * statistic / denominator
             p_value_modified <- stats::pchisq(statistic_modified, df = df, lower.tail = FALSE)
         }
     }
