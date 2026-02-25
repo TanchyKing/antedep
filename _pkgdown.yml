@@ -111,7 +111,8 @@ reference:
   - bolus_inad
   - cattle_growth
   - cochlear_implant
-  - cochlear_implant_cat
+  - labor_force_cat
+  - race_100km
 
 - title: Methods and internal topics
   desc: S3 methods and developer-facing helper functions.

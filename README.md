@@ -29,6 +29,7 @@ Included datasets:
 - `cattle_growth` (book companion cattle growth data; continuous)
 - `cochlear_implant` (book companion speech recognition/cochlear data; continuous)
 - `labor_force_cat` (labor-force categorical table expanded to subject sequences)
+- `race_100km` (100km race split times; continuous)
 
 ### AD example (continuous)
 

@@ -21,7 +21,13 @@ set.seed(123)
 - INAD for count longitudinal outcomes
 - CAT (categorical AD) for discrete state longitudinal outcomes
 
-Packaged datasets include `bolus_inad`, `cattle_growth`, `cochlear_implant`, and `labor_force_cat`.
+Packaged datasets include `bolus_inad`, `cattle_growth`, `cochlear_implant`, `labor_force_cat`, and `race_100km`.
+
+```{r eval=FALSE}
+data("race_100km")
+dim(race_100km$y)
+colMeans(race_100km$y)
+```
 
 ## Production-Readiness Matrix
 
