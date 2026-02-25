@@ -28,7 +28,7 @@ Included datasets:
 - `bolus_inad` (morphine bolus counts)
 - `cattle_growth` (book companion cattle growth data; continuous)
 - `cochlear_implant` (book companion speech recognition/cochlear data; continuous)
-- `cochlear_implant_cat` (categorical version for CAT workflows)
+- `labor_force_cat` (labor-force categorical table expanded to subject sequences)
 
 ### AD example (continuous)
 
