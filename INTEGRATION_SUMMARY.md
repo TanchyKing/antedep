@@ -10,22 +10,22 @@
    - `.warn_intermittent_missing()` - Performance warnings
    - `.extract_complete_cases()` - Complete case analysis
 
-2. **loglik_ad_missing.R** (4.9K) - Observed-data likelihood for AD
-   - `.logL_ad_missing()` - MVN marginalization
-   - `.build_ad_covariance()` - Covariance construction
+2. **loglik_gau_missing.R** (4.9K) - Observed-data likelihood for AD
+   - `.logL_gau_missing()` - MVN marginalization
+   - `.build_gau_covariance()` - Covariance construction
 
-3. **fit_ad_em.R** (11K) - Already present (matches implementation)
-   - `.fit_ad_em()` - EM algorithm
-   - `.initialize_ad_em()` - Initialization
-   - `.em_e_step_ad()` - E-step
-   - `.em_m_step_ad()` - M-step
+3. **fit_gau_em.R** (11K) - Already present (matches implementation)
+   - `.fit_gau_em()` - EM algorithm
+   - `.initialize_gau_em()` - Initialization
+   - `.em_e_step_gau()` - E-step
+   - `.em_m_step_gau()` - M-step
 
 ### Modified Files (R/)
-4. **fit_ad.R** (7.7K) - Already updated with na_action parameter
-5. **loglik_ad.R** (5.7K) - Already updated with na_action parameter
+4. **fit_gau.R** (7.7K) - Already updated with na_action parameter
+5. **loglik_gau.R** (5.7K) - Already updated with na_action parameter
 
 ### Tests (tests/testthat/)
-6. **test-missing_ad.R** (11K) - Comprehensive test suite
+6. **test-missing_gau.R** (11K) - Comprehensive test suite
    - 158 tests covering all functionality
 
 ### Documentation
@@ -51,10 +51,10 @@
 # With missing data (uses EM automatically)
 y <- matrix(rnorm(100), 20, 5)
 y[sample(100, 10)] <- NA
-fit <- fit_ad(y, order = 1)
+fit <- fit_gau(y, order = 1)
 
 # Compute log-likelihood with marginalization
-logL_ad(y, order = 1, mu = fit$mu, phi = fit$phi, 
+logL_gau(y, order = 1, mu = fit$mu, phi = fit$phi, 
         sigma = fit$sigma, na_action = "marginalize")
 ```
 

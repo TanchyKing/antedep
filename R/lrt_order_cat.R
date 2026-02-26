@@ -92,7 +92,9 @@
 #' @export
 lrt_order_cat <- function(y = NULL, order_null = 0, order_alt = 1,
                           blocks = NULL, homogeneous = TRUE, n_categories = NULL,
-                          fit_null = NULL, fit_alt = NULL) {
+                          fit_null = NULL, fit_alt = NULL,
+                          test = c("lrt", "score", "mlrt", "wald")) {
+  test <- match.arg(test)
   
  # Validate that we have either y or pre-fitted models
   if (is.null(y) && (is.null(fit_null) || is.null(fit_alt))) {
@@ -147,13 +149,76 @@ lrt_order_cat <- function(y = NULL, order_null = 0, order_alt = 1,
   n_params_alt <- fit_alt$n_params
   
   # Compute LRT statistic
-  lrt_stat <- -2 * (log_l_null - log_l_alt)
+  lrt_stat_raw <- -2 * (log_l_null - log_l_alt)
   
   # Degrees of freedom
   df <- n_params_alt - n_params_null
+
+  # Select test statistic
+  stat_value <- lrt_stat_raw
+  e_hat_mlrt <- NA_real_
+  if (identical(test, "score")) {
+    if (is.null(y)) {
+      stop("y must be provided when test = 'score'")
+    }
+    if (anyNA(y) || .cat_fit_uses_missing_likelihood(fit_null) || .cat_fit_uses_missing_likelihood(fit_alt)) {
+      .stop_cat_missing_inference("lrt_order_cat(test = 'score')")
+    }
+
+    c <- fit_null$settings$n_categories
+    pops <- .cat_split_populations(y, blocks = blocks, fit = fit_null)
+    stat_value <- 0
+    for (pop in pops) {
+      stat_value <- stat_value + .cat_score_order_single(
+        y = pop$y,
+        p = fit_null$settings$order,
+        q = fit_alt$settings$order,
+        c = c,
+        marginal = pop$marginal,
+        transition = pop$transition
+      )
+    }
+  } else if (identical(test, "mlrt")) {
+    e_hat_mlrt <- .cat_mlrt_order_e(fit_null = fit_null, fit_alt = fit_alt)
+    if (!is.finite(e_hat_mlrt) || e_hat_mlrt <= 0) {
+      stop("Modified LRT scaling factor could not be computed (non-positive or non-finite)")
+    }
+    stat_value <- lrt_stat_raw * df / e_hat_mlrt
+  } else if (identical(test, "wald")) {
+    if (is.null(y)) {
+      stop("y must be provided when test = 'wald'")
+    }
+    if (anyNA(y) || .cat_fit_uses_missing_likelihood(fit_null) || .cat_fit_uses_missing_likelihood(fit_alt)) {
+      .stop_cat_missing_inference("lrt_order_cat(test = 'wald')")
+    }
+    if (!identical(fit_null$settings$homogeneous, fit_alt$settings$homogeneous)) {
+      stop("fit_null and fit_alt must both be homogeneous or both heterogeneous for Wald order test")
+    }
+
+    c <- fit_null$settings$n_categories
+    pops_null <- .cat_split_populations(y, blocks = blocks, fit = fit_null)
+    pops_alt <- .cat_split_populations(y, blocks = blocks, fit = fit_alt)
+    if (length(pops_null) != length(pops_alt)) {
+      stop("Population structures in fit_null and fit_alt do not match for Wald test")
+    }
+
+    stat_value <- 0
+    for (i in seq_along(pops_null)) {
+      stat_value <- stat_value + .cat_wald_order_single(
+        y = pops_null[[i]]$y,
+        p = fit_null$settings$order,
+        q = fit_alt$settings$order,
+        c = c,
+        marginal_null = pops_null[[i]]$marginal,
+        transition_null = pops_null[[i]]$transition,
+        marginal_alt = pops_alt[[i]]$marginal,
+        transition_alt = pops_alt[[i]]$transition
+      )
+    }
+  }
   
   # P-value from chi-square
-  p_value <- stats::pchisq(lrt_stat, df = df, lower.tail = FALSE)
+  p_value <- stats::pchisq(stat_value, df = df, lower.tail = FALSE)
   
   # Build summary table
   table_df <- data.frame(
@@ -167,9 +232,13 @@ lrt_order_cat <- function(y = NULL, order_null = 0, order_alt = 1,
   
   # Assemble output
   out <- list(
-    lrt_stat = lrt_stat,
+    lrt_stat = stat_value,
+    statistic = stat_value,
+    lrt_stat_raw = lrt_stat_raw,
+    e_hat_mlrt = e_hat_mlrt,
     df = df,
     p_value = p_value,
+    test = test,
     fit_null = fit_null,
     fit_alt = fit_alt,
     order_null = fit_null$settings$order,
@@ -189,18 +258,36 @@ lrt_order_cat <- function(y = NULL, order_null = 0, order_alt = 1,
 #'
 #' @export
 print.cat_lrt <- function(x, ...) {
-  cat("Likelihood Ratio Test for Categorical AD Order\n")
-  cat("===============================================\n\n")
-  
-  cat("H0: AD(", x$order_null, ")\n", sep = "")
-  cat("H1: AD(", x$order_alt, ")\n\n", sep = "")
+  test_name <- x$test
+  if (is.null(test_name)) {
+    test_name <- "lrt"
+  }
+  test_label <- switch(
+    test_name,
+    lrt = "Likelihood Ratio",
+    score = "Score (Pearson)",
+    mlrt = "Modified LRT",
+    wald = "Wald",
+    "Likelihood Ratio"
+  )
+  cat(test_label, "Test for Categorical AD\n")
+  cat("===============================\n\n")
+
+  if (!is.null(x$order_null) && !is.null(x$order_alt)) {
+    cat("H0: AD(", x$order_null, ")\n", sep = "")
+    cat("H1: AD(", x$order_alt, ")\n\n", sep = "")
+  } else if (!is.null(x$order)) {
+    cat("Order:", x$order, "\n\n")
+  }
   
   cat("Test statistic:", round(x$lrt_stat, 4), "\n")
   cat("Degrees of freedom:", x$df, "\n")
   cat("P-value:", format.pval(x$p_value, digits = 4), "\n\n")
   
-  cat("Model comparison:\n")
-  print(x$table, row.names = FALSE)
+  if (!is.null(x$table)) {
+    cat("Model comparison:\n")
+    print(x$table, row.names = FALSE)
+  }
   
   invisible(x)
 }
@@ -236,8 +323,10 @@ print.cat_lrt <- function(x, ...) {
 #' }
 #'
 #' @export
-run_order_tests_cat <- function(y, max_order = 2, blocks = NULL, 
-                                 homogeneous = TRUE, n_categories = NULL) {
+run_order_tests_cat <- function(y, max_order = 2, blocks = NULL,
+                                 homogeneous = TRUE, n_categories = NULL,
+                                 test = c("lrt", "score", "mlrt", "wald")) {
+  test <- match.arg(test)
   use_missing <- anyNA(y)
   
   # Validate data
@@ -287,8 +376,16 @@ run_order_tests_cat <- function(y, max_order = 2, blocks = NULL,
   for (i in seq_len(n_tests)) {
     p_null <- orders[i]
     p_alt <- orders[i + 1]
-    
-    tests[[i]] <- lrt_order_cat(fit_null = fits[[i]], fit_alt = fits[[i + 1]])
+
+    tests[[i]] <- lrt_order_cat(
+      y = if (identical(test, "lrt")) NULL else y,
+      blocks = if (identical(test, "lrt")) NULL else blocks,
+      homogeneous = homogeneous,
+      n_categories = n_categories,
+      fit_null = fits[[i]],
+      fit_alt = fits[[i + 1]],
+      test = test
+    )
     
     test_results$comparison[i] <- paste0("AD(", p_null, ") vs AD(", p_alt, ")")
     test_results$order_null[i] <- p_null

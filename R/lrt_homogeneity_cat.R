@@ -71,7 +71,9 @@
 #' @export
 lrt_homogeneity_cat <- function(y = NULL, blocks = NULL, order = 1,
                                  n_categories = NULL,
-                                 fit_null = NULL, fit_alt = NULL) {
+                                 fit_null = NULL, fit_alt = NULL,
+                                 test = c("lrt", "score", "mlrt")) {
+  test <- match.arg(test)
   
   # Validate that we have either y+blocks or pre-fitted models
   if (is.null(y) && (is.null(fit_null) || is.null(fit_alt))) {
@@ -124,13 +126,84 @@ lrt_homogeneity_cat <- function(y = NULL, blocks = NULL, order = 1,
   n_groups <- fit_alt$settings$n_blocks
   
   # Compute LRT statistic
-  lrt_stat <- -2 * (log_l_null - log_l_alt)
+  lrt_stat_raw <- -2 * (log_l_null - log_l_alt)
   
   # Degrees of freedom = (G-1) * k, where k is params per population
   df <- n_params_alt - n_params_null
   
+  # Select test statistic
+  stat_value <- lrt_stat_raw
+  e_hat_mlrt <- NA_real_
+  if (identical(test, "score")) {
+    if (is.null(y)) {
+      stop("y and blocks must be provided when test = 'score'")
+    }
+    if (anyNA(y) || .cat_fit_uses_missing_likelihood(fit_null) || .cat_fit_uses_missing_likelihood(fit_alt)) {
+      .stop_cat_missing_inference("lrt_homogeneity_cat(test = 'score')")
+    }
+    stat_value <- .cat_score_homogeneity(
+      y = y,
+      blocks = blocks,
+      p = fit_null$settings$order,
+      c = fit_null$settings$n_categories,
+      fit_null = fit_null
+    )
+  } else if (identical(test, "mlrt")) {
+    p <- fit_null$settings$order
+    c <- fit_null$settings$n_categories
+    n_subjects <- fit_null$settings$n_subjects
+    n_time <- fit_null$settings$n_time
+    blocks_eff <- .cat_resolve_blocks(blocks, fit_alt)
+
+    if (length(blocks_eff) != n_subjects) {
+      stop("blocks length does not match n_subjects for modified homogeneity test")
+    }
+
+    simulate_fn <- function() {
+      simulate_cat(
+        n_subjects = n_subjects,
+        n_time = n_time,
+        order = p,
+        n_categories = c,
+        marginal = fit_null$marginal,
+        transition = fit_null$transition,
+        blocks = blocks_eff,
+        homogeneous = TRUE
+      )
+    }
+    lrt_raw_fn <- function(y_b) {
+      fit0_b <- fit_cat(
+        y_b,
+        order = p,
+        blocks = blocks_eff,
+        homogeneous = TRUE,
+        n_categories = c,
+        na_action = "fail"
+      )
+      fit1_b <- fit_cat(
+        y_b,
+        order = p,
+        blocks = blocks_eff,
+        homogeneous = FALSE,
+        n_categories = c,
+        na_action = "fail"
+      )
+      -2 * (fit0_b$log_l - fit1_b$log_l)
+    }
+
+    e_hat_mlrt <- .cat_mlrt_expected_lrt_boot(simulate_fn, lrt_raw_fn)
+    if (is.finite(e_hat_mlrt) && e_hat_mlrt > 0) {
+      stat_value <- lrt_stat_raw * df / e_hat_mlrt
+    } else {
+      warning(
+        "Modified LRT scaling factor could not be estimated; returning unmodified LRT statistic.",
+        call. = FALSE
+      )
+    }
+  }
+
   # P-value from chi-square
-  p_value <- stats::pchisq(lrt_stat, df = df, lower.tail = FALSE)
+  p_value <- stats::pchisq(stat_value, df = df, lower.tail = FALSE)
   
   # Build summary table
   table_df <- data.frame(
@@ -143,9 +216,13 @@ lrt_homogeneity_cat <- function(y = NULL, blocks = NULL, order = 1,
   
   # Assemble output
   out <- list(
-    lrt_stat = lrt_stat,
+    lrt_stat = stat_value,
+    statistic = stat_value,
+    lrt_stat_raw = lrt_stat_raw,
+    e_hat_mlrt = e_hat_mlrt,
     df = df,
     p_value = p_value,
+    test = test,
     fit_null = fit_null,
     fit_alt = fit_alt,
     n_groups = n_groups,
@@ -210,7 +287,9 @@ lrt_homogeneity_cat <- function(y = NULL, blocks = NULL, order = 1,
 #'
 #' @export
 lrt_timeinvariance_cat <- function(y, order = 1, blocks = NULL,
-                                    homogeneous = TRUE, n_categories = NULL) {
+                                    homogeneous = TRUE, n_categories = NULL,
+                                    test = c("lrt", "score", "mlrt")) {
+  test <- match.arg(test)
   if (anyNA(y)) {
     .stop_cat_missing_inference("lrt_timeinvariance_cat")
   }
@@ -239,7 +318,7 @@ lrt_timeinvariance_cat <- function(y, order = 1, blocks = NULL,
   fit_null <- .fit_cat_timeinvariant(y, p, c, blocks, homogeneous)
   
   # Compute LRT statistic
-  lrt_stat <- -2 * (fit_null$log_l - fit_alt$log_l)
+  lrt_stat_raw <- -2 * (fit_null$log_l - fit_alt$log_l)
   
   # Degrees of freedom
   # Time-varying has (n-p) separate transition matrices, each with (c-1)*c^p params
@@ -257,8 +336,70 @@ lrt_timeinvariance_cat <- function(y, order = 1, blocks = NULL,
     df <- df * n_blocks
   }
   
+  # Select test statistic
+  stat_value <- lrt_stat_raw
+  e_hat_mlrt <- NA_real_
+  if (identical(test, "score")) {
+    pops <- .cat_split_populations(y, blocks = blocks, fit = fit_null)
+    stat_value <- 0
+    for (pop in pops) {
+      pooled_transition <- pop$transition[["pooled"]]
+      stat_value <- stat_value + .cat_score_timeinvariance_single(
+        y = pop$y,
+        p = p,
+        c = c,
+        pooled_transition = pooled_transition
+      )
+    }
+  } else if (identical(test, "mlrt")) {
+    n_subjects <- fit_alt$settings$n_subjects
+    blocks_eff <- .cat_resolve_blocks(blocks, fit_alt)
+    sim_params <- .cat_timeinvariant_sim_params(fit_null)
+
+    simulate_fn <- function() {
+      simulate_cat(
+        n_subjects = n_subjects,
+        n_time = n_time,
+        order = p,
+        n_categories = c,
+        marginal = sim_params$marginal,
+        transition = sim_params$transition,
+        blocks = blocks_eff,
+        homogeneous = homogeneous
+      )
+    }
+    lrt_raw_fn <- function(y_b) {
+      fit1_b <- fit_cat(
+        y_b,
+        order = p,
+        blocks = blocks_eff,
+        homogeneous = homogeneous,
+        n_categories = c,
+        na_action = "fail"
+      )
+      fit0_b <- .fit_cat_timeinvariant(
+        y_b,
+        p = p,
+        c = c,
+        blocks = blocks_eff,
+        homogeneous = homogeneous
+      )
+      -2 * (fit0_b$log_l - fit1_b$log_l)
+    }
+
+    e_hat_mlrt <- .cat_mlrt_expected_lrt_boot(simulate_fn, lrt_raw_fn)
+    if (is.finite(e_hat_mlrt) && e_hat_mlrt > 0) {
+      stat_value <- lrt_stat_raw * df / e_hat_mlrt
+    } else {
+      warning(
+        "Modified LRT scaling factor could not be estimated; returning unmodified LRT statistic.",
+        call. = FALSE
+      )
+    }
+  }
+
   # P-value from chi-square
-  p_value <- stats::pchisq(lrt_stat, df = df, lower.tail = FALSE)
+  p_value <- stats::pchisq(stat_value, df = df, lower.tail = FALSE)
   
   # Build summary table
   table_df <- data.frame(
@@ -271,9 +412,13 @@ lrt_timeinvariance_cat <- function(y, order = 1, blocks = NULL,
   
   # Assemble output
   out <- list(
-    lrt_stat = lrt_stat,
+    lrt_stat = stat_value,
+    statistic = stat_value,
+    lrt_stat_raw = lrt_stat_raw,
+    e_hat_mlrt = e_hat_mlrt,
     df = df,
     p_value = p_value,
+    test = test,
     fit_null = fit_null,
     fit_alt = fit_alt,
     order = p,

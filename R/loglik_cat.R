@@ -46,6 +46,18 @@
 #'   \item Order 2: List with elements t3, t4, ..., tn, each c x c x c array
 #' }
 #'
+#' @examples
+#' set.seed(1)
+#' y <- simulate_cat(n_subjects = 40, n_time = 5, order = 1, n_categories = 3)
+#' fit <- fit_cat(y, order = 1, n_categories = 3)
+#' logL_cat(
+#'   y = y,
+#'   order = 1,
+#'   marginal = fit$marginal,
+#'   transition = fit$transition,
+#'   n_categories = 3
+#' )
+#'
 #' @references
 #' Xie, Y. and Zimmerman, D. L. (2013). Antedependence models for nonstationary
 #' categorical longitudinal data with ignorable missingness: likelihood-based

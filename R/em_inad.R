@@ -3,7 +3,7 @@
 #' Fits INAD models using the Expectation-Maximization algorithm.
 #' This is an alternative to direct likelihood optimization.
 #'
-#' For Gaussian and CAT EM entry points, see \code{\link{em_ad}} and
+#' For Gaussian and CAT EM entry points, see \code{\link{em_gau}} and
 #' \code{\link{em_cat}}. For CAT specifically, \code{fit_cat()} supports
 #' \code{na_action = "em"} for orders 0/1 and \code{na_action = "marginalize"}
 #' for order 2 missing-data fits.
@@ -23,7 +23,21 @@
 #' @param verbose Logical; if TRUE, print iteration progress.
 #'
 #' @return A list with class "inad_fit" containing estimated parameters.
-#' @seealso \code{\link{em_ad}}, \code{\link{em_cat}}, \code{\link{fit_inad}},
+#'
+#' @examples
+#' set.seed(1)
+#' y <- simulate_inad(
+#'   n_subjects = 50,
+#'   n_time = 5,
+#'   order = 1,
+#'   thinning = "binom",
+#'   innovation = "pois",
+#'   alpha = 0.25,
+#'   theta = 2
+#' )
+#' fit <- em_inad(y, order = 1, thinning = "binom", innovation = "pois", max_iter = 20, tol = 1e-6)
+#' fit$log_l
+#' @seealso \code{\link{em_gau}}, \code{\link{em_cat}}, \code{\link{fit_inad}},
 #'   \code{\link{fit_cat}}
 #' @export
 em_inad <- function(y, order = 1, thinning = "binom", innovation = "pois",
@@ -37,11 +51,9 @@ em_inad <- function(y, order = 1, thinning = "binom", innovation = "pois",
   if (order >= n_time) stop("order must be less than n_time")
   thinning <- match.arg(thinning, c("binom", "pois", "nbinom"))
   innovation <- match.arg(innovation, c("pois", "bell", "nbinom"))
-  if (is.null(blocks)) blocks <- rep(1L, n_subjects)
-  if (length(blocks) != n_subjects) stop("blocks must have length n_subjects")
-  if (any(is.na(blocks))) stop("blocks must not contain missing values")
-  blocks <- as.integer(factor(blocks))
-  n_blocks <- max(blocks)
+  block_info <- .normalize_blocks(blocks, n_subjects)
+  blocks <- block_info$blocks_id
+  n_blocks <- block_info$n_blocks
   
   if (!(thinning == "binom" && innovation == "pois")) {
     warning("EM is optimized for binom-pois. Other combinations use approximations.")
@@ -88,7 +100,9 @@ em_inad <- function(y, order = 1, thinning = "binom", innovation = "pois",
     alpha = alpha, theta = theta, tau = tau,
     log_l = loglik_new, iterations = iter, converged = converged, loglik_trace = loglik_trace,
     settings = list(order = order, thinning = thinning, innovation = innovation,
-                    blocks = blocks, n_subjects = n_subjects, n_time = n_time, n_blocks = n_blocks, method = "em")
+                    blocks = if (n_blocks > 1L) blocks else NULL,
+                    block_levels = block_info$block_levels,
+                    n_subjects = n_subjects, n_time = n_time, n_blocks = n_blocks, method = "em")
   )
   class(result) <- "inad_fit"
   result
@@ -206,6 +220,11 @@ print.inad_fit <- function(x, digits = 4, ...) {
   cat("\n", paste(rep("=", 40), collapse = ""), "\n\n")
   cat("Order:", x$settings$order, " Thinning:", x$settings$thinning, " Innovation:", x$settings$innovation, "\n")
   cat("Log-likelihood:", round(x$log_l, digits), "\n")
+  if (!is.null(x$aic)) cat("AIC:", round(x$aic, digits), "\n")
+  if (!is.null(x$bic)) cat("BIC:", round(x$bic, digits), "\n")
+  if (!is.null(x$n_params)) cat("Parameters:", x$n_params, "\n")
+  if (!is.null(x$n_missing)) cat("Missing values:", x$n_missing, "\n")
+  if (!is.null(x$convergence)) cat("Convergence code:", x$convergence, "\n")
   if (!is.null(x$iterations)) cat("Iterations:", x$iterations, " Converged:", x$converged, "\n")
   invisible(x)
 }

@@ -15,6 +15,20 @@
 #' \deqn{BIC = -2 \times \ell + k \times \log(N)}
 #' where \eqn{\ell} is the log-likelihood, \eqn{k} is the number of free parameters,
 #' and \eqn{N} is the number of subjects.
+#'
+#' @examples
+#' set.seed(1)
+#' y <- simulate_inad(
+#'   n_subjects = 40,
+#'   n_time = 5,
+#'   order = 1,
+#'   thinning = "binom",
+#'   innovation = "pois",
+#'   alpha = 0.3,
+#'   theta = 2
+#' )
+#' fit <- fit_inad(y, order = 1, thinning = "binom", innovation = "pois", max_iter = 20)
+#' bic_inad(fit, n_subjects = nrow(y))
 #' @export
 bic_inad <- function(fit, n_subjects = NULL) {
     if (is.null(n_subjects)) {
@@ -49,6 +63,20 @@ bic_inad <- function(fit, n_subjects = NULL) {
 #' \deqn{AIC = -2 \times \ell + 2k}
 #' where \eqn{\ell} is the log-likelihood and \eqn{k} is the number of free
 #' parameters.
+#'
+#' @examples
+#' set.seed(1)
+#' y <- simulate_inad(
+#'   n_subjects = 40,
+#'   n_time = 5,
+#'   order = 1,
+#'   thinning = "binom",
+#'   innovation = "pois",
+#'   alpha = 0.3,
+#'   theta = 2
+#' )
+#' fit <- fit_inad(y, order = 1, thinning = "binom", innovation = "pois", max_iter = 20)
+#' aic_inad(fit)
 #' @export
 aic_inad <- function(fit) {
     k <- .count_params_inad_fit(fit)

@@ -79,7 +79,7 @@ set.seed(123)
 cat("\n=== Example 1: Monotone dropout ===\n")
 n_subjects <- 80
 n_time <- 6
-y_complete <- simulate_ad(
+y_complete <- simulate_gau(
   n_subjects = n_subjects,
   n_time = n_time,
   order = 1,
@@ -96,14 +96,14 @@ for (s in dropout_subjects) {
 }
 print_missing(summarize_missing(y_dropout))
 
-fit_em <- fit_ad(
+fit_em <- fit_gau(
   y_dropout,
   order = 1,
   na_action = "em",
   em_max_iter = 100,
   em_verbose = FALSE
 )
-fit_cc <- fit_ad(y_dropout, order = 1, na_action = "complete")
+fit_cc <- fit_gau(y_dropout, order = 1, na_action = "complete")
 print_fit("EM fit:", fit_em)
 print_fit("Complete-case fit:", fit_cc)
 
@@ -118,7 +118,7 @@ mcar_idx <- sample(length(y_mcar), size = round(0.15 * length(y_mcar)))
 y_mcar[mcar_idx] <- NA
 print_missing(summarize_missing(y_mcar))
 
-fit_mcar_em <- fit_ad(
+fit_mcar_em <- fit_gau(
   y_mcar,
   order = 1,
   na_action = "em",
@@ -130,7 +130,7 @@ print_fit("EM fit (MCAR):", fit_mcar_em)
 cat("=== Example 3: Block effects with missing data ===\n")
 n_per_group <- 40
 blocks <- c(rep(1L, n_per_group), rep(2L, n_per_group))
-y_blocks <- simulate_ad(
+y_blocks <- simulate_gau(
   n_subjects = 2 * n_per_group,
   n_time = n_time,
   order = 1,
@@ -146,7 +146,7 @@ blocks_missing_idx <- sample(length(y_blocks_missing), size = round(0.10 * lengt
 y_blocks_missing[blocks_missing_idx] <- NA
 print_missing(summarize_missing(y_blocks_missing))
 
-fit_blocks <- fit_ad(
+fit_blocks <- fit_gau(
   y_blocks_missing,
   order = 1,
   blocks = blocks,
@@ -157,8 +157,8 @@ fit_blocks <- fit_ad(
 print_fit("EM fit with blocks:", fit_blocks)
 cat("Estimated tau:", paste(round(fit_blocks$tau, 2), collapse = ", "), "\n\n")
 
-cat("=== Example 4: logL_ad with different missing-data actions ===\n")
-ll_marginalize <- logL_ad(
+cat("=== Example 4: logL_gau with different missing-data actions ===\n")
+ll_marginalize <- logL_gau(
   y_dropout,
   order = 1,
   mu = fit_em$mu,
@@ -166,7 +166,7 @@ ll_marginalize <- logL_ad(
   sigma = fit_em$sigma,
   na_action = "marginalize"
 )
-ll_complete <- logL_ad(
+ll_complete <- logL_gau(
   y_dropout,
   order = 1,
   mu = fit_em$mu,

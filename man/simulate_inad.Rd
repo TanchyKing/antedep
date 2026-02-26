@@ -68,3 +68,16 @@ and \code{alpha} are ignored.
 If \code{blocks} is provided, innovations include a block effect and use the
 parameter \code{theta[t] + tau[blocks[i]]} for subject i at time t.
 }
+\examples{
+y <- simulate_inad(
+  n_subjects = 20,
+  n_time = 6,
+  order = 1,
+  thinning = "binom",
+  innovation = "pois",
+  alpha = 0.3,
+  theta = 2,
+  seed = 42
+)
+dim(y)
+}

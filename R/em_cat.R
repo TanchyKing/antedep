@@ -40,6 +40,13 @@
 #' A final E-step is run before returning so that \code{log_l}/AIC/BIC and
 #' expected cell counts correspond exactly to the returned parameter values.
 #'
+#' @examples
+#' set.seed(1)
+#' y <- simulate_cat(n_subjects = 40, n_time = 5, order = 1, n_categories = 3)
+#' y[sample(length(y), 10)] <- NA
+#' fit <- em_cat(y, order = 1, n_categories = 3, max_iter = 20, tol = 1e-5)
+#' fit$settings$na_action
+#'
 #' @seealso \code{\link{fit_cat}}, \code{\link{logL_cat}}
 #' @export
 em_cat <- function(y, order = 1, blocks = NULL, homogeneous = TRUE,

@@ -45,6 +45,40 @@ test_that("lrt_order_cat works for AD(1) vs AD(2)", {
   # (but with random data this isn't guaranteed, so just check it runs)
 })
 
+test_that("lrt_order_cat supports score and mlrt options", {
+  set.seed(460)
+  y <- simulate_cat(250, 5, order = 1, n_categories = 2)
+
+  score_test <- lrt_order_cat(y, order_null = 0, order_alt = 1, test = "score")
+  expect_s3_class(score_test, "cat_lrt")
+  expect_equal(score_test$test, "score")
+  expect_true(score_test$lrt_stat >= 0)
+  expect_true(score_test$p_value >= 0 && score_test$p_value <= 1)
+
+  mlrt_test <- lrt_order_cat(y, order_null = 0, order_alt = 1, test = "mlrt")
+  expect_s3_class(mlrt_test, "cat_lrt")
+  expect_equal(mlrt_test$test, "mlrt")
+  expect_true(is.finite(mlrt_test$e_hat_mlrt))
+  expect_true(mlrt_test$e_hat_mlrt > 0)
+  expect_true(mlrt_test$lrt_stat >= 0)
+  expect_true(mlrt_test$p_value >= 0 && mlrt_test$p_value <= 1)
+
+  lrt_test <- lrt_order_cat(y, order_null = 0, order_alt = 1, test = "lrt")
+  expect_false(isTRUE(all.equal(mlrt_test$lrt_stat, lrt_test$lrt_stat, tolerance = 1e-12)))
+})
+
+test_that("lrt_order_cat supports wald option", {
+  set.seed(461)
+  y <- simulate_cat(250, 5, order = 1, n_categories = 2)
+
+  wald_test <- lrt_order_cat(y, order_null = 0, order_alt = 1, test = "wald")
+  expect_s3_class(wald_test, "cat_lrt")
+  expect_equal(wald_test$test, "wald")
+  expect_true(is.finite(wald_test$lrt_stat))
+  expect_true(wald_test$lrt_stat >= 0)
+  expect_true(wald_test$p_value >= 0 && wald_test$p_value <= 1)
+})
+
 
 test_that("lrt_order_cat works with pre-fitted models", {
   set.seed(789)
@@ -183,6 +217,38 @@ test_that("lrt_homogeneity_cat accepts homogeneous data", {
   expect_true(test$p_value >= 0 && test$p_value <= 1)
 })
 
+test_that("lrt_homogeneity_cat supports score option", {
+  set.seed(445)
+  y1 <- simulate_cat(120, 4, order = 1, n_categories = 2)
+  y2 <- simulate_cat(120, 4, order = 1, n_categories = 2)
+  y <- rbind(y1, y2)
+  blocks <- c(rep(1, 120), rep(2, 120))
+
+  score_test <- lrt_homogeneity_cat(y, blocks, order = 1, test = "score")
+  expect_s3_class(score_test, "cat_lrt")
+  expect_equal(score_test$test, "score")
+  expect_true(score_test$lrt_stat >= 0)
+  expect_true(score_test$p_value >= 0 && score_test$p_value <= 1)
+})
+
+test_that("lrt_homogeneity_cat supports mlrt option", {
+  old_opt <- options(antedep.cat_mlrt_nsim = 20L, antedep.cat_mlrt_seed = 101L)
+  on.exit(options(old_opt), add = TRUE)
+
+  set.seed(446)
+  y1 <- simulate_cat(110, 4, order = 1, n_categories = 2)
+  y2 <- simulate_cat(110, 4, order = 1, n_categories = 2)
+  y <- rbind(y1, y2)
+  blocks <- c(rep(1, 110), rep(2, 110))
+
+  mlrt_test <- lrt_homogeneity_cat(y, blocks, order = 1, test = "mlrt")
+  expect_s3_class(mlrt_test, "cat_lrt")
+  expect_equal(mlrt_test$test, "mlrt")
+  expect_true(is.finite(mlrt_test$e_hat_mlrt))
+  expect_true(mlrt_test$e_hat_mlrt > 0)
+  expect_true(mlrt_test$lrt_stat >= 0)
+})
+
 
 test_that("lrt_homogeneity_cat works with pre-fitted models", {
   set.seed(555)
@@ -255,6 +321,29 @@ test_that("lrt_timeinvariance_cat detects time-varying transitions", {
   expect_true(test$p_value < 0.05)
 })
 
+test_that("lrt_timeinvariance_cat supports score option", {
+  set.seed(778)
+  y <- simulate_cat(300, 5, order = 1, n_categories = 2)
+  score_test <- lrt_timeinvariance_cat(y, order = 1, test = "score")
+  expect_s3_class(score_test, "cat_lrt")
+  expect_equal(score_test$test, "score")
+  expect_true(score_test$lrt_stat >= 0)
+})
+
+test_that("lrt_timeinvariance_cat supports mlrt option", {
+  old_opt <- options(antedep.cat_mlrt_nsim = 20L, antedep.cat_mlrt_seed = 202L)
+  on.exit(options(old_opt), add = TRUE)
+
+  set.seed(779)
+  y <- simulate_cat(280, 5, order = 1, n_categories = 2)
+  mlrt_test <- lrt_timeinvariance_cat(y, order = 1, test = "mlrt")
+  expect_s3_class(mlrt_test, "cat_lrt")
+  expect_equal(mlrt_test$test, "mlrt")
+  expect_true(is.finite(mlrt_test$e_hat_mlrt))
+  expect_true(mlrt_test$e_hat_mlrt > 0)
+  expect_true(mlrt_test$lrt_stat >= 0)
+})
+
 
 test_that("lrt_timeinvariance_cat validates inputs", {
   y <- simulate_cat(50, 4, order = 1, n_categories = 2)
@@ -275,4 +364,52 @@ test_that("print.cat_lrt works", {
   
   # Just verify it doesn't error
   expect_output(print(test), "Likelihood Ratio Test")
+})
+
+test_that("lrt_stationarity_cat supports score option (order 1)", {
+  set.seed(889)
+  y <- simulate_cat(250, 5, order = 1, n_categories = 2)
+  score_test <- lrt_stationarity_cat(y, order = 1, test = "score")
+  expect_s3_class(score_test, "cat_lrt")
+  expect_equal(score_test$test, "score")
+  expect_true(score_test$lrt_stat >= 0)
+  expect_true(score_test$p_value >= 0 && score_test$p_value <= 1)
+})
+
+test_that("lrt_stationarity_cat supports score option (order 2)", {
+  set.seed(890)
+  y <- simulate_cat(250, 6, order = 2, n_categories = 2)
+  score_test <- lrt_stationarity_cat(y, order = 2, test = "score")
+  expect_s3_class(score_test, "cat_lrt")
+  expect_equal(score_test$test, "score")
+  expect_true(score_test$lrt_stat >= 0)
+  expect_true(score_test$p_value >= 0 && score_test$p_value <= 1)
+})
+
+test_that("lrt_stationarity_cat blocks lrt/mlrt at order 2", {
+  set.seed(892)
+  y <- simulate_cat(180, 6, order = 2, n_categories = 2)
+  expect_error(
+    lrt_stationarity_cat(y, order = 2, test = "lrt"),
+    "not supported for order >= 2"
+  )
+  expect_error(
+    lrt_stationarity_cat(y, order = 2, test = "mlrt"),
+    "not supported for order >= 2"
+  )
+})
+
+test_that("lrt_stationarity_cat supports mlrt option (order 1)", {
+  old_opt <- options(antedep.cat_mlrt_nsim = 20L, antedep.cat_mlrt_seed = 303L)
+  on.exit(options(old_opt), add = TRUE)
+
+  set.seed(891)
+  y <- simulate_cat(220, 5, order = 1, n_categories = 2)
+  mlrt_test <- lrt_stationarity_cat(y, order = 1, test = "mlrt")
+  expect_s3_class(mlrt_test, "cat_lrt")
+  expect_equal(mlrt_test$test, "mlrt")
+  expect_true(is.finite(mlrt_test$e_hat_mlrt))
+  expect_true(mlrt_test$e_hat_mlrt > 0)
+  expect_true(mlrt_test$lrt_stat >= 0)
+  expect_true(mlrt_test$p_value >= 0 && mlrt_test$p_value <= 1)
 })

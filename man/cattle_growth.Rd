@@ -15,9 +15,9 @@ A list with five components:
 }
 }
 \source{
-\url{https://www.stat.uiowa.edu/~dzimmer/Data-for-AD/cattle_growth_data_Treatment\%20A.txt}
+\url{https://homepage.divms.uiowa.edu/~dzimmer/Data-for-AD/cattle_growth_data_Treatment\%20A.txt}
 and
-\url{https://www.stat.uiowa.edu/~dzimmer/Data-for-AD/cattle_growth_data_Treatment\%20B.txt}
+\url{https://homepage.divms.uiowa.edu/~dzimmer/Data-for-AD/cattle_growth_data_Treatment\%20B.txt}
 }
 \usage{
 cattle_growth

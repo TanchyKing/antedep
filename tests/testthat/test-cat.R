@@ -105,6 +105,8 @@ test_that("fit_cat works for order 0", {
   expect_true(is.finite(fit0$log_l))
   expect_true(fit0$log_l < 0)
   expect_equal(fit0$n_params, 5)  # (c-1)*n = 1*5 = 5
+  expect_equal(fit0$n_obs, length(y_sim))
+  expect_equal(fit0$n_missing, 0)
 })
 
 
@@ -146,12 +148,14 @@ test_that("fit_cat missing-data modes behave correctly", {
   fit_complete_mode <- fit_cat(y_miss, order = 1, na_action = "complete")
   fit_complete_ref <- fit_cat(y_miss[keep, , drop = FALSE], order = 1)
   expect_equal(as.numeric(fit_complete_mode$log_l), as.numeric(fit_complete_ref$log_l), tolerance = 1e-10)
+  expect_equal(fit_complete_mode$n_missing, 0)
   
   # With no missing values, marginalize should reduce to complete-data fit.
   fit_full <- fit_cat(y, order = 1)
   fit_marg_no_missing <- fit_cat(y, order = 1, na_action = "marginalize")
   expect_equal(as.numeric(fit_marg_no_missing$log_l), as.numeric(fit_full$log_l), tolerance = 1e-10)
   expect_equal(fit_marg_no_missing$settings$na_action_effective, "complete")
+  expect_equal(fit_marg_no_missing$n_missing, 0)
 
   # EM entry point via fit_cat should be available for order 1.
   fit_em_mode <- fit_cat(y_miss, order = 1, na_action = "em", em_max_iter = 60)
@@ -344,6 +348,7 @@ test_that("block handling works for heterogeneous model", {
   
   # Heterogeneous should fit better
   expect_true(fit_hetero$log_l > fit_homo$log_l)
+  expect_equal(sort(fit_hetero$settings$block_levels), c("1", "2"))
   
   # Check parameter separation - use unname and wider tolerance (0.15)
   # With N=200 per group, standard error is about sqrt(p(1-p)/200) ~ 0.03-0.04
@@ -352,6 +357,17 @@ test_that("block handling works for heterogeneous model", {
   est_g2_t1 <- unname(fit_hetero$marginal$block_2$t1)
   expect_equal(est_g1_t1[1], 0.8, tolerance = 0.15)
   expect_equal(est_g2_t1[1], 0.3, tolerance = 0.15)
+})
+
+test_that("fit_cat preserves original block labels in settings", {
+  set.seed(654)
+  y <- simulate_cat(120, 4, order = 1, n_categories = 2)
+  blocks <- rep(c(5, 2), each = 60)
+
+  fit <- fit_cat(y, order = 1, blocks = blocks, homogeneous = FALSE)
+
+  expect_equal(sort(fit$settings$block_levels), c("2", "5"))
+  expect_equal(length(fit$marginal), 2)
 })
 
 

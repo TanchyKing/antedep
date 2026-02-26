@@ -3,15 +3,15 @@
 ## Immediate focus - Reviewer feedback sprint (effort ascending)
 
 - [x] (XS) Unify BIC documentation style across model families (Comment 2)
-  - Scope: `bic_cat`, `bic_ad`, `bic_inad` docs.
+  - Scope: `bic_cat`, `bic_gau`, `bic_inad` docs.
   - Actions:
-    - Add consistent `@details` text to `bic_ad` and `bic_inad` (same formula-style level as `bic_cat`).
+    - Add consistent `@details` text to `bic_gau` and `bic_inad` (same formula-style level as `bic_cat`).
     - Standardize `@return` wording to "A numeric scalar BIC value." for all three.
   - Done when:
     - `man/bic_*.Rd` pages show matching `Value` phrasing and parallel `Details` sections.
 
 - [x] (XS) Standardize maximum-likelihood wording in `fit_*` descriptions (Comment 6)
-  - Scope: `fit_ad`, `fit_cat`, `fit_inad` docs.
+  - Scope: `fit_gau`, `fit_cat`, `fit_inad` docs.
   - Actions:
     - Ensure each `fit_*` help page explicitly states that estimation is likelihood-based / MLE.
     - Keep wording parallel so users can compare model families quickly.
@@ -19,9 +19,9 @@
     - All three `man/fit_*.Rd` descriptions use consistent estimation language.
 
 - [x] (S) Clarify Gaussian-specific scope and naming strategy for AD helpers (Comment 1)
-  - Scope: `fit_ad`, `bic_ad`, `bic_order_ad` and related docs.
+  - Scope: `fit_gau`, `bic_gau`, `bic_order_gau` and related docs.
   - Actions:
-    - Explicitly document that `*_ad` currently refers to Gaussian AD functions.
+    - Explicitly document that `*_gau` currently refers to Gaussian AD functions.
     - Decide non-breaking naming plan: keep existing names and optionally add alias wrappers (`fit_gau`, `bic_gau`, `bic_order_gau`).
   - Done when:
     - No ambiguity remains about overlap with CAT/INAD function families.
@@ -29,25 +29,25 @@
 - [x] (S) Improve EM interface uniformity/discoverability across families (Comment 5)
   - Scope: `em_inad`, AD EM pathway, docs/examples.
   - Actions:
-    - Document clearly that Gaussian EM is available via `fit_ad(..., na_action = "em")`.
-    - Decide whether to export `em_ad` wrapper for symmetry (without changing AD internals).
+    - Document clearly that Gaussian EM is available via `fit_gau(..., na_action = "em")`.
+    - Decide whether to export `em_gau` wrapper for symmetry (without changing AD internals).
     - Record explicit rationale for CAT (no separate EM helper yet, or planned roadmap).
   - Done when:
     - Users can immediately see where EM is available for each data type.
 
 - [x] (M) Add AIC counterparts for AD and INAD (Comment 3)
-  - Scope: `aic_ad`, `aic_inad`, exports, docs, tests.
+  - Scope: `aic_gau`, `aic_inad`, exports, docs, tests.
   - Actions:
-    - Implement and export `aic_ad` and `aic_inad` to mirror `aic_cat`.
+    - Implement and export `aic_gau` and `aic_inad` to mirror `aic_cat`.
     - Add unit tests against manual formulas and include examples in docs.
   - Done when:
     - AIC API is symmetric across Gaussian/CAT/INAD model families.
 
-- [x] (L) Add Gaussian confidence-interval helper (`ci_ad`) (Comment 4)
-  - Scope: new `ci_ad` API, docs, tests.
+- [x] (L) Add Gaussian confidence-interval helper (`ci_gau`) (Comment 4)
+  - Scope: new `ci_gau` API, docs, tests.
   - Actions:
     - Define CI target parameters (e.g., `mu`, `phi`, `sigma`, optional `tau`) and method (Wald/profile/bootstrap where feasible).
-    - Implement `ci_ad` with guardrails for unsupported modes and missing-data behavior.
+    - Implement `ci_gau` with guardrails for unsupported modes and missing-data behavior.
     - Add documentation/examples and tests for standard usage.
   - Done when:
     - CI coverage exists for Gaussian/CAT/INAD families with clearly documented scope.
@@ -92,7 +92,7 @@
 
 - [x] Fix stale missing-data example script
   - File: `examples/example_missing_data.R`.
-  - Issue: script sources non-existing root files (`missing_utils.R`, `fit_ad_em.R`, etc.).
+  - Issue: script sources non-existing root files (`missing_utils.R`, `fit_gau_em.R`, etc.).
   - Done when:
     - Script runs from package root using package functions only.
     - No `source("...")` paths that do not exist.
@@ -107,7 +107,7 @@
 ## P1 - Statistical completeness
 
 - [x] Complete AD order-2 missing-data implementation
-  - Files: `R/fit_ad_em.R`, `R/logL_ad_missing.R`.
+  - Files: `R/fit_gau_em.R`, `R/logL_gau_missing.R`.
   - Current gap: simplified order-2 updates.
   - Done when:
     - Exact order-2 covariance and M-step are implemented.

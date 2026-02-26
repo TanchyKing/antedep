@@ -447,6 +447,12 @@ print.cat_fit <- function(x, ...) {
   cat("AIC:", round(x$aic, 4), "\n")
   cat("BIC:", round(x$bic, 4), "\n")
   cat("Parameters:", x$n_params, "\n")
+  if (!is.null(x$n_missing)) {
+    cat("Missing values:", x$n_missing, "\n")
+  }
+  if (!is.null(x$convergence)) {
+    cat("Convergence code:", x$convergence, "\n")
+  }
   
   invisible(x)
 }

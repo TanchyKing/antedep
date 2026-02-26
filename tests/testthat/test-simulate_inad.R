@@ -193,3 +193,31 @@ test_that("blocks and tau affect innovations as intended", {
     mn2 <- mean(y_nonseq[blocks_nonseq == 5L, ])
     expect_true(mn2 > mn1)
 })
+
+test_that("nbinom thinning handles zero previous counts without introducing NA", {
+    set.seed(99)
+    y1 <- simulate_inad(
+        n_subjects = 200,
+        n_time = 6,
+        order = 1,
+        thinning = "nbinom",
+        innovation = "pois",
+        alpha = rep(0.6, 6),
+        theta = 1e-12
+    )
+    expect_true(any(y1[, 1L] == 0L))
+    expect_false(anyNA(y1))
+
+    set.seed(100)
+    y2 <- simulate_inad(
+        n_subjects = 200,
+        n_time = 7,
+        order = 2,
+        thinning = "nbinom",
+        innovation = "pois",
+        alpha = rbind(c(0, 0.6, rep(0.6, 5)), c(0, 0, rep(0.4, 5))),
+        theta = 1e-12
+    )
+    expect_true(any(y2[, 1L] == 0L))
+    expect_false(anyNA(y2))
+})

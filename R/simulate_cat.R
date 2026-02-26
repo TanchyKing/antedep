@@ -53,6 +53,10 @@
 #' categorical longitudinal data with ignorable missingness: likelihood-based
 #' inference. \emph{Statistics in Medicine}, 32, 3274-3289.
 #'
+#' @examples
+#' y <- simulate_cat(n_subjects = 30, n_time = 5, order = 1, n_categories = 3, seed = 1)
+#' dim(y)
+#'
 #' @export
 simulate_cat <- function(n_subjects, n_time, order = 1, n_categories = 2,
                          marginal = NULL, transition = NULL,

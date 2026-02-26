@@ -58,7 +58,9 @@
 #'
 #' @export
 lrt_stationarity_cat <- function(y, order = 1, blocks = NULL,
-                                  homogeneous = TRUE, n_categories = NULL) {
+                                  homogeneous = TRUE, n_categories = NULL,
+                                  test = c("lrt", "score", "mlrt")) {
+  test <- match.arg(test)
   if (anyNA(y)) {
     .stop_cat_missing_inference("lrt_stationarity_cat")
   }
@@ -77,6 +79,12 @@ lrt_stationarity_cat <- function(y, order = 1, blocks = NULL,
   if (p >= n_time) {
     stop("order must be less than n_time")
   }
+  if (p >= 2L && test %in% c("lrt", "mlrt")) {
+    stop(
+      "lrt_stationarity_cat with test='lrt' or test='mlrt' is not supported for order >= 2 due to a known null-model specification issue; use test='score' for order 2.",
+      call. = FALSE
+    )
+  }
   
   # Fit unconstrained (non-stationary) model - this is the alternative
   fit_alt <- fit_cat(y, order = p, blocks = blocks,
@@ -86,13 +94,90 @@ lrt_stationarity_cat <- function(y, order = 1, blocks = NULL,
   fit_null <- .fit_cat_stationary(y, p, c, blocks, homogeneous)
   
   # Compute LRT statistic
-  lrt_stat <- -2 * (fit_null$log_l - fit_alt$log_l)
+  lrt_stat_raw <- -2 * (fit_null$log_l - fit_alt$log_l)
   
   # Degrees of freedom
   df <- fit_alt$n_params - fit_null$n_params
   
+  # Select test statistic
+  stat_value <- lrt_stat_raw
+  e_hat_mlrt <- NA_real_
+  if (identical(test, "score")) {
+    pops <- .cat_split_populations(y, blocks = blocks, fit = fit_null)
+    stat_value <- 0
+    for (pop in pops) {
+      stat_marg <- pop$marginal[["stationary"]]
+      stat_trans <- pop$transition[["stationary"]]
+      stat_value <- stat_value + .cat_score_stationarity_single(
+        y = pop$y,
+        p = p,
+        c = c,
+        stationary_marginal = stat_marg,
+        stationary_transition = stat_trans
+      )
+    }
+  } else if (identical(test, "mlrt")) {
+    blocks_eff <- .cat_resolve_blocks(blocks, fit_alt)
+    sim_params <- tryCatch(
+      .cat_stationary_sim_params(fit_null),
+      error = function(e) e
+    )
+
+    if (inherits(sim_params, "error")) {
+      warning(
+        paste0(
+          "Modified stationarity LRT unavailable for this model: ",
+          sim_params$message,
+          ". Returning unmodified LRT statistic."
+        ),
+        call. = FALSE
+      )
+    } else {
+      simulate_fn <- function() {
+        simulate_cat(
+          n_subjects = n_subjects,
+          n_time = n_time,
+          order = p,
+          n_categories = c,
+          marginal = sim_params$marginal,
+          transition = sim_params$transition,
+          blocks = blocks_eff,
+          homogeneous = homogeneous
+        )
+      }
+      lrt_raw_fn <- function(y_b) {
+        fit1_b <- fit_cat(
+          y_b,
+          order = p,
+          blocks = blocks_eff,
+          homogeneous = homogeneous,
+          n_categories = c,
+          na_action = "fail"
+        )
+        fit0_b <- .fit_cat_stationary(
+          y_b,
+          p = p,
+          c = c,
+          blocks = blocks_eff,
+          homogeneous = homogeneous
+        )
+        -2 * (fit0_b$log_l - fit1_b$log_l)
+      }
+
+      e_hat_mlrt <- .cat_mlrt_expected_lrt_boot(simulate_fn, lrt_raw_fn)
+      if (is.finite(e_hat_mlrt) && e_hat_mlrt > 0) {
+        stat_value <- lrt_stat_raw * df / e_hat_mlrt
+      } else {
+        warning(
+          "Modified LRT scaling factor could not be estimated; returning unmodified LRT statistic.",
+          call. = FALSE
+        )
+      }
+    }
+  }
+
   # P-value from chi-square
-  p_value <- stats::pchisq(lrt_stat, df = df, lower.tail = FALSE)
+  p_value <- stats::pchisq(stat_value, df = df, lower.tail = FALSE)
   
   # Build summary table
   table_df <- data.frame(
@@ -105,9 +190,13 @@ lrt_stationarity_cat <- function(y, order = 1, blocks = NULL,
   
   # Assemble output
   out <- list(
-    lrt_stat = lrt_stat,
+    lrt_stat = stat_value,
+    statistic = stat_value,
+    lrt_stat_raw = lrt_stat_raw,
+    e_hat_mlrt = e_hat_mlrt,
     df = df,
     p_value = p_value,
+    test = test,
     fit_null = fit_null,
     fit_alt = fit_alt,
     order = p,
@@ -346,7 +435,9 @@ lrt_stationarity_cat <- function(y, order = 1, blocks = NULL,
 #'
 #' @export
 run_stationarity_tests_cat <- function(y, order = 1, blocks = NULL,
-                                        homogeneous = TRUE, n_categories = NULL) {
+                                        homogeneous = TRUE, n_categories = NULL,
+                                        test = c("lrt", "score", "mlrt")) {
+  test <- match.arg(test)
   if (anyNA(y)) {
     .stop_cat_missing_inference("run_stationarity_tests_cat")
   }
@@ -354,12 +445,14 @@ run_stationarity_tests_cat <- function(y, order = 1, blocks = NULL,
   # Run time-invariance test
   test_ti <- lrt_timeinvariance_cat(y, order = order, blocks = blocks,
                                      homogeneous = homogeneous, 
-                                     n_categories = n_categories)
+                                     n_categories = n_categories,
+                                     test = test)
   
   # Run stationarity test
   test_stat <- lrt_stationarity_cat(y, order = order, blocks = blocks,
                                      homogeneous = homogeneous,
-                                     n_categories = n_categories)
+                                     n_categories = n_categories,
+                                     test = test)
   
   # Build summary table
   table_df <- data.frame(
