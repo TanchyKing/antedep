@@ -275,7 +275,12 @@ print.inad_ci <- function(x, ...) {
         for (s in 1:n) {
             b <- blocks[s]
             z <- y[s, 1]
-            la <- max(theta_hat + tau_hat[b], 1e-8)
+            if (innovation == "bell") {
+                mu <- .bell_mean_from_theta(theta_hat) + tau_hat[b]
+                la <- max(.bell_theta_from_mean(mu), 1e-8)
+            } else {
+                la <- max(theta_hat + tau_hat[b], 1e-8)
+            }
 
             if (innovation == "pois") {
                 Itt <- Itt + z / (la^2)
@@ -307,7 +312,12 @@ print.inad_ci <- function(x, ...) {
 
     for (s in 1:n) {
         b <- blocks[s]
-        la <- max(th + tau_hat[b], 1e-8)
+        if (innovation == "bell") {
+            mu <- .bell_mean_from_theta(th) + tau_hat[b]
+            la <- max(.bell_theta_from_mean(mu), 1e-8)
+        } else {
+            la <- max(th + tau_hat[b], 1e-8)
+        }
         acc <- .poster_general(m = m[s], n = nvec[s], alpha = a, lambda = la,
                                thinning = thinning, innovation = innovation,
                                nb_inno_size = nb_sz)
@@ -551,8 +561,12 @@ print.inad_ci <- function(x, ...) {
     alpha_ub <- 1 - eps_alpha
 
     lambda_ok <- function(theta_vec, tau_vec) {
-        lam <- outer(rep(1, n), theta_vec) + matrix(tau_vec[blocks], n, N)
-        all(is.finite(lam)) && all(lam > eps_pos)
+        mu <- if (innovation == "bell") {
+            outer(rep(1, n), .bell_mean_from_theta(theta_vec)) + matrix(tau_vec[blocks], n, N)
+        } else {
+            outer(rep(1, n), theta_vec) + matrix(tau_vec[blocks], n, N)
+        }
+        all(is.finite(mu)) && all(mu > eps_pos)
     }
 
     pack_par <- function(alpha, theta, tau, nb_inno_size, ord, B, N, innovation, tau_fix_idx) {
@@ -708,7 +722,11 @@ print.inad_ci <- function(x, ...) {
 
     bracket_one_side <- function(b, direction, step0) {
         tau_mle <- fit$tau[b]
-        lower_bound <- -min(fit$theta)
+        lower_bound <- if (innovation == "bell") {
+            -min(.bell_mean_from_theta(fit$theta))
+        } else {
+            -min(fit$theta)
+        }
         upper_bound <- max(abs(tau_mle) + 1, 1)
 
         x1 <- tau_mle
@@ -730,7 +748,11 @@ print.inad_ci <- function(x, ...) {
     tau_ci <- vector("list", length = B - 1)
     for (b in 2:B) {
         tau_mle <- fit$tau[b]
-        lower_bound <- -min(fit$theta)
+        lower_bound <- if (innovation == "bell") {
+            -min(.bell_mean_from_theta(fit$theta))
+        } else {
+            -min(fit$theta)
+        }
         upper_bound <- max(abs(tau_mle) + 1, 1)
         step0 <- (upper_bound - lower_bound) / 40
         if (!is.finite(step0) || step0 <= 0) step0 <- 0.1

@@ -113,6 +113,38 @@ test_that("fixed effect: invalid lambda yields -Inf", {
     expect_equal(ll, -Inf)
 })
 
+test_that("bell FE tau is constrained by innovation mean, not raw Bell theta", {
+    y <- matrix(0L, nrow = 2, ncol = 3)
+    blocks <- c(1L, 2L)
+    theta <- rep(0.5, ncol(y))
+
+    # Valid under mean-shifted Bell FE: 0.5*exp(0.5) - 0.5 > 0
+    ll_ok <- logL_inad(
+        y = y,
+        order = 0,
+        thinning = "binom",
+        innovation = "bell",
+        alpha = 0.1,
+        theta = theta,
+        blocks = blocks,
+        tau = -0.5
+    )
+    expect_true(is.finite(ll_ok))
+
+    # Invalid because Bell innovation mean becomes nonpositive.
+    ll_bad <- logL_inad(
+        y = y,
+        order = 0,
+        thinning = "binom",
+        innovation = "bell",
+        alpha = 0.1,
+        theta = theta,
+        blocks = blocks,
+        tau = -1.0
+    )
+    expect_equal(ll_bad, -Inf)
+})
+
 test_that("innovation nbinom requires nb_inno_size", {
     set.seed(3)
     y <- matrix(rpois(20, 2), nrow = 4)

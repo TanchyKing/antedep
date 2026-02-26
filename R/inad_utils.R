@@ -9,6 +9,52 @@
     m + log(sum(exp(x - m)))
 }
 
+#' Convert Bell parameter to Bell mean
+#' @keywords internal
+.bell_mean_from_theta <- function(theta) {
+    theta * exp(theta)
+}
+
+#' Convert Bell mean to Bell parameter
+#' @keywords internal
+.bell_theta_from_mean <- function(mu) {
+    mu <- as.numeric(mu)
+    out <- rep(NA_real_, length(mu))
+    ok <- is.finite(mu) & mu > 0
+    if (!any(ok)) return(out)
+
+    mu_ok <- mu[ok]
+    uniq <- unique(mu_ok)
+    th_uniq <- vapply(uniq, solve_theta_bell, numeric(1))
+    out[ok] <- th_uniq[match(mu_ok, uniq)]
+    out
+}
+
+#' Effective innovation distribution parameter under block effects
+#'
+#' For Poisson and negative binomial innovations, block effects are additive on
+#' the mean. For Bell innovations, block effects are additive on the innovation
+#' mean `theta * exp(theta)`, then mapped back to the Bell parameter.
+#'
+#' @keywords internal
+.inad_effective_innovation_param <- function(theta, tau, innovation) {
+    if (innovation == "bell") {
+        mu <- .bell_mean_from_theta(theta) + tau
+        if (any(!is.finite(mu) | mu <= 0)) return(rep(NA_real_, length(mu)))
+        return(.bell_theta_from_mean(mu))
+    }
+    theta + tau
+}
+
+#' Effective innovation mean under block effects
+#' @keywords internal
+.inad_effective_innovation_mean <- function(theta, tau, innovation) {
+    if (innovation == "bell") {
+        return(.bell_mean_from_theta(theta) + tau)
+    }
+    theta + tau
+}
+
 #' Thinning probability vector
 #'
 #' Computes the probability mass for thinned counts.
@@ -47,7 +93,8 @@
 #' Computes the probability mass for innovation counts.
 #'
 #' @param u_vals Integer vector of possible innovation values.
-#' @param lam Innovation mean parameter (theta + tau for FE models).
+#' @param lam Innovation parameter used by the PMF. This is the mean for
+#'   `"pois"` and `"nbinom"`, and the Bell parameter for `"bell"`.
 #' @param innovation One of "pois", "bell", "nbinom".
 #' @param sz Size parameter for negative binomial innovation (ignored otherwise).
 #'

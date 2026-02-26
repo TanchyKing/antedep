@@ -127,6 +127,16 @@
 
 ## P2 - Inference and workflow hardening
 
+- [ ] Robustify INAD order-2 optimization under nbinom thinning
+  - Scope: `fit_inad(order = 2)` for `thinning = "nbinom"` (notably with `innovation = "bell"` and `innovation = "nbinom"`).
+  - Issue: default initialization can hit penalty solutions (`log_l = -1e10`, `BIC = 2e+10`) on `bolus_inad` in some no-block configurations.
+  - Actions:
+    - Add retry/multi-start fallback when a penalty solution is reached.
+    - Seed fallback starts with small/moderate `alpha` patterns and multiple `nb_inno_size` starts.
+    - Keep best finite likelihood fit and expose diagnostics to users.
+  - Done when:
+    - `order=2` no longer collapses to penalty values on standard benchmark data with default settings.
+
 - [x] Extend CI/inference utilities for missing-data fits
   - Scope: `ci_*` and `lrt_*` behavior with incomplete data.
   - Done when:

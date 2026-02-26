@@ -221,3 +221,26 @@ test_that("nbinom thinning handles zero previous counts without introducing NA",
     expect_true(any(y2[, 1L] == 0L))
     expect_false(anyNA(y2))
 })
+
+test_that("bell block effects are applied on innovation mean scale", {
+    n_sub <- 4000
+    blocks <- c(rep(1L, n_sub / 2), rep(2L, n_sub / 2))
+
+    set.seed(321)
+    y <- simulate_inad(
+        n_subjects = n_sub,
+        n_time = 1,
+        order = 0,
+        innovation = "bell",
+        theta = 0.5,
+        blocks = blocks,
+        tau = -0.5
+    )
+
+    # Base Bell mean at theta=0.5 is 0.5*exp(0.5) ~= 0.824.
+    # Group 2 mean should be lower by about 0.5 on the innovation-mean scale.
+    m1 <- mean(y[blocks == 1L, 1L])
+    m2 <- mean(y[blocks == 2L, 1L])
+    expect_gt(m1, m2)
+    expect_equal(m1 - m2, 0.5, tolerance = 0.12)
+})

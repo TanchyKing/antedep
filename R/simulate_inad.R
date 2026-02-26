@@ -9,8 +9,9 @@
 #' are generated from the innovation distribution and the thinning operator
 #' and `alpha` are ignored.
 #'
-#' If `blocks` is provided, innovations include a block effect and use the
-#' parameter `theta[t] + tau[blocks[i]]` for subject i at time t.
+#' If `blocks` is provided, innovations include a block effect. For Poisson and
+#' negative binomial innovations, the innovation mean is `theta[t] + tau[blocks[i]]`.
+#' For Bell innovations, the innovation mean is `theta[t] * exp(theta[t]) + tau[blocks[i]]`.
 #'
 #' @param n_subjects number of subjects
 #' @param n_time number of time points
@@ -199,22 +200,25 @@ simulate_inad <- function(n_subjects,
     y <- matrix(0L, nrow = n_subjects, ncol = n_time)
 
     draw_innovation <- function(t_index) {
-        # eff = theta[t] + tau[block] is the mean of the innovation
-        eff <- theta[t_index] + tau[blocks]
-        if (any(eff <= 0)) {
+        eff_mean <- .inad_effective_innovation_mean(theta[t_index], tau[blocks], innovation)
+        if (any(!is.finite(eff_mean)) || any(eff_mean <= 0)) {
+            if (innovation == "bell") {
+                stop("theta[t] * exp(theta[t]) + tau[block] must be positive for all subjects")
+            }
             stop("theta[t] + tau[block] must be positive for all subjects")
         }
         if (innovation == "pois") {
-            stats::rpois(n_subjects, lambda = eff)
+            stats::rpois(n_subjects, lambda = eff_mean)
         } else if (innovation == "bell") {
-            as.integer(vapply(eff, function(th) rbell(1L, theta = th), integer(1L)))
+            eff_theta <- .bell_theta_from_mean(eff_mean)
+            as.integer(vapply(eff_theta, function(th) rbell(1L, theta = th), integer(1L)))
         } else {
             # For nbinom: size = nb_inno_size[t], mu = eff (mean)
             # This matches dnbinom(size=sz, mu=lam) in loglik_inad.R
             stats::rnbinom(
                 n_subjects,
                 size = nb_inno_size[t_index],
-                mu = eff
+                mu = eff_mean
             )
         }
     }

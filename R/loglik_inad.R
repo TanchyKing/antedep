@@ -147,10 +147,17 @@ logL_inad <- function(
 
     loglik <- 0
 
+    lam_eff <- matrix(NA_real_, nrow = B, ncol = N)
+    for (b in seq_len(B)) {
+        lam_b <- .inad_effective_innovation_param(theta, tau[b], innovation)
+        if (any(!is.finite(lam_b)) || any(lam_b <= 0)) return(-Inf)
+        lam_eff[b, ] <- lam_b
+    }
+
     for (s in 1:n) {
         b <- blocks[s]
         for (i in 1:N) {
-            lam <- theta[i] + tau[b]
+            lam <- lam_eff[b, i]
             if (!is.finite(lam) || lam <= 0) return(-Inf)
 
             y_si <- y[s, i]
@@ -408,12 +415,14 @@ logL_inad_i <- function(
         alpha1 = alpha1,
         alpha2 = alpha2,
         theta = theta,
-        tau = tau_use
+        tau = tau_use,
+        innovation = innovation
     )
 
     trans_by_block <- vector("list", n_blocks)
     for (b in seq_len(n_blocks)) {
-        lam <- theta + if (length(tau_use) == 1L) tau_use else tau_use[b]
+        tau_b <- if (length(tau_use) == 1L) tau_use else tau_use[b]
+        lam <- .inad_effective_innovation_param(theta, tau_b, innovation)
         if (any(!is.finite(lam)) || any(lam <= 0)) return(-Inf)
         trans_by_block[[b]] <- .inad_build_transitions(
             order = order,
@@ -677,12 +686,20 @@ logL_inad_i <- function(
 
 #' Heuristic state-space bound for INAD missing-data recursion
 #' @keywords internal
-.inad_state_max <- function(y, order, alpha1, alpha2, theta, tau) {
+.inad_state_max <- function(y, order, alpha1, alpha2, theta, tau, innovation = "pois") {
     y_obs <- y[!is.na(y)]
     obs_max <- if (length(y_obs) == 0L) 0 else max(y_obs)
 
-    lam_max <- max(theta, na.rm = TRUE)
-    if (length(tau) > 1L) lam_max <- lam_max + max(tau, na.rm = TRUE)
+    if (length(tau) == 1L) {
+        mu_eff <- .inad_effective_innovation_mean(theta, tau, innovation = innovation)
+    } else {
+        mu_eff <- as.numeric(outer(
+            tau,
+            theta,
+            FUN = function(tb, th) .inad_effective_innovation_mean(th, tb, innovation = innovation)
+        ))
+    }
+    lam_max <- max(mu_eff, na.rm = TRUE)
 
     a_sum <- 0
     if (order == 1) {

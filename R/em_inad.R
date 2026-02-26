@@ -59,7 +59,7 @@ em_inad <- function(y, order = 1, thinning = "binom", innovation = "pois",
     warning("EM is optimized for binom-pois. Other combinations use approximations.")
   }
   
-  init <- .em_init(y, order, blocks, alpha_init, theta_init, tau_init)
+  init <- .em_init(y, order, blocks, alpha_init, theta_init, tau_init, innovation = innovation)
   alpha <- init$alpha; theta <- init$theta; tau <- init$tau
   
   loglik_old <- .em_ll(y, order, thinning, innovation, alpha, theta, tau, blocks, nb_inno_size)
@@ -109,9 +109,18 @@ em_inad <- function(y, order = 1, thinning = "binom", innovation = "pois",
 }
 
 #' @keywords internal
-.em_init <- function(y, order, blocks, alpha_init, theta_init, tau_init) {
+.em_init <- function(y, order, blocks, alpha_init, theta_init, tau_init, innovation = "pois") {
   n_time <- ncol(y); n_blocks <- length(unique(blocks))
-  theta <- if (is.null(theta_init)) pmax(colMeans(y), 1e-6) else pmax(theta_init, 1e-6)
+  theta <- if (is.null(theta_init)) {
+    mu0 <- pmax(colMeans(y), 1e-6)
+    if (innovation == "bell") {
+      th0 <- .bell_theta_from_mean(mu0)
+      th0[!is.finite(th0)] <- 1
+      pmax(th0, 1e-6)
+    } else {
+      mu0
+    }
+  } else pmax(theta_init, 1e-6)
   if (is.null(alpha_init)) {
     if (order == 1) {
       alpha <- numeric(n_time); alpha[1] <- 0
@@ -136,7 +145,8 @@ em_inad <- function(y, order = 1, thinning = "binom", innovation = "pois",
   if (order == 1) {
     E_Z <- E_W <- matrix(0, n, N); E_Z[,1] <- 0; E_W[,1] <- y[,1]
     for (i in 2:N) for (s in 1:n) {
-      lam <- theta[i] + tau[blocks[s]]; y_i <- y[s,i]; y_i1 <- y[s,i-1]
+      lam <- .inad_effective_innovation_param(theta[i], tau[blocks[s]], innovation)
+      y_i <- y[s,i]; y_i1 <- y[s,i-1]
       if (y_i1 == 0) { E_Z[s,i] <- 0; E_W[s,i] <- y_i } else {
         z_vals <- 0:min(y_i1, y_i); w_vals <- y_i - z_vals
         log_pz <- log(pmax(.thin_vec(z_vals, y_i1, a1[i], thinning), 1e-300))
@@ -149,7 +159,8 @@ em_inad <- function(y, order = 1, thinning = "binom", innovation = "pois",
   } else {
     E_Z1 <- E_Z2 <- E_W <- matrix(0, n, N); E_W[,1] <- y[,1]
     for (s in 1:n) {
-      lam <- theta[2] + tau[blocks[s]]; y_2 <- y[s,2]; y_1 <- y[s,1]
+      lam <- .inad_effective_innovation_param(theta[2], tau[blocks[s]], innovation)
+      y_2 <- y[s,2]; y_1 <- y[s,1]
       if (y_1 > 0) {
         z_vals <- 0:min(y_1, y_2); w_vals <- y_2 - z_vals
         log_pz <- log(pmax(.thin_vec(z_vals, y_1, a1[2], thinning), 1e-300))
@@ -160,7 +171,8 @@ em_inad <- function(y, order = 1, thinning = "binom", innovation = "pois",
       E_W[s,2] <- y[s,2] - E_Z1[s,2]
     }
     for (i in 3:N) for (s in 1:n) {
-      lam <- theta[i] + tau[blocks[s]]; y_i <- y[s,i]; y_i1 <- y[s,i-1]; y_i2 <- y[s,i-2]
+      lam <- .inad_effective_innovation_param(theta[i], tau[blocks[s]], innovation)
+      y_i <- y[s,i]; y_i1 <- y[s,i-1]; y_i2 <- y[s,i-2]
       if (y_i1 == 0 && y_i2 == 0) { E_W[s,i] <- y_i; next }
       grid <- expand.grid(z1 = 0:min(y_i1, y_i), z2 = 0:min(y_i2, y_i))
       grid <- grid[grid$z1 + grid$z2 <= y_i, ]
@@ -185,8 +197,25 @@ em_inad <- function(y, order = 1, thinning = "binom", innovation = "pois",
     for (i in 2:N) alpha[i] <- pmax(pmin(sum(E_Z[,i]) / max(sum(y[,i-1]), 1), 0.9999), 1e-12)
     theta <- numeric(N); tau <- rep(0, B)
     for (k in 1:10) {
-      for (i in 1:N) theta[i] <- pmax(mean(E_W[,i] - tau[blocks]), 1e-12)
-      if (B > 1) for (b in 2:B) { idx <- which(blocks == b); if (length(idx) > 0) tau[b] <- mean(rowMeans(E_W[idx,,drop=FALSE]) - mean(theta)) }
+      if (innovation == "bell") {
+        for (i in 1:N) {
+          mu_i <- pmax(mean(E_W[, i] - tau[blocks]), 1e-12)
+          th_i <- .bell_theta_from_mean(mu_i)
+          theta[i] <- if (is.finite(th_i)) pmax(th_i, 1e-12) else 1e-12
+        }
+        mu_theta <- .bell_mean_from_theta(theta)
+        if (B > 1) {
+          for (b in 2:B) {
+            idx <- which(blocks == b)
+            if (length(idx) > 0) {
+              tau[b] <- mean(colMeans(E_W[idx, , drop = FALSE]) - mu_theta)
+            }
+          }
+        }
+      } else {
+        for (i in 1:N) theta[i] <- pmax(mean(E_W[,i] - tau[blocks]), 1e-12)
+        if (B > 1) for (b in 2:B) { idx <- which(blocks == b); if (length(idx) > 0) tau[b] <- mean(rowMeans(E_W[idx,,drop=FALSE]) - mean(theta)) }
+      }
     }
     list(alpha = alpha, theta = theta, tau = tau)
   } else {
@@ -199,8 +228,25 @@ em_inad <- function(y, order = 1, thinning = "binom", innovation = "pois",
     }
     theta <- numeric(N); tau <- rep(0, B)
     for (k in 1:10) {
-      for (i in 1:N) theta[i] <- pmax(mean(E_W[,i] - tau[blocks]), 1e-12)
-      if (B > 1) for (b in 2:B) { idx <- which(blocks == b); if (length(idx) > 0) tau[b] <- mean(rowMeans(E_W[idx,,drop=FALSE]) - mean(theta)) }
+      if (innovation == "bell") {
+        for (i in 1:N) {
+          mu_i <- pmax(mean(E_W[, i] - tau[blocks]), 1e-12)
+          th_i <- .bell_theta_from_mean(mu_i)
+          theta[i] <- if (is.finite(th_i)) pmax(th_i, 1e-12) else 1e-12
+        }
+        mu_theta <- .bell_mean_from_theta(theta)
+        if (B > 1) {
+          for (b in 2:B) {
+            idx <- which(blocks == b)
+            if (length(idx) > 0) {
+              tau[b] <- mean(colMeans(E_W[idx, , drop = FALSE]) - mu_theta)
+            }
+          }
+        }
+      } else {
+        for (i in 1:N) theta[i] <- pmax(mean(E_W[,i] - tau[blocks]), 1e-12)
+        if (B > 1) for (b in 2:B) { idx <- which(blocks == b); if (length(idx) > 0) tau[b] <- mean(rowMeans(E_W[idx,,drop=FALSE]) - mean(theta)) }
+      }
     }
     list(alpha = cbind(alpha1, alpha2), theta = theta, tau = tau)
   }

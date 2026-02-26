@@ -1072,8 +1072,12 @@ fit_inad_fe <- function(
     }
 
     lambda_ok <- function(theta_vec, tau_vec) {
-        lam <- outer(rep(1, n), theta_vec) + matrix(tau_vec[blocks], n, N)
-        all(is.finite(lam)) && all(lam > eps_pos)
+        mu <- if (innovation == "bell") {
+            outer(rep(1, n), .bell_mean_from_theta(theta_vec)) + matrix(tau_vec[blocks], n, N)
+        } else {
+            outer(rep(1, n), theta_vec) + matrix(tau_vec[blocks], n, N)
+        }
+        all(is.finite(mu)) && all(mu > eps_pos)
     }
 
     log_old <- logL_inad(

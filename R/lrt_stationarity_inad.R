@@ -160,6 +160,15 @@ print.lrt_stationarity_inad <- function(x, digits = 4, ...) {
     if (length(nb_inno_size_fixed) == 1L) nb_inno_size_fixed <- rep(nb_inno_size_fixed, N)
     nb_inno_size_fixed <- pmax(nb_inno_size_fixed, 1e-8)
   }
+
+  lambda_ok <- function(theta, tau) {
+    mu <- if (innovation == "bell") {
+      outer(rep(1, n), .bell_mean_from_theta(theta)) + matrix(tau[blocks], n, N)
+    } else {
+      outer(rep(1, n), theta) + matrix(tau[blocks], n, N)
+    }
+    all(is.finite(mu)) && all(mu > 0)
+  }
   
   if (order == 1) {
     obj_fn <- function(par) {
@@ -171,8 +180,7 @@ print.lrt_stationarity_inad <- function(x, digits = 4, ...) {
       tau <- if (B > 1) c(0, par[idx:(idx + B - 2)]) else 0
       alpha <- pmax(alpha, 0); if (thinning == "binom") alpha <- pmin(alpha, 0.999)
       theta <- pmax(theta, 1e-8)
-      lam_mat <- outer(rep(1, n), theta) + matrix(tau[blocks], n, N)
-      if (any(lam_mat <= 0)) return(1e20)
+      if (!lambda_ok(theta, tau)) return(1e20)
       -logL_inad(y = y, order = 1, thinning = thinning, innovation = innovation,
                  alpha = alpha, theta = theta, nb_inno_size = nb_inno_size_fixed,
                  blocks = blocks, tau = tau, na_action = na_action)
@@ -199,8 +207,7 @@ print.lrt_stationarity_inad <- function(x, digits = 4, ...) {
       alpha1 <- pmax(alpha1, 0); alpha2 <- pmax(alpha2, 0)
       if (thinning == "binom") { alpha1 <- pmin(alpha1, 0.999); alpha2 <- pmin(alpha2, 0.999) }
       theta <- pmax(theta, 1e-8)
-      lam_mat <- outer(rep(1, n), theta) + matrix(tau[blocks], n, N)
-      if (any(lam_mat <= 0)) return(1e20)
+      if (!lambda_ok(theta, tau)) return(1e20)
       -logL_inad(y = y, order = 2, thinning = thinning, innovation = innovation,
                  alpha = cbind(alpha1, alpha2), theta = theta, nb_inno_size = nb_inno_size_fixed,
                  blocks = blocks, tau = tau, na_action = na_action)
