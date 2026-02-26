@@ -53,8 +53,12 @@ reference:
   - lrt_one_sample_gau
   - lrt_order_gau
   - lrt_order_gau
+  - lrt_stationarity_gau
+  - lrt_stationarity_gau
   - lrt_two_sample_gau
   - lrt_two_sample_gau
+  - run_stationarity_tests_gau
+  - run_stationarity_tests_gau
   - simulate_gau
   - simulate_gau
 

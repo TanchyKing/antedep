@@ -127,4 +127,6 @@ test_that("AD likelihood-ratio utilities reject missing-data inference clearly",
     lrt_contrast_gau(y_miss, C = matrix(c(1, -1, 0), nrow = 1), p = 1),
     "complete data only"
   )
+  expect_error(lrt_stationarity_gau(y_miss, order = 1), "complete data only")
+  expect_error(run_stationarity_tests_gau(y_miss, order = 1), "complete data only")
 })

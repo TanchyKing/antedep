@@ -51,9 +51,10 @@ constant for all k > p
 This is stronger than time-invariance, which only requires condition 2.
 
 The null hypothesis is tested against the general (non-stationary) AD(p)
-model. The degrees of freedom are:
-\deqn{df = (c-1)(n-1) + (c-1)c^p(n-p-1)}
-for order p >= 1, which accounts for both marginal and transition constraints.
+model. The degrees of freedom are computed from the fitted parameter counts:
+\deqn{df = n_{params}(H_1) - n_{params}(H_0)}
+where \eqn{H_1} is the unconstrained non-stationary model and \eqn{H_0} is
+the stationary model.
 }
 \examples{
 \dontrun{
