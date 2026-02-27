@@ -1,9 +1,9 @@
 # bic_cat.R - BIC computation for categorical antedependence models
 
-#' Compute BIC for a categorical antedependence model
+#' Bayesian information criterion for fitted categorical AD models
 #'
-#' Calculates the Bayesian Information Criterion for a fitted AD(p) model
-#' for categorical longitudinal data.
+#' Computes BIC using the fitted log likelihood and a parameter count for
+#' categorical antedependence parameters.
 #'
 #' @param fit A fitted model object of class \code{"cat_fit"} from \code{fit_cat()}.
 #' @param n_subjects Number of subjects. If NULL, extracted from fit.
@@ -49,9 +49,10 @@ bic_cat <- function(fit, n_subjects = NULL) {
 }
 
 
-#' Compute AIC for a categorical antedependence model
+#' Akaike information criterion for fitted categorical AD models
 #'
-#' Calculates the Akaike Information Criterion for a fitted AD(p) model.
+#' Computes AIC using the fitted log likelihood and a parameter count for
+#' categorical antedependence parameters.
 #'
 #' @param fit A fitted model object of class \code{"cat_fit"} from \code{fit_cat()}.
 #'
@@ -60,7 +61,8 @@ bic_cat <- function(fit, n_subjects = NULL) {
 #' @details
 #' The AIC is computed as:
 #' \deqn{AIC = -2 \times \ell + 2k}
-#' where \eqn{\ell} is the log-likelihood and \eqn{k} is the number of free parameters.
+#' where \eqn{\ell} is the log-likelihood and \eqn{k} is the number of free
+#' parameters.
 #'
 #' @examples
 #' \dontrun{
@@ -80,9 +82,9 @@ aic_cat <- function(fit) {
 }
 
 
-#' Compare models across orders using BIC
+#' BIC-based order selection for categorical AD models
 #'
-#' Fits AD models of orders 0, 1, ..., max_order and compares them using BIC.
+#' Fits AD models of increasing orders and selects the best by BIC.
 #'
 #' @param y Integer matrix of categorical data (n_subjects x n_time).
 #' @param max_order Maximum order to consider. Default is 2.

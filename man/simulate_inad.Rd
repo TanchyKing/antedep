@@ -2,7 +2,7 @@
 % Please edit documentation in R/simulate_inad.R
 \name{simulate_inad}
 \alias{simulate_inad}
-\title{Simulate integer valued antedependence series}
+\title{Simulate INAD antedependence series}
 \usage{
 simulate_inad(
   n_subjects,
@@ -65,8 +65,9 @@ counts plus independent innovations. When \code{order = 0}, all time points
 are generated from the innovation distribution and the thinning operator
 and \code{alpha} are ignored.
 
-If \code{blocks} is provided, innovations include a block effect and use the
-parameter \code{theta[t] + tau[blocks[i]]} for subject i at time t.
+If \code{blocks} is provided, innovations include a block effect. For Poisson and
+negative binomial innovations, the innovation mean is \code{theta[t] + tau[blocks[i]]}.
+For Bell innovations, the innovation mean is \code{theta[t] * exp(theta[t]) + tau[blocks[i]]}.
 }
 \examples{
 y <- simulate_inad(

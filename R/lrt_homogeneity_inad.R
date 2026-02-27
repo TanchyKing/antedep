@@ -2,7 +2,7 @@
 # Likelihood ratio tests for homogeneity across groups in INAD models
 # Based on Section 3.7 of Li & Zimmerman (2026) Biostatistics
 
-#' Likelihood Ratio Test for Homogeneity in INAD Models
+#' Likelihood ratio test for homogeneity across groups (INAD data)
 #'
 #' Tests hypotheses about parameter equality across treatment or grouping
 #' factors in integer-valued antedependence models. Implements the homogeneity

@@ -1,6 +1,6 @@
 # lrt_homogeneity_cat.R - Likelihood ratio test for homogeneity in categorical AD
 
-#' Likelihood ratio test for homogeneity across groups (categorical data)
+#' Likelihood ratio test for homogeneity across groups (categorical AD data)
 #'
 #' Tests whether multiple groups share the same transition probability parameters
 #' in a categorical antedependence model.
@@ -16,8 +16,11 @@
 #'   homogeneous = TRUE). If provided, y is not required for fitting under H0.
 #' @param fit_alt Optional pre-fitted heterogeneous model (class "cat_fit" with
 #'   homogeneous = FALSE). If provided, y is not required for fitting under H1.
+#' @param test Type of test statistic. One of \code{"lrt"} (default),
+#'   \code{"score"}, or \code{"mlrt"}.
 #'
 #' @return A list of class \code{"cat_lrt"} containing:
+#' \describe{
 #'   \item{lrt_stat}{Likelihood ratio test statistic}
 #'   \item{df}{Degrees of freedom}
 #'   \item{p_value}{P-value from chi-square distribution}
@@ -25,6 +28,7 @@
 #'   \item{fit_alt}{Fitted heterogeneous model (H1)}
 #'   \item{n_groups}{Number of groups}
 #'   \item{table}{Summary data frame}
+#' }
 #'
 #' @details
 #' The null hypothesis is that all G groups share the same transition probability
@@ -248,14 +252,18 @@ lrt_homogeneity_cat <- function(y = NULL, blocks = NULL, order = 1,
 #' @param homogeneous Logical. If TRUE (default), parameters are shared across
 #'   all groups.
 #' @param n_categories Number of categories. If NULL, inferred from data.
+#' @param test Type of test statistic. One of \code{"lrt"} (default),
+#'   \code{"score"}, or \code{"mlrt"}.
 #'
 #' @return A list of class \code{"cat_lrt"} containing:
+#' \describe{
 #'   \item{lrt_stat}{Likelihood ratio test statistic}
 #'   \item{df}{Degrees of freedom}
 #'   \item{p_value}{P-value from chi-square distribution}
 #'   \item{fit_null}{Fitted time-invariant model (H0)}
 #'   \item{fit_alt}{Fitted time-varying model (H1)}
 #'   \item{table}{Summary data frame}
+#' }
 #'
 #' @details
 #' The null hypothesis is that all transition probabilities (for k > p) are

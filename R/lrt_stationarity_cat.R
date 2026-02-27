@@ -1,6 +1,6 @@
 # lrt_stationarity_cat.R - Likelihood ratio test for stationarity in categorical AD
 
-#' Likelihood ratio test for stationarity (categorical data)
+#' Likelihood ratio test for stationarity (categorical AD data)
 #'
 #' Tests whether a categorical antedependence process is strictly stationary,
 #' meaning both the marginal distribution and transition probabilities are
@@ -14,14 +14,18 @@
 #' @param homogeneous Logical. If TRUE (default), parameters are shared across
 #'   all groups.
 #' @param n_categories Number of categories. If NULL, inferred from data.
+#' @param test Type of test statistic. One of \code{"lrt"} (default),
+#'   \code{"score"}, or \code{"mlrt"}.
 #'
 #' @return A list of class \code{"cat_lrt"} containing:
+#' \describe{
 #'   \item{lrt_stat}{Likelihood ratio test statistic}
 #'   \item{df}{Degrees of freedom}
 #'   \item{p_value}{P-value from chi-square distribution}
 #'   \item{fit_null}{Fitted stationary model (H0)}
 #'   \item{fit_alt}{Fitted non-stationary model (H1)}
 #'   \item{table}{Summary data frame}
+#' }
 #'
 #' @details
 #' Strict stationarity requires:
@@ -416,16 +420,23 @@ lrt_stationarity_cat <- function(y, order = 1, blocks = NULL,
 #'
 #' Performs tests for time-invariance and strict stationarity.
 #'
-#' @param y Integer matrix of categorical data (n_subjects x n_time).
+#' @param y Integer matrix with n_subjects rows and n_time columns. Each entry
+#'   should be a category code from 1 to c.
 #' @param order Antedependence order p. Default is 1.
-#' @param blocks Optional block membership vector.
-#' @param homogeneous Whether to use homogeneous parameters across blocks.
-#' @param n_categories Number of categories (inferred if NULL).
+#' @param blocks Optional integer vector of length n_subjects specifying group
+#'   membership.
+#' @param homogeneous Logical. If TRUE (default), parameters are shared across
+#'   all groups.
+#' @param n_categories Number of categories. If NULL, inferred from data.
+#' @param test Type of test statistic. One of \code{"lrt"} (default),
+#'   \code{"score"}, or \code{"mlrt"}.
 #'
 #' @return A list containing:
+#' \describe{
 #'   \item{time_invariance}{Result of lrt_timeinvariance_cat}
 #'   \item{stationarity}{Result of lrt_stationarity_cat}
 #'   \item{table}{Summary data frame}
+#' }
 #'
 #' @examples
 #' \dontrun{

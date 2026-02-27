@@ -1,14 +1,10 @@
 # File: R/lrt_stationarity_gau.R
 # Likelihood ratio tests for Gaussian AD stationarity constraints
 
-#' Likelihood ratio test for Gaussian AD stationarity constraints
+#' Likelihood ratio test for stationarity (Gaussian AD data)
 #'
 #' Tests whether time-varying Gaussian AD covariance parameters can be
 #' constrained to be constant over time.
-#'
-#' The mean structure is kept unrestricted in both models (time-specific means
-#' plus optional block shifts), and the test constrains covariance parameters:
-#' innovation standard deviations and/or antedependence coefficients.
 #'
 #' @param y Numeric matrix with n_subjects rows and n_time columns.
 #' @param order Antedependence order (0, 1, or 2).
@@ -38,6 +34,23 @@
 #'   \item{bic_selected}{Model selected by BIC}
 #'   \item{table}{Two-row model summary table}
 #' }
+#'
+#' @details
+#' The mean structure is kept unrestricted in both models (time-specific means
+#' plus optional block shifts), and the test constrains covariance parameters:
+#' innovation standard deviations and/or antedependence coefficients.
+#'
+#' The likelihood-ratio statistic is:
+#' \deqn{\lambda = 2(\ell_{alt} - \ell_{null})}
+#' where \eqn{\ell_{null}} and \eqn{\ell_{alt}} are maximized log-likelihoods
+#' under the constrained and unconstrained models, respectively.
+#'
+#' Degrees of freedom are computed from the number of constraints implied by
+#' \code{constrain}.
+#'
+#' @references
+#' Zimmerman, D.L. and Nunez-Anton, V. (2009). Antedependence Models for
+#' Longitudinal Data. Chapman & Hall/CRC. Chapter 6.
 #'
 #' @examples
 #' set.seed(1)
@@ -194,7 +207,7 @@ lrt_stationarity_gau <- function(y, order = 1L, blocks = NULL, constrain = "both
 }
 
 
-#' Run Gaussian AD stationarity test battery
+#' Run all stationarity-related tests for Gaussian AD
 #'
 #' Runs a standard set of stationarity constraints for Gaussian AD models.
 #'

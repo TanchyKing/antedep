@@ -9,7 +9,8 @@
 \arguments{
 \item{u_vals}{Integer vector of possible innovation values.}
 
-\item{lam}{Innovation mean parameter (theta + tau for FE models).}
+\item{lam}{Innovation parameter used by the PMF. This is the mean for
+\code{"pois"} and \code{"nbinom"}, and the Bell parameter for \code{"bell"}.}
 
 \item{innovation}{One of "pois", "bell", "nbinom".}
 

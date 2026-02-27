@@ -4,7 +4,7 @@
 \alias{.inad_state_max}
 \title{Heuristic state-space bound for INAD missing-data recursion}
 \usage{
-.inad_state_max(y, order, alpha1, alpha2, theta, tau)
+.inad_state_max(y, order, alpha1, alpha2, theta, tau, innovation = "pois")
 }
 \description{
 Heuristic state-space bound for INAD missing-data recursion

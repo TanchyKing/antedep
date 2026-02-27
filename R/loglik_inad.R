@@ -1,4 +1,4 @@
-#' INAD log likelihood (full data)
+#' Log-likelihood for INAD models (with missing data support)
 #'
 #' If blocks is NULL, this computes the log likelihood as the sum of per time
 #' contributions from logL_inad_i for computational convenience.

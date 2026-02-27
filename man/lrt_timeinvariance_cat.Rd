@@ -9,7 +9,8 @@ lrt_timeinvariance_cat(
   order = 1,
   blocks = NULL,
   homogeneous = TRUE,
-  n_categories = NULL
+  n_categories = NULL,
+  test = c("lrt", "score", "mlrt")
 )
 }
 \arguments{
@@ -25,15 +26,20 @@ membership.}
 all groups.}
 
 \item{n_categories}{Number of categories. If NULL, inferred from data.}
+
+\item{test}{Type of test statistic. One of \code{"lrt"} (default),
+\code{"score"}, or \code{"mlrt"}.}
 }
 \value{
 A list of class \code{"cat_lrt"} containing:
+\describe{
 \item{lrt_stat}{Likelihood ratio test statistic}
 \item{df}{Degrees of freedom}
 \item{p_value}{P-value from chi-square distribution}
 \item{fit_null}{Fitted time-invariant model (H0)}
 \item{fit_alt}{Fitted time-varying model (H1)}
 \item{table}{Summary data frame}
+}
 }
 \description{
 Tests whether transition probabilities are constant over time in a

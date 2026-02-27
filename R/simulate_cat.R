@@ -1,6 +1,6 @@
 # simulate_cat.R - Data simulation for categorical antedependence models
 
-#' Simulate data from a categorical antedependence model
+#' Simulate categorical antedependence series
 #'
 #' Generates simulated longitudinal categorical data from an AD(p) model with
 #' specified transition probabilities.

@@ -2,7 +2,7 @@
 % Please edit documentation in R/bic_cat.R
 \name{aic_cat}
 \alias{aic_cat}
-\title{Compute AIC for a categorical antedependence model}
+\title{Akaike information criterion for fitted categorical AD models}
 \usage{
 aic_cat(fit)
 }
@@ -13,12 +13,14 @@ aic_cat(fit)
 Scalar AIC value.
 }
 \description{
-Calculates the Akaike Information Criterion for a fitted AD(p) model.
+Computes AIC using the fitted log likelihood and a parameter count for
+categorical antedependence parameters.
 }
 \details{
 The AIC is computed as:
 \deqn{AIC = -2 \times \ell + 2k}
-where \eqn{\ell} is the log-likelihood and \eqn{k} is the number of free parameters.
+where \eqn{\ell} is the log-likelihood and \eqn{k} is the number of free
+parameters.
 }
 \examples{
 \dontrun{

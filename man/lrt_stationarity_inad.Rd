@@ -2,7 +2,7 @@
 % Please edit documentation in R/lrt_stationarity_inad.R
 \name{lrt_stationarity_inad}
 \alias{lrt_stationarity_inad}
-\title{Likelihood Ratio Test for INAD Stationarity}
+\title{Likelihood ratio test for stationarity (INAD data)}
 \usage{
 lrt_stationarity_inad(
   y,
@@ -37,10 +37,37 @@ lrt_stationarity_inad(
 \item{...}{Additional arguments.}
 }
 \value{
-A list with class "lrt_stationarity_inad".
+A list with class \code{"lrt_stationarity_inad"} containing:
+\describe{
+\item{fit_unconstrained}{Unconstrained INAD fit}
+\item{fit_constrained}{Constrained INAD fit}
+\item{constraint}{Human-readable null constraint description}
+\item{lrt_stat}{Likelihood ratio test statistic}
+\item{df}{Degrees of freedom}
+\item{p_value}{Chi-square p-value}
+\item{bic_unconstrained}{BIC of unconstrained model}
+\item{bic_constrained}{BIC of constrained model}
+\item{bic_selected}{Model selected by BIC}
+\item{table}{Two-row model summary table}
+}
 }
 \description{
-Tests whether time-varying parameters can be constrained to constants.
+Tests whether time-varying INAD parameters can be constrained to be constant
+over time.
+}
+\details{
+For order 1, the test can constrain \code{alpha}, \code{theta}, or both.
+For order 2, it can constrain \code{alpha1}, \code{alpha2},
+\code{alpha} (both), \code{theta}, or all supported time-varying
+parameters.
+
+Degrees of freedom are computed from the number of equality constraints
+imposed under the null model relative to the unconstrained model.
+
+Missing-data inputs are supported through the same \code{na_action} options
+available in \code{\link{fit_inad}}. If \code{y} has missing values and
+\code{na_action} is not supplied via \code{...}, this function defaults to
+\code{na_action = "marginalize"}.
 }
 \examples{
 set.seed(1)
@@ -62,4 +89,12 @@ out <- lrt_stationarity_inad(
   max_iter = 20
 )
 out$p_value
+}
+\references{
+Li, C. and Zimmerman, D.L. (2026). Integer-valued antedependence models for
+longitudinal count data. \emph{Biostatistics}.
+}
+\seealso{
+\code{\link{run_stationarity_tests_inad}},
+\code{\link{lrt_order_inad}}, \code{\link{fit_inad}}
 }

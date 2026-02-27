@@ -1,10 +1,9 @@
-#' Likelihood Ratio Test for INAD Stationarity
+#' Likelihood ratio test for stationarity (INAD data)
 #'
-#' Tests whether time-varying parameters can be constrained to constants.
+#' Tests whether time-varying INAD parameters can be constrained to be constant
+#' over time.
 #'
 #' @param y Integer matrix with n_subjects rows and n_time columns.
-#'
-#' @importFrom stats pchisq optim
 #' @param order Model order (1 or 2).
 #' @param thinning Thinning operator: "binom", "pois", or "nbinom".
 #' @param innovation Innovation distribution: "pois", "bell", or "nbinom".
@@ -15,7 +14,42 @@
 #' @param verbose Logical; if TRUE, print progress.
 #' @param ... Additional arguments.
 #'
-#' @return A list with class "lrt_stationarity_inad".
+#' @return A list with class \code{"lrt_stationarity_inad"} containing:
+#' \describe{
+#'   \item{fit_unconstrained}{Unconstrained INAD fit}
+#'   \item{fit_constrained}{Constrained INAD fit}
+#'   \item{constraint}{Human-readable null constraint description}
+#'   \item{lrt_stat}{Likelihood ratio test statistic}
+#'   \item{df}{Degrees of freedom}
+#'   \item{p_value}{Chi-square p-value}
+#'   \item{bic_unconstrained}{BIC of unconstrained model}
+#'   \item{bic_constrained}{BIC of constrained model}
+#'   \item{bic_selected}{Model selected by BIC}
+#'   \item{table}{Two-row model summary table}
+#' }
+#'
+#' @details
+#' For order 1, the test can constrain \code{alpha}, \code{theta}, or both.
+#' For order 2, it can constrain \code{alpha1}, \code{alpha2},
+#' \code{alpha} (both), \code{theta}, or all supported time-varying
+#' parameters.
+#'
+#' Degrees of freedom are computed from the number of equality constraints
+#' imposed under the null model relative to the unconstrained model.
+#'
+#' Missing-data inputs are supported through the same \code{na_action} options
+#' available in \code{\link{fit_inad}}. If \code{y} has missing values and
+#' \code{na_action} is not supplied via \code{...}, this function defaults to
+#' \code{na_action = "marginalize"}.
+#'
+#' @references
+#' Li, C. and Zimmerman, D.L. (2026). Integer-valued antedependence models for
+#' longitudinal count data. \emph{Biostatistics}.
+#'
+#' @seealso \code{\link{run_stationarity_tests_inad}},
+#'   \code{\link{lrt_order_inad}}, \code{\link{fit_inad}}
+#'
+#' @importFrom stats pchisq optim
 #'
 #' @examples
 #' set.seed(1)
@@ -255,7 +289,7 @@ print.lrt_stationarity_inad <- function(x, digits = 4, ...) {
   }
 }
 
-#' Run All Stationarity Tests
+#' Run all stationarity-related tests for INAD
 #' @param y Integer matrix.
 #' @param order Model order (1 or 2).
 #' @param thinning Thinning operator.

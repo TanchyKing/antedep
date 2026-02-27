@@ -2,7 +2,7 @@
 % Please edit documentation in R/bic_cat.R
 \name{bic_order_cat}
 \alias{bic_order_cat}
-\title{Compare models across orders using BIC}
+\title{BIC-based order selection for categorical AD models}
 \usage{
 bic_order_cat(
   y,
@@ -33,7 +33,7 @@ A list containing:
 \item{fits}{List of fitted models}
 }
 \description{
-Fits AD models of orders 0, 1, ..., max_order and compares them using BIC.
+Fits AD models of increasing orders and selects the best by BIC.
 }
 \examples{
 \dontrun{

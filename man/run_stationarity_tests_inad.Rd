@@ -2,7 +2,7 @@
 % Please edit documentation in R/lrt_stationarity_inad.R
 \name{run_stationarity_tests_inad}
 \alias{run_stationarity_tests_inad}
-\title{Run All Stationarity Tests}
+\title{Run all stationarity-related tests for INAD}
 \usage{
 run_stationarity_tests_inad(
   y,
@@ -33,7 +33,7 @@ run_stationarity_tests_inad(
 A list with class "stationarity_tests_inad".
 }
 \description{
-Run All Stationarity Tests
+Run all stationarity-related tests for INAD
 }
 \examples{
 set.seed(1)

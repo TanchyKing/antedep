@@ -25,10 +25,6 @@ A list with class \code{gau_bic_order} containing:
 \description{
 Fits AD models of increasing orders and selects the best by BIC.
 }
-\seealso{
-\code{\link{bic_order_gau}}, \code{\link{bic_order_cat}},
-\code{\link{bic_order_inad}}
-}
 \examples{
 \dontrun{
 set.seed(1)
@@ -37,4 +33,9 @@ ord <- bic_order_gau(y, max_order = 2)
 ord$best_order
 ord$table
 }
+
+}
+\seealso{
+\code{\link{bic_order_gau}}, \code{\link{bic_order_cat}},
+\code{\link{bic_order_inad}}
 }

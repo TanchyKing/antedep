@@ -1,4 +1,4 @@
-#' EM Algorithm for INAD Model Estimation
+#' EM algorithm for INAD model estimation
 #'
 #' Fits INAD models using the Expectation-Maximization algorithm.
 #' This is an alternative to direct likelihood optimization.

@@ -2,7 +2,7 @@
 % Please edit documentation in R/lrt_order_gau.R
 \name{lrt_order_gau}
 \alias{lrt_order_gau}
-\title{Likelihood ratio test for antedependence order}
+\title{Likelihood ratio test for antedependence order (Gaussian AD data)}
 \usage{
 lrt_order_gau(y, p = 0L, q = 1L, mu = NULL, use_modified = TRUE)
 }

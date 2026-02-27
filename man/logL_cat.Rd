@@ -2,7 +2,7 @@
 % Please edit documentation in R/loglik_cat.R
 \name{logL_cat}
 \alias{logL_cat}
-\title{Compute log-likelihood for a categorical antedependence model}
+\title{Log-likelihood for categorical AD models (with missing data support)}
 \usage{
 logL_cat(
   y,

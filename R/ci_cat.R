@@ -1,6 +1,6 @@
 # ci_cat.R - Confidence intervals for categorical antedependence model parameters
 
-#' Confidence intervals for categorical AD model parameters
+#' Confidence intervals for fitted categorical AD models
 #'
 #' Computes Wald-based confidence intervals for the transition probability
 #' parameters of a fitted categorical antedependence model.

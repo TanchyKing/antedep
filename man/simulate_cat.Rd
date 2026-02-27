@@ -2,7 +2,7 @@
 % Please edit documentation in R/simulate_cat.R
 \name{simulate_cat}
 \alias{simulate_cat}
-\title{Simulate data from a categorical antedependence model}
+\title{Simulate categorical antedependence series}
 \usage{
 simulate_cat(
   n_subjects,

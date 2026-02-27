@@ -2,7 +2,7 @@
 % Please edit documentation in R/lrt_stationarity_gau.R
 \name{lrt_stationarity_gau}
 \alias{lrt_stationarity_gau}
-\title{Likelihood ratio test for Gaussian AD stationarity constraints}
+\title{Likelihood ratio test for stationarity (Gaussian AD data)}
 \usage{
 lrt_stationarity_gau(
   y,
@@ -63,6 +63,18 @@ constrained to be constant over time.
 The mean structure is kept unrestricted in both models (time-specific means
 plus optional block shifts), and the test constrains covariance parameters:
 innovation standard deviations and/or antedependence coefficients.
+
+The likelihood-ratio statistic is:
+\deqn{\lambda = 2(\ell_{alt} - \ell_{null})}
+where \eqn{\ell_{null}} and \eqn{\ell_{alt}} are maximized log-likelihoods
+under the constrained and unconstrained models, respectively.
+
+Degrees of freedom are computed from the number of constraints implied by
+\code{constrain}.
+}
+\references{
+Zimmerman, D.L. and Nunez-Anton, V. (2009). Antedependence Models for
+Longitudinal Data. Chapman & Hall/CRC. Chapter 6.
 }
 \examples{
 set.seed(1)

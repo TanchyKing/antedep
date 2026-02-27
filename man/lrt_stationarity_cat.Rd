@@ -2,14 +2,15 @@
 % Please edit documentation in R/lrt_stationarity_cat.R
 \name{lrt_stationarity_cat}
 \alias{lrt_stationarity_cat}
-\title{Likelihood ratio test for stationarity (categorical data)}
+\title{Likelihood ratio test for stationarity (categorical AD data)}
 \usage{
 lrt_stationarity_cat(
   y,
   order = 1,
   blocks = NULL,
   homogeneous = TRUE,
-  n_categories = NULL
+  n_categories = NULL,
+  test = c("lrt", "score", "mlrt")
 )
 }
 \arguments{
@@ -25,15 +26,20 @@ membership.}
 all groups.}
 
 \item{n_categories}{Number of categories. If NULL, inferred from data.}
+
+\item{test}{Type of test statistic. One of \code{"lrt"} (default),
+\code{"score"}, or \code{"mlrt"}.}
 }
 \value{
 A list of class \code{"cat_lrt"} containing:
+\describe{
 \item{lrt_stat}{Likelihood ratio test statistic}
 \item{df}{Degrees of freedom}
 \item{p_value}{P-value from chi-square distribution}
 \item{fit_null}{Fitted stationary model (H0)}
 \item{fit_alt}{Fitted non-stationary model (H1)}
 \item{table}{Summary data frame}
+}
 }
 \description{
 Tests whether a categorical antedependence process is strictly stationary,

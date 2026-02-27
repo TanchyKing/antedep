@@ -2,7 +2,7 @@
 % Please edit documentation in R/lrt_order_inad.R
 \name{bic_order_inad}
 \alias{bic_order_inad}
-\title{BIC Model Order Comparison}
+\title{BIC-based order selection for INAD models}
 \usage{
 bic_order_inad(
   y,
@@ -30,7 +30,7 @@ bic_order_inad(
 A list with class "bic_order_inad".
 }
 \description{
-BIC Model Order Comparison
+BIC-based order selection for INAD models
 }
 \examples{
 \donttest{

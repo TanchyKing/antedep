@@ -1,10 +1,8 @@
-#' Likelihood Ratio Test for INAD Model Order
+#' Likelihood ratio test for antedependence order (INAD data)
 #'
 #' Performs a likelihood ratio test comparing INAD models of different orders.
 #'
 #' @param y Integer matrix with n_subjects rows and n_time columns.
-#'
-#' @importFrom stats pchisq
 #' @param order_null Order under null hypothesis (0 or 1).
 #' @param order_alt Order under alternative hypothesis (1 or 2). Must be order_null + 1.
 #' @param thinning Thinning operator: "binom", "pois", or "nbinom".
@@ -16,7 +14,46 @@
 #' @param fit_alt Optional pre-computed alternative fit.
 #' @param ... Additional arguments passed to fit_inad.
 #'
-#' @return A list with class "lrt_order_inad".
+#' @return A list with class \code{"lrt_order_inad"} containing:
+#' \describe{
+#'   \item{fit_null}{Fitted model under H0}
+#'   \item{fit_alt}{Fitted model under H1}
+#'   \item{lrt_stat}{Likelihood ratio test statistic}
+#'   \item{df}{Degrees of freedom}
+#'   \item{p_value}{Chi-square p-value}
+#'   \item{p_value_chibar}{Chi-bar-square p-value (if \code{use_chibar = TRUE})}
+#'   \item{bic_null}{BIC under H0}
+#'   \item{bic_alt}{BIC under H1}
+#'   \item{bic_selected}{Which model BIC prefers}
+#'   \item{table}{Two-row model comparison table}
+#'   \item{settings}{Input and derived settings for the test}
+#' }
+#'
+#' @details
+#' The test compares nested INAD models of orders \code{order_null} and
+#' \code{order_alt = order_null + 1} using:
+#' \deqn{\lambda = 2(\ell_{alt} - \ell_{null})}
+#' where \eqn{\ell_{null}} and \eqn{\ell_{alt}} are maximized log-likelihoods
+#' under the null and alternative models.
+#'
+#' The default p-value uses the chi-square approximation with degrees of freedom
+#' matching the number of additional dependence parameters introduced under the
+#' higher-order model. When \code{use_chibar = TRUE}, a chi-bar-square mixture
+#' p-value is also reported for boundary-aware inference.
+#'
+#' Missing-data inputs are supported through the same \code{na_action} options
+#' available in \code{\link{fit_inad}}. If \code{y} has missing values and
+#' \code{na_action} is not supplied via \code{...}, this function defaults to
+#' \code{na_action = "marginalize"}.
+#'
+#' @references
+#' Li, C. and Zimmerman, D.L. (2026). Integer-valued antedependence models for
+#' longitudinal count data. \emph{Biostatistics}.
+#'
+#' @seealso \code{\link{fit_inad}}, \code{\link{bic_order_inad}},
+#'   \code{\link{lrt_stationarity_inad}}
+#'
+#' @importFrom stats pchisq
 #'
 #' @examples
 #' set.seed(1)
@@ -135,7 +172,7 @@ print.lrt_order_inad <- function(x, digits = 4, ...) {
   n_alpha + n_theta + n_tau + n_nb_inno
 }
 
-#' BIC Model Order Comparison
+#' BIC-based order selection for INAD models
 #' @param y Integer matrix.
 #' @param max_order Maximum order (1 or 2).
 #' @param thinning Thinning operator.

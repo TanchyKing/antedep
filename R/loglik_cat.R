@@ -1,6 +1,6 @@
 # loglik_cat.R - Log-likelihood computation for categorical antedependence models
 
-#' Compute log-likelihood for a categorical antedependence model
+#' Log-likelihood for categorical AD models (with missing data support)
 #'
 #' Evaluates the log-likelihood of an AD(p) model for categorical longitudinal
 #' data at given parameter values.

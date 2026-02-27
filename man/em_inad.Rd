@@ -2,7 +2,7 @@
 % Please edit documentation in R/em_inad.R
 \name{em_inad}
 \alias{em_inad}
-\title{EM Algorithm for INAD Model Estimation}
+\title{EM algorithm for INAD model estimation}
 \usage{
 em_inad(
   y,

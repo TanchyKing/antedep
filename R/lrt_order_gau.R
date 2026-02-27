@@ -1,7 +1,7 @@
 # File: R/lrt_order_gau.R
 # Likelihood ratio tests for the order of antedependence (Chapter 6.2)
 
-#' Likelihood ratio test for antedependence order
+#' Likelihood ratio test for antedependence order (Gaussian AD data)
 #'
 #' Tests the null hypothesis that the data follow an AD(p) model against the
 #' alternative that they follow an AD(p+q) model, using the likelihood ratio

@@ -1,4 +1,4 @@
-#' Simulate integer valued antedependence series
+#' Simulate INAD antedependence series
 #'
 #' Generate longitudinal count data from an INAD model using a thinning
 #' operator and an innovation distribution.

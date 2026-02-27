@@ -1,7 +1,7 @@
 # File: R/lrt_homogeneity_gau.R
 # Likelihood ratio test for homogeneity of covariance across groups (Section 6.4)
 
-#' Test for homogeneity of AD covariance structure across groups
+#' Likelihood ratio test for homogeneity across groups (Gaussian AD data)
 #'
 #' Tests the null hypothesis that G groups have the same AD(p) covariance
 #' structure against the alternative that they have different AD(p) structures.

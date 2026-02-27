@@ -18,7 +18,7 @@
   )
 }
 
-#' Likelihood ratio test for antedependence order (categorical data)
+#' Likelihood ratio test for antedependence order (categorical AD data)
 #'
 #' Tests whether a higher-order AD model provides significantly better fit
 #' than a lower-order model for categorical longitudinal data.
@@ -38,8 +38,11 @@
 #'   If provided, y is not required for fitting under H0.
 #' @param fit_alt Optional pre-fitted model under alternative hypothesis.
 #'   If provided, y is not required for fitting under H1.
+#' @param test Type of test statistic. One of \code{"lrt"} (default),
+#'   \code{"score"}, \code{"mlrt"}, or \code{"wald"}.
 #'
 #' @return A list of class \code{"cat_lrt"} containing:
+#' \describe{
 #'   \item{lrt_stat}{Likelihood ratio test statistic}
 #'   \item{df}{Degrees of freedom}
 #'   \item{p_value}{P-value from chi-square distribution}
@@ -48,6 +51,7 @@
 #'   \item{order_null}{Order under null}
 #'   \item{order_alt}{Order under alternative}
 #'   \item{table}{Summary data frame}
+#' }
 #'
 #' @details
 #' The likelihood ratio test statistic is:

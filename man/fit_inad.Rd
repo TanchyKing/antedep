@@ -2,7 +2,7 @@
 % Please edit documentation in R/fit_inad.R
 \name{fit_inad}
 \alias{fit_inad}
-\title{Fit INAD model by maximum likelihood}
+\title{Fit INAD antedependence model by maximum likelihood}
 \usage{
 fit_inad(
   y,

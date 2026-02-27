@@ -9,7 +9,8 @@ run_order_tests_cat(
   max_order = 2,
   blocks = NULL,
   homogeneous = TRUE,
-  n_categories = NULL
+  n_categories = NULL,
+  test = c("lrt", "score", "mlrt", "wald")
 )
 }
 \arguments{

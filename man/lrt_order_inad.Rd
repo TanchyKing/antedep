@@ -2,7 +2,7 @@
 % Please edit documentation in R/lrt_order_inad.R
 \name{lrt_order_inad}
 \alias{lrt_order_inad}
-\title{Likelihood Ratio Test for INAD Model Order}
+\title{Likelihood ratio test for antedependence order (INAD data)}
 \usage{
 lrt_order_inad(
   y,
@@ -42,10 +42,40 @@ lrt_order_inad(
 \item{...}{Additional arguments passed to fit_inad.}
 }
 \value{
-A list with class "lrt_order_inad".
+A list with class \code{"lrt_order_inad"} containing:
+\describe{
+\item{fit_null}{Fitted model under H0}
+\item{fit_alt}{Fitted model under H1}
+\item{lrt_stat}{Likelihood ratio test statistic}
+\item{df}{Degrees of freedom}
+\item{p_value}{Chi-square p-value}
+\item{p_value_chibar}{Chi-bar-square p-value (if \code{use_chibar = TRUE})}
+\item{bic_null}{BIC under H0}
+\item{bic_alt}{BIC under H1}
+\item{bic_selected}{Which model BIC prefers}
+\item{table}{Two-row model comparison table}
+\item{settings}{Input and derived settings for the test}
+}
 }
 \description{
 Performs a likelihood ratio test comparing INAD models of different orders.
+}
+\details{
+The test compares nested INAD models of orders \code{order_null} and
+\code{order_alt = order_null + 1} using:
+\deqn{\lambda = 2(\ell_{alt} - \ell_{null})}
+where \eqn{\ell_{null}} and \eqn{\ell_{alt}} are maximized log-likelihoods
+under the null and alternative models.
+
+The default p-value uses the chi-square approximation with degrees of freedom
+matching the number of additional dependence parameters introduced under the
+higher-order model. When \code{use_chibar = TRUE}, a chi-bar-square mixture
+p-value is also reported for boundary-aware inference.
+
+Missing-data inputs are supported through the same \code{na_action} options
+available in \code{\link{fit_inad}}. If \code{y} has missing values and
+\code{na_action} is not supplied via \code{...}, this function defaults to
+\code{na_action = "marginalize"}.
 }
 \examples{
 set.seed(1)
@@ -67,4 +97,12 @@ out <- lrt_order_inad(
   max_iter = 20
 )
 out$lrt_stat
+}
+\references{
+Li, C. and Zimmerman, D.L. (2026). Integer-valued antedependence models for
+longitudinal count data. \emph{Biostatistics}.
+}
+\seealso{
+\code{\link{fit_inad}}, \code{\link{bic_order_inad}},
+\code{\link{lrt_stationarity_inad}}
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/bic_cat.R
 \name{bic_cat}
 \alias{bic_cat}
-\title{Compute BIC for a categorical antedependence model}
+\title{Bayesian information criterion for fitted categorical AD models}
 \usage{
 bic_cat(fit, n_subjects = NULL)
 }
@@ -15,8 +15,8 @@ bic_cat(fit, n_subjects = NULL)
 A numeric scalar BIC value.
 }
 \description{
-Calculates the Bayesian Information Criterion for a fitted AD(p) model
-for categorical longitudinal data.
+Computes BIC using the fitted log likelihood and a parameter count for
+categorical antedependence parameters.
 }
 \details{
 The BIC is computed as:

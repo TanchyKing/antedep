@@ -9,25 +9,34 @@ run_stationarity_tests_cat(
   order = 1,
   blocks = NULL,
   homogeneous = TRUE,
-  n_categories = NULL
+  n_categories = NULL,
+  test = c("lrt", "score", "mlrt")
 )
 }
 \arguments{
-\item{y}{Integer matrix of categorical data (n_subjects x n_time).}
+\item{y}{Integer matrix with n_subjects rows and n_time columns. Each entry
+should be a category code from 1 to c.}
 
 \item{order}{Antedependence order p. Default is 1.}
 
-\item{blocks}{Optional block membership vector.}
+\item{blocks}{Optional integer vector of length n_subjects specifying group
+membership.}
 
-\item{homogeneous}{Whether to use homogeneous parameters across blocks.}
+\item{homogeneous}{Logical. If TRUE (default), parameters are shared across
+all groups.}
 
-\item{n_categories}{Number of categories (inferred if NULL).}
+\item{n_categories}{Number of categories. If NULL, inferred from data.}
+
+\item{test}{Type of test statistic. One of \code{"lrt"} (default),
+\code{"score"}, or \code{"mlrt"}.}
 }
 \value{
 A list containing:
+\describe{
 \item{time_invariance}{Result of lrt_timeinvariance_cat}
 \item{stationarity}{Result of lrt_stationarity_cat}
 \item{table}{Summary data frame}
+}
 }
 \description{
 Performs tests for time-invariance and strict stationarity.

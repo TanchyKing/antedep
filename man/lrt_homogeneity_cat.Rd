@@ -2,7 +2,7 @@
 % Please edit documentation in R/lrt_homogeneity_cat.R
 \name{lrt_homogeneity_cat}
 \alias{lrt_homogeneity_cat}
-\title{Likelihood ratio test for homogeneity across groups (categorical data)}
+\title{Likelihood ratio test for homogeneity across groups (categorical AD data)}
 \usage{
 lrt_homogeneity_cat(
   y = NULL,
@@ -10,7 +10,8 @@ lrt_homogeneity_cat(
   order = 1,
   n_categories = NULL,
   fit_null = NULL,
-  fit_alt = NULL
+  fit_alt = NULL,
+  test = c("lrt", "score", "mlrt")
 )
 }
 \arguments{
@@ -30,9 +31,13 @@ homogeneous = TRUE). If provided, y is not required for fitting under H0.}
 
 \item{fit_alt}{Optional pre-fitted heterogeneous model (class "cat_fit" with
 homogeneous = FALSE). If provided, y is not required for fitting under H1.}
+
+\item{test}{Type of test statistic. One of \code{"lrt"} (default),
+\code{"score"}, or \code{"mlrt"}.}
 }
 \value{
 A list of class \code{"cat_lrt"} containing:
+\describe{
 \item{lrt_stat}{Likelihood ratio test statistic}
 \item{df}{Degrees of freedom}
 \item{p_value}{P-value from chi-square distribution}
@@ -40,6 +45,7 @@ A list of class \code{"cat_lrt"} containing:
 \item{fit_alt}{Fitted heterogeneous model (H1)}
 \item{n_groups}{Number of groups}
 \item{table}{Summary data frame}
+}
 }
 \description{
 Tests whether multiple groups share the same transition probability parameters
