@@ -11,7 +11,8 @@ test_homogeneity_gau(y, blocks, p = 1L, use_modified = TRUE)
 
 \item{blocks}{Integer vector of length n_subjects indicating group membership.}
 
-\item{p}{Antedependence order.}
+\item{p}{Antedependence order. This is the same order parameter named
+\code{order} in \code{\link{fit_gau}}.}
 
 \item{use_modified}{Logical. If TRUE (default), use modified test statistic
 for better small-sample approximation.}

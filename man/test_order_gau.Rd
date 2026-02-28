@@ -9,7 +9,8 @@ test_order_gau(y, p = 0L, q = 1L, mu = NULL, use_modified = TRUE)
 \arguments{
 \item{y}{Numeric matrix with n_subjects rows and n_time columns.}
 
-\item{p}{Order under the null hypothesis (default 0).}
+\item{p}{Order under the null hypothesis (default 0). This is the same
+antedependence order parameter named \code{order} in \code{\link{fit_gau}}.}
 
 \item{q}{Order increment under the alternative (default 1, so alternative is AD(p+q)).}
 

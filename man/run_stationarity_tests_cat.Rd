@@ -39,7 +39,10 @@ A list containing:
 }
 }
 \description{
-Performs tests for time-invariance and strict stationarity.
+Performs tests for time-invariance and stationarity constraints. For
+\code{order = 1}, the stationarity test corresponds to strict stationarity;
+for \code{order > 1}, it tests marginal-constancy plus time-invariant
+transitions.
 }
 \examples{
 \dontrun{

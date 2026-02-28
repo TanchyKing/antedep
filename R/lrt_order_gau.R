@@ -8,7 +8,8 @@
 #' test described in Theorem 6.4 and 6.5 of Zimmerman & Núñez-Antón (2009).
 #'
 #' @param y Numeric matrix with n_subjects rows and n_time columns.
-#' @param p Order under the null hypothesis (default 0).
+#' @param p Order under the null hypothesis (default 0). This is the same
+#'   antedependence order parameter named \code{order} in \code{\link{fit_gau}}.
 #' @param q Order increment under the alternative (default 1, so alternative is AD(p+q)).
 #' @param mu Optional mean vector. If NULL, the saturated mean (sample means) is used.
 #' @param use_modified Logical. If TRUE (default), use the modified test statistic

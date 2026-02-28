@@ -38,6 +38,9 @@ Performs sequential likelihood ratio tests for AD orders 0 vs 1, 1 vs 2, etc.
 This function performs forward selection: starting from order 0, it tests
 whether increasing the order provides significant improvement. The selected
 order is the highest order where the test was significant (at alpha = 0.05).
+
+This convenience wrapper is currently implemented for categorical AD models.
+Analogous batch order wrappers for Gaussian and INAD models are planned.
 }
 \examples{
 \dontrun{

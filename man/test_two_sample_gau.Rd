@@ -12,7 +12,8 @@ test_two_sample_gau(y, blocks, p = 1L, use_modified = TRUE)
 \item{blocks}{Integer vector of length n_subjects indicating group membership
 (must contain exactly two unique values, typically 1 and 2).}
 
-\item{p}{Antedependence order of the common covariance structure.}
+\item{p}{Antedependence order of the common covariance structure. This is the
+same order parameter named \code{order} in \code{\link{fit_gau}}.}
 
 \item{use_modified}{Logical. If TRUE (default), use modified test statistic.}
 }

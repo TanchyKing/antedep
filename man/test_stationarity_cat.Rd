@@ -44,19 +44,23 @@ or \code{"mlrt"}.}
 }
 }
 \description{
-Tests whether a categorical antedependence process is strictly stationary,
-meaning both the marginal distribution and transition probabilities are
-constant over time.
+Tests whether a categorical antedependence process satisfies stationarity
+constraints in the AD parameterization.
 }
 \details{
-Strict stationarity requires:
+The tested constraints are:
 \enumerate{
 \item The marginal distribution P(Yk) is constant for all k
 \item The transition probabilities P(Yk | Y(k-p), ..., Y(k-1)) are
 constant for all k > p
 }
 
-This is stronger than time-invariance, which only requires condition 2.
+For AD order 1, these two constraints correspond to strict stationarity.
+For AD order greater than 1, this function should be interpreted as testing
+marginal-constancy plus time-invariant transitions; these constraints are
+not, in general, sufficient for full strict stationarity.
+
+This is stronger than time-invariance alone, which only requires condition 2.
 
 The null hypothesis is tested against the general (non-stationary) AD(p)
 model. The degrees of freedom are computed from the fitted parameter counts:

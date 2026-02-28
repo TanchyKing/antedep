@@ -379,7 +379,11 @@ test_that("test_stationarity_cat supports score option (order 1)", {
 test_that("test_stationarity_cat supports score option (order 2)", {
   set.seed(890)
   y <- simulate_cat(250, 6, order = 2, n_categories = 2)
-  score_test <- test_stationarity_cat(y, order = 2, test = "score")
+  score_test <- NULL
+  expect_warning(
+    score_test <- test_stationarity_cat(y, order = 2, test = "score"),
+    "marginal-constancy plus time-invariant transitions"
+  )
   expect_s3_class(score_test, "cat_lrt")
   expect_equal(score_test$test, "score")
   expect_true(score_test$lrt_stat >= 0)

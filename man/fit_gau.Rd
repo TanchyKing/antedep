@@ -48,6 +48,11 @@ For missing data with \code{na_action = "em"}, AD orders 0 and 1 are the
 primary production path. AD order 2 is available, but the current EM
 implementation uses simplified second-order updates and should be treated as
 provisional for high-stakes inference.
+
+For observed-data likelihood evaluation under MAR without fitting, use
+\code{\link{logL_gau}} with \code{na_action = "marginalize"}. In contrast,
+\code{fit_gau} handles missingness via complete-case fitting
+(\code{na_action = "complete"}) or EM (\code{na_action = "em"}).
 }
 \examples{
 set.seed(1)

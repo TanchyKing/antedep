@@ -10,6 +10,11 @@
 #' implementation uses simplified second-order updates and should be treated as
 #' provisional for high-stakes inference.
 #'
+#' For observed-data likelihood evaluation under MAR without fitting, use
+#' \code{\link{logL_gau}} with \code{na_action = "marginalize"}. In contrast,
+#' \code{fit_gau} handles missingness via complete-case fitting
+#' (\code{na_action = "complete"}) or EM (\code{na_action = "em"}).
+#'
 #' @param y Numeric matrix (n_subjects x n_time). May contain NA.
 #' @param order Integer 0, 1, or 2.
 #' @param blocks Optional vector of block membership (length n_subjects).

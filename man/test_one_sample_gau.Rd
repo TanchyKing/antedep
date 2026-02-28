@@ -11,7 +11,8 @@ test_one_sample_gau(y, mu0, p = 1L, use_modified = TRUE)
 
 \item{mu0}{Hypothesized mean vector under the null (length n_time).}
 
-\item{p}{Antedependence order of the covariance structure.}
+\item{p}{Antedependence order of the covariance structure. This is the same
+order parameter named \code{order} in \code{\link{fit_gau}}.}
 
 \item{use_modified}{Logical. If TRUE (default), use the modified test statistic
 (formula 7.7) for better small-sample approximation.}

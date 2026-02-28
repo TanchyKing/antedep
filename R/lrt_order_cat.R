@@ -321,6 +321,9 @@ print.cat_lrt <- function(x, ...) {
 #' whether increasing the order provides significant improvement. The selected
 #' order is the highest order where the test was significant (at alpha = 0.05).
 #'
+#' This convenience wrapper is currently implemented for categorical AD models.
+#' Analogous batch order wrappers for Gaussian and INAD models are planned.
+#'
 #' @examples
 #' \dontrun{
 #' y <- simulate_cat(200, 6, order = 1, n_categories = 2)

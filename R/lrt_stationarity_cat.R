@@ -2,9 +2,8 @@
 
 #' Likelihood ratio test for stationarity (categorical AD data)
 #'
-#' Tests whether a categorical antedependence process is strictly stationary,
-#' meaning both the marginal distribution and transition probabilities are
-#' constant over time.
+#' Tests whether a categorical antedependence process satisfies stationarity
+#' constraints in the AD parameterization.
 #'
 #' @param y Integer matrix with n_subjects rows and n_time columns. Each entry
 #'   should be a category code from 1 to c.
@@ -30,14 +29,19 @@
 #' }
 #'
 #' @details
-#' Strict stationarity requires:
+#' The tested constraints are:
 #' \enumerate{
 #'   \item The marginal distribution P(Yk) is constant for all k
 #'   \item The transition probabilities P(Yk | Y(k-p), ..., Y(k-1)) are
 #'     constant for all k > p
 #' }
 #'
-#' This is stronger than time-invariance, which only requires condition 2.
+#' For AD order 1, these two constraints correspond to strict stationarity.
+#' For AD order greater than 1, this function should be interpreted as testing
+#' marginal-constancy plus time-invariant transitions; these constraints are
+#' not, in general, sufficient for full strict stationarity.
+#'
+#' This is stronger than time-invariance alone, which only requires condition 2.
 #'
 #' The null hypothesis is tested against the general (non-stationary) AD(p)
 #' model. The degrees of freedom are computed from the fitted parameter counts:
@@ -89,6 +93,12 @@ test_stationarity_cat <- function(y, order = 1, blocks = NULL,
   if (p >= 2L && test %in% c("lrt", "mlrt")) {
     stop(
       "test_stationarity_cat with test='lrt' or test='mlrt' is not supported for order >= 2 due to a known null-model specification issue; use test='score' for order 2.",
+      call. = FALSE
+    )
+  }
+  if (p >= 2L && identical(test, "score")) {
+    warning(
+      "For order >= 2, test_stationarity_cat evaluates marginal-constancy plus time-invariant transitions and should not be interpreted as a full strict-stationarity test.",
       call. = FALSE
     )
   }
@@ -421,7 +431,10 @@ test_stationarity_cat <- function(y, order = 1, blocks = NULL,
 
 #' Run all stationarity-related tests for categorical AD
 #'
-#' Performs tests for time-invariance and strict stationarity.
+#' Performs tests for time-invariance and stationarity constraints. For
+#' \code{order = 1}, the stationarity test corresponds to strict stationarity;
+#' for \code{order > 1}, it tests marginal-constancy plus time-invariant
+#' transitions.
 #'
 #' @param y Integer matrix with n_subjects rows and n_time columns. Each entry
 #'   should be a category code from 1 to c.

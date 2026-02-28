@@ -9,7 +9,8 @@
 #'
 #' @param y Numeric matrix with n_subjects rows and n_time columns.
 #' @param blocks Integer vector of length n_subjects indicating group membership.
-#' @param p Antedependence order.
+#' @param p Antedependence order. This is the same order parameter named
+#'   \code{order} in \code{\link{fit_gau}}.
 #' @param use_modified Logical. If TRUE (default), use modified test statistic
 #'   for better small-sample approximation.
 #'

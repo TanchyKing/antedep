@@ -15,7 +15,8 @@ number of contrasts being tested. Rows must be linearly independent.}
 \item{c}{Right-hand side vector of length equal to nrow(C). Default is
 a vector of zeros.}
 
-\item{p}{Antedependence order of the covariance structure.}
+\item{p}{Antedependence order of the covariance structure. This is the same
+order parameter named \code{order} in \code{\link{fit_gau}}.}
 }
 \value{
 A list with class \code{gau_contrast_test} containing:

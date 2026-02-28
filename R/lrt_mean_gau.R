@@ -9,7 +9,8 @@
 #'
 #' @param y Numeric matrix with n_subjects rows and n_time columns.
 #' @param mu0 Hypothesized mean vector under the null (length n_time).
-#' @param p Antedependence order of the covariance structure.
+#' @param p Antedependence order of the covariance structure. This is the same
+#'   order parameter named \code{order} in \code{\link{fit_gau}}.
 #' @param use_modified Logical. If TRUE (default), use the modified test statistic
 #'   (formula 7.7) for better small-sample approximation.
 #'
@@ -156,7 +157,8 @@ test_one_sample_gau <- function(y, mu0, p = 1L, use_modified = TRUE) {
 #' @param y Numeric matrix with n_subjects rows and n_time columns.
 #' @param blocks Integer vector of length n_subjects indicating group membership
 #'   (must contain exactly two unique values, typically 1 and 2).
-#' @param p Antedependence order of the common covariance structure.
+#' @param p Antedependence order of the common covariance structure. This is the
+#'   same order parameter named \code{order} in \code{\link{fit_gau}}.
 #' @param use_modified Logical. If TRUE (default), use modified test statistic.
 #'
 #' @return A list with class \code{gau_mean_test} containing:
@@ -330,7 +332,8 @@ test_two_sample_gau <- function(y, blocks, p = 1L, use_modified = TRUE) {
 #'   number of contrasts being tested. Rows must be linearly independent.
 #' @param c Right-hand side vector of length equal to nrow(C). Default is
 #'   a vector of zeros.
-#' @param p Antedependence order of the covariance structure.
+#' @param p Antedependence order of the covariance structure. This is the same
+#'   order parameter named \code{order} in \code{\link{fit_gau}}.
 #'
 #' @return A list with class \code{gau_contrast_test} containing:
 #' \describe{
