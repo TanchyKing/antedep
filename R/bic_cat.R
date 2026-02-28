@@ -5,7 +5,8 @@
 #' Computes BIC using the fitted log likelihood and a parameter count for
 #' categorical antedependence parameters.
 #'
-#' @param fit A fitted model object of class \code{"cat_fit"} from \code{fit_cat()}.
+#' @param fit A fitted model object of class \code{"cat_fit"} returned by
+#'   \code{\link{fit_cat}}.
 #' @param n_subjects Number of subjects. If NULL, extracted from fit.
 #'
 #' @return A numeric scalar BIC value.
@@ -17,9 +18,8 @@
 #' and \eqn{N} is the number of subjects.
 #'
 #' @examples
-#' \dontrun{
-#' # Simulate data
-#' y <- simulate_cat(100, 5, order = 1, n_categories = 2)
+#' set.seed(1)
+#' y <- simulate_cat(40, 5, order = 1, n_categories = 2)
 #'
 #' # Fit models of different orders
 #' fit0 <- fit_cat(y, order = 0)
@@ -28,7 +28,6 @@
 #'
 #' # Compare BIC
 #' c(BIC_0 = bic_cat(fit0), BIC_1 = bic_cat(fit1), BIC_2 = bic_cat(fit2))
-#' }
 #'
 #' @export
 bic_cat <- function(fit, n_subjects = NULL) {
@@ -54,9 +53,10 @@ bic_cat <- function(fit, n_subjects = NULL) {
 #' Computes AIC using the fitted log likelihood and a parameter count for
 #' categorical antedependence parameters.
 #'
-#' @param fit A fitted model object of class \code{"cat_fit"} from \code{fit_cat()}.
+#' @param fit A fitted model object of class \code{"cat_fit"} returned by
+#'   \code{\link{fit_cat}}.
 #'
-#' @return Scalar AIC value.
+#' @return A numeric scalar AIC value.
 #'
 #' @details
 #' The AIC is computed as:
@@ -65,11 +65,10 @@ bic_cat <- function(fit, n_subjects = NULL) {
 #' parameters.
 #'
 #' @examples
-#' \dontrun{
-#' y <- simulate_cat(100, 5, order = 1, n_categories = 2)
+#' set.seed(1)
+#' y <- simulate_cat(40, 5, order = 1, n_categories = 2)
 #' fit <- fit_cat(y, order = 1)
 #' aic_cat(fit)
-#' }
 #'
 #' @export
 aic_cat <- function(fit) {
@@ -95,7 +94,9 @@ aic_cat <- function(fit) {
 #'
 #' @return A list containing:
 #'   \item{table}{Data frame with order, log_l, n_params, aic, bic}
+#'   \item{bic}{Named numeric vector of BIC values by order}
 #'   \item{best_order}{Order with lowest criterion value}
+#'   \item{criterion}{Criterion used for order selection (\code{"bic"} or \code{"aic"})}
 #'   \item{fits}{List of fitted models}
 #'
 #' @examples
@@ -156,9 +157,11 @@ bic_order_cat <- function(y, max_order = 2, blocks = NULL, homogeneous = TRUE,
     best_idx <- which.min(table_df$aic)
   }
   best_order <- orders[best_idx]
+  bic_vals <- stats::setNames(table_df$bic, paste0("order_", orders))
   
   list(
     table = table_df,
+    bic = bic_vals,
     best_order = best_order,
     criterion = criterion,
     fits = fits

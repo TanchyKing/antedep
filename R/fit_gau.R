@@ -33,7 +33,7 @@
 #' fit_em <- fit_gau(y_miss, order = 1, na_action = "em", em_max_iter = 20)
 #' fit_em$settings$na_action
 #'
-#' @seealso \code{\link{em_gau}}, \code{\link{fit_gau}},
+#' @seealso \code{\link{em_gau}},
 #'   \code{\link{fit_cat}}, \code{\link{fit_inad}}
 #' @export
 fit_gau <- function(y, order = 1, blocks = NULL,

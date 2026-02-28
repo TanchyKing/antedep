@@ -8,7 +8,7 @@ run_stationarity_tests_gau(
   y,
   order = 1L,
   blocks = NULL,
-  verbose = TRUE,
+  verbose = FALSE,
   max_iter = 2000L,
   rel_tol = 1e-08,
   ...
@@ -34,7 +34,7 @@ unconstrained fit.}
 A list with class \code{"stationarity_tests_gau"} containing:
 \describe{
 \item{fit_unconstrained}{Unconstrained Gaussian AD fit}
-\item{tests}{Named list of \code{\link{lrt_stationarity_gau}} results}
+\item{tests}{Named list of \code{\link{test_stationarity_gau}} results}
 \item{summary}{Summary table of all constraints}
 }
 }
@@ -49,5 +49,5 @@ out$summary
 
 }
 \seealso{
-\code{\link{lrt_stationarity_gau}}
+\code{\link{test_stationarity_gau}}
 }

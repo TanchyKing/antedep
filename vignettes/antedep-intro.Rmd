@@ -69,7 +69,7 @@ bic_order_gau(y_gau, max_order = 2)$table
 
 ```{r}
 # Example AD order test
-lrt_order_gau(y_gau, p = 0, q = 1)$p_value
+test_order_gau(y_gau, p = 0, q = 1)$p_value
 ```
 
 ### Missing-data AD fit
@@ -94,19 +94,19 @@ These AD inference tests currently require complete data.
 mu0 <- colMeans(y_gau)
 blocks_gau <- rep(1:2, each = nrow(y_gau) / 2)
 
-lrt_one_sample_gau(y_gau, mu0 = mu0, p = 1)$p_value
-lrt_two_sample_gau(y_gau, blocks = blocks_gau, p = 1)$p_value
+test_one_sample_gau(y_gau, mu0 = mu0, p = 1)$p_value
+test_two_sample_gau(y_gau, blocks = blocks_gau, p = 1)$p_value
 ```
 
 ```{r}
 # Wald contrast test: H0 that adjacent means are equal
 C <- diff(diag(ncol(y_gau)))
-lrt_contrast_gau(y_gau, C = C, p = 1)$p_value
+test_contrast_gau(y_gau, C = C, p = 1)$p_value
 ```
 
 ```{r}
 # Covariance homogeneity across groups
-lrt_homogeneity_gau(y_gau, blocks = blocks_gau, p = 1)$p_value
+test_homogeneity_gau(y_gau, blocks = blocks_gau, p = 1)$p_value
 ```
 
 ## INAD Workflow (Count Outcomes)
@@ -151,8 +151,8 @@ fit_inad_miss$pct_missing
 ```{r}
 # Missing-data LRTs (observed-data likelihood)
 blocks_inad <- rep(1:2, each = nrow(y_inad_miss) / 2)
-lrt_order_inad(y_inad_miss, order_null = 0, order_alt = 1, blocks = blocks_inad)$p_value
-lrt_homogeneity_inad(y_inad_miss, blocks = blocks_inad, order = 1, test = "mean")$p_value
+test_order_inad(y_inad_miss, order_null = 0, order_alt = 1, blocks = blocks_inad)$p_value
+test_homogeneity_inad(y_inad_miss, blocks = blocks_inad, order = 1, test = "mean")$p_value
 ```
 
 ## CAT Workflow (Categorical Outcomes)
@@ -194,8 +194,8 @@ fit_cat_miss_em$log_l
 ```{r}
 # Missing-data order/homogeneity tests are supported
 blocks_cat <- rep(1:2, each = nrow(y_cat_miss) / 2)
-lrt_order_cat(y_cat_miss, order_null = 0, order_alt = 1)$p_value
-lrt_homogeneity_cat(y_cat_miss, blocks = blocks_cat, order = 1)$p_value
+test_order_cat(y_cat_miss, order_null = 0, order_alt = 1)$p_value
+test_homogeneity_cat(y_cat_miss, blocks = blocks_cat, order = 1)$p_value
 ```
 
 ## Additional Inference Helpers (Complete Data)
@@ -207,8 +207,8 @@ run_homogeneity_tests_inad(y_inad, blocks = blocks, order = 1)
 run_stationarity_tests_inad(y_inad, order = 1, blocks = blocks)
 
 # CAT stationarity/time-invariance tools
-lrt_timeinvariance_cat(y_cat, order = 1)
-lrt_stationarity_cat(y_cat, order = 1)
+test_timeinvariance_cat(y_cat, order = 1)
+test_stationarity_cat(y_cat, order = 1)
 ```
 
 ## Known Limitations
@@ -217,7 +217,7 @@ lrt_stationarity_cat(y_cat, order = 1)
 - For CAT missingness, `fit_cat(na_action = "marginalize")` supports orders 0/1/2, while `fit_cat(na_action = "em")` (or `em_cat`) supports orders 0/1 with optional safeguard step-halving.
 - Missing-data confidence intervals are not implemented yet (`ci_gau`, `ci_inad`, `ci_cat` require complete-data fits).
 - AD missing-data LRT/mean/covariance tests are not implemented yet.
-- CAT missing-data time-invariance/stationarity tests (`lrt_timeinvariance_cat`, `lrt_stationarity_cat`, `run_stationarity_tests_cat`) are not implemented yet.
+- CAT missing-data time-invariance/stationarity tests (`test_timeinvariance_cat`, `test_stationarity_cat`, `run_stationarity_tests_cat`) are not implemented yet.
 - Current order support is up to order 2 for AD, INAD, and CAT.
 - CAT missing-data marginalization currently supports orders 0, 1, and 2.
 

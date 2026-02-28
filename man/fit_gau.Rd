@@ -62,6 +62,6 @@ fit_em$settings$na_action
 
 }
 \seealso{
-\code{\link{em_gau}}, \code{\link{fit_gau}},
+\code{\link{em_gau}},
 \code{\link{fit_cat}}, \code{\link{fit_inad}}
 }

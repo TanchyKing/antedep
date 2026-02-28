@@ -29,7 +29,10 @@ logL_inad_i(
 \item{alpha}{Thinning parameters. For order 1, numeric length 1 or n_time.
 For order 2, either a matrix n_time by 2 or a list(alpha1, alpha2).}
 
-\item{theta}{Innovation mean parameter at time i, or a vector length 1 or n_time.}
+\item{theta}{Innovation parameter at time i, or a vector length 1 or n_time.
+For Poisson and negative binomial innovations, this is the innovation
+mean. For Bell innovations, this is the Bell rate parameter
+(mean \eqn{\theta e^\theta}).}
 
 \item{nb_inno_size}{Size parameter for innovation "nbinom". Numeric length 1 or n_time.}
 }

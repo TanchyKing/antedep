@@ -1,4 +1,4 @@
-# lrt_stationarity_cat.R - Likelihood ratio test for stationarity in categorical AD
+# test_stationarity_cat.R - Likelihood ratio test for stationarity in categorical AD
 
 #' Likelihood ratio test for stationarity (categorical AD data)
 #'
@@ -19,6 +19,8 @@
 #'
 #' @return A list of class \code{"cat_lrt"} containing:
 #' \describe{
+#'   \item{method}{Inference method used: one of \code{"lrt"}, \code{"score"},
+#'     or \code{"mlrt"}.}
 #'   \item{lrt_stat}{Likelihood ratio test statistic}
 #'   \item{df}{Degrees of freedom}
 #'   \item{p_value}{P-value from chi-square distribution}
@@ -50,7 +52,7 @@
 #' y <- simulate_cat(200, 6, order = 1, n_categories = 2)
 #'
 #' # Test stationarity
-#' test <- lrt_stationarity_cat(y, order = 1)
+#' test <- test_stationarity_cat(y, order = 1)
 #' print(test)
 #' }
 #'
@@ -59,15 +61,15 @@
 #' categorical longitudinal data with ignorable missingness: likelihood-based
 #' inference. \emph{Statistics in Medicine}, 32, 3274-3289.
 #'
-#' @seealso \code{\link{lrt_timeinvariance_cat}}, \code{\link{lrt_order_cat}}
+#' @seealso \code{\link{test_timeinvariance_cat}}, \code{\link{test_order_cat}}
 #'
 #' @export
-lrt_stationarity_cat <- function(y, order = 1, blocks = NULL,
+test_stationarity_cat <- function(y, order = 1, blocks = NULL,
                                   homogeneous = TRUE, n_categories = NULL,
                                   test = c("lrt", "score", "mlrt")) {
   test <- match.arg(test)
   if (anyNA(y)) {
-    .stop_cat_missing_inference("lrt_stationarity_cat")
+    .stop_cat_missing_inference("test_stationarity_cat")
   }
   
   # Validate data
@@ -86,7 +88,7 @@ lrt_stationarity_cat <- function(y, order = 1, blocks = NULL,
   }
   if (p >= 2L && test %in% c("lrt", "mlrt")) {
     stop(
-      "lrt_stationarity_cat with test='lrt' or test='mlrt' is not supported for order >= 2 due to a known null-model specification issue; use test='score' for order 2.",
+      "test_stationarity_cat with test='lrt' or test='mlrt' is not supported for order >= 2 due to a known null-model specification issue; use test='score' for order 2.",
       call. = FALSE
     )
   }
@@ -195,6 +197,7 @@ lrt_stationarity_cat <- function(y, order = 1, blocks = NULL,
   
   # Assemble output
   out <- list(
+    method = test,
     lrt_stat = stat_value,
     statistic = stat_value,
     lrt_stat_raw = lrt_stat_raw,
@@ -433,8 +436,8 @@ lrt_stationarity_cat <- function(y, order = 1, blocks = NULL,
 #'
 #' @return A list containing:
 #' \describe{
-#'   \item{time_invariance}{Result of lrt_timeinvariance_cat}
-#'   \item{stationarity}{Result of lrt_stationarity_cat}
+#'   \item{time_invariance}{Result of test_timeinvariance_cat}
+#'   \item{stationarity}{Result of test_stationarity_cat}
 #'   \item{table}{Summary data frame}
 #' }
 #'
@@ -455,13 +458,13 @@ run_stationarity_tests_cat <- function(y, order = 1, blocks = NULL,
   }
   
   # Run time-invariance test
-  test_ti <- lrt_timeinvariance_cat(y, order = order, blocks = blocks,
+  test_ti <- test_timeinvariance_cat(y, order = order, blocks = blocks,
                                      homogeneous = homogeneous, 
                                      n_categories = n_categories,
                                      test = test)
   
   # Run stationarity test
-  test_stat <- lrt_stationarity_cat(y, order = order, blocks = blocks,
+  test_stat <- test_stationarity_cat(y, order = order, blocks = blocks,
                                      homogeneous = homogeneous,
                                      n_categories = n_categories,
                                      test = test)
@@ -469,6 +472,7 @@ run_stationarity_tests_cat <- function(y, order = 1, blocks = NULL,
   # Build summary table
   table_df <- data.frame(
     test = c("Time-invariance", "Stationarity"),
+    method = c(test_ti$method, test_stat$method),
     lrt_stat = c(test_ti$lrt_stat, test_stat$lrt_stat),
     df = c(test_ti$df, test_stat$df),
     p_value = c(test_ti$p_value, test_stat$p_value),
@@ -477,6 +481,7 @@ run_stationarity_tests_cat <- function(y, order = 1, blocks = NULL,
   )
   
   list(
+    method = test,
     time_invariance = test_ti,
     stationarity = test_stat,
     table = table_df

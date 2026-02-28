@@ -154,6 +154,38 @@ print.inad_ci <- function(x, ...) {
     invisible(x)
 }
 
+#' Summary method for inad_ci objects
+#'
+#' @param object An \code{inad_ci} object.
+#' @param ... Unused.
+#'
+#' @return A data frame stacking available confidence intervals with columns
+#'   \code{param}, \code{component}, \code{est}, \code{se}, \code{lower},
+#'   \code{upper}, and \code{level}. Returns \code{NULL} if no intervals are available.
+#' @export
+summary.inad_ci <- function(object, ...) {
+    parts <- list()
+
+    add_part <- function(df, component) {
+        if (is.null(df) || !is.data.frame(df) || nrow(df) == 0L) return(NULL)
+        df$component <- component
+        keep <- intersect(
+            c("param", "component", "est", "se", "lower", "upper", "level"),
+            names(df)
+        )
+        df[, keep, drop = FALSE]
+    }
+
+    parts[[length(parts) + 1L]] <- add_part(object$alpha, "alpha")
+    parts[[length(parts) + 1L]] <- add_part(object$theta, "theta")
+    parts[[length(parts) + 1L]] <- add_part(object$nb_inno_size, "nb_inno_size")
+    parts[[length(parts) + 1L]] <- add_part(object$tau, "tau")
+    parts <- Filter(Negate(is.null), parts)
+
+    if (length(parts) == 0L) return(NULL)
+    do.call(rbind, parts)
+}
+
 #' @keywords internal
 .lse <- function(v) {
     m <- max(v)

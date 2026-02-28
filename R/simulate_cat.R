@@ -2,7 +2,7 @@
 
 #' Simulate categorical antedependence series
 #'
-#' Generates simulated longitudinal categorical data from an AD(p) model with
+#' Generate simulated longitudinal categorical data from an AD(p) model with
 #' specified transition probabilities.
 #'
 #' @param n_subjects Number of subjects to simulate.

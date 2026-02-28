@@ -29,7 +29,9 @@ bic_order_cat(
 \value{
 A list containing:
 \item{table}{Data frame with order, log_l, n_params, aic, bic}
+\item{bic}{Named numeric vector of BIC values by order}
 \item{best_order}{Order with lowest criterion value}
+\item{criterion}{Criterion used for order selection (\code{"bic"} or \code{"aic"})}
 \item{fits}{List of fitted models}
 }
 \description{

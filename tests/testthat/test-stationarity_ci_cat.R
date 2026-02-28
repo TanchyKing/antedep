@@ -1,14 +1,14 @@
 # test-stationarity_ci_cat.R - Tests for stationarity testing and CIs
 
 # ============================================================
-# Test lrt_stationarity_cat
+# Test test_stationarity_cat
 # ============================================================
-test_that("lrt_stationarity_cat works for order 0", {
+test_that("test_stationarity_cat works for order 0", {
   set.seed(100)
   # Simulate with constant marginal (stationary under independence)
   y <- simulate_cat(200, 5, order = 0, n_categories = 2)
   
-  test <- lrt_stationarity_cat(y, order = 0)
+  test <- test_stationarity_cat(y, order = 0)
   
   expect_s3_class(test, "cat_lrt")
   expect_true(test$lrt_stat >= 0)
@@ -18,12 +18,12 @@ test_that("lrt_stationarity_cat works for order 0", {
 })
 
 
-test_that("lrt_stationarity_cat works for order 1", {
+test_that("test_stationarity_cat works for order 1", {
   set.seed(101)
   # Simulate with time-invariant transitions (should be approximately stationary)
   y <- simulate_cat(200, 5, order = 1, n_categories = 2)
   
-  test <- lrt_stationarity_cat(y, order = 1)
+  test <- test_stationarity_cat(y, order = 1)
   
   expect_s3_class(test, "cat_lrt")
   expect_true(test$lrt_stat >= 0)
@@ -32,7 +32,7 @@ test_that("lrt_stationarity_cat works for order 1", {
 })
 
 
-test_that("lrt_stationarity_cat detects non-stationarity", {
+test_that("test_stationarity_cat detects non-stationarity", {
   set.seed(102)
   # Simulate with time-varying marginals AND transitions
   marg <- list(t1 = c(0.9, 0.1))  # Very skewed initial
@@ -46,7 +46,7 @@ test_that("lrt_stationarity_cat detects non-stationarity", {
   y <- simulate_cat(400, 5, order = 1, n_categories = 2,
                     marginal = marg, transition = trans_varying)
   
-  test <- lrt_stationarity_cat(y, order = 1)
+  test <- test_stationarity_cat(y, order = 1)
   
   expect_s3_class(test, "cat_lrt")
   # Should reject stationarity
@@ -54,11 +54,11 @@ test_that("lrt_stationarity_cat detects non-stationarity", {
 })
 
 
-test_that("lrt_stationarity_cat df is correct", {
+test_that("test_stationarity_cat df is correct", {
   set.seed(103)
   y <- simulate_cat(100, 5, order = 1, n_categories = 2)
   
-  test <- lrt_stationarity_cat(y, order = 1)
+  test <- test_stationarity_cat(y, order = 1)
   
   # For stationary model:
   # - params: (c-1) for marginal + (c-1)*c^p for transition = 1 + 2 = 3

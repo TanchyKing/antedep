@@ -14,10 +14,12 @@
 #' @param fit_alt Optional pre-computed alternative fit.
 #' @param ... Additional arguments passed to fit_inad.
 #'
-#' @return A list with class \code{"lrt_order_inad"} containing:
+#' @return A list with class \code{"test_order_inad"} containing:
 #' \describe{
+#'   \item{method}{Inference method used (\code{"lrt"}).}
 #'   \item{fit_null}{Fitted model under H0}
 #'   \item{fit_alt}{Fitted model under H1}
+#'   \item{statistic}{Test statistic value}
 #'   \item{lrt_stat}{Likelihood ratio test statistic}
 #'   \item{df}{Degrees of freedom}
 #'   \item{p_value}{Chi-square p-value}
@@ -51,7 +53,7 @@
 #' longitudinal count data. \emph{Biostatistics}.
 #'
 #' @seealso \code{\link{fit_inad}}, \code{\link{bic_order_inad}},
-#'   \code{\link{lrt_stationarity_inad}}
+#'   \code{\link{test_stationarity_inad}}
 #'
 #' @importFrom stats pchisq
 #'
@@ -66,7 +68,7 @@
 #'   alpha = 0.3,
 #'   theta = 2
 #' )
-#' out <- lrt_order_inad(
+#' out <- test_order_inad(
 #'   y,
 #'   order_null = 0,
 #'   order_alt = 1,
@@ -74,9 +76,9 @@
 #'   innovation = "pois",
 #'   max_iter = 20
 #' )
-#' out$lrt_stat
+#' out$statistic
 #' @export
-lrt_order_inad <- function(y, order_null = 1, order_alt = 2,
+test_order_inad <- function(y, order_null = 0, order_alt = 1,
                            thinning = "binom", innovation = "pois",
                            blocks = NULL, use_chibar = TRUE, weights = NULL,
                            fit_null = NULL, fit_alt = NULL, ...) {
@@ -133,23 +135,25 @@ lrt_order_inad <- function(y, order_null = 1, order_alt = 2,
                                    .count_params_inad(order_alt, n_time, n_blocks, thinning, innovation)),
                       BIC = c(bic_null, bic_alt), stringsAsFactors = FALSE)
   
-  result <- list(fit_null = fit_null, fit_alt = fit_alt, lrt_stat = lrt_stat, df = df,
+  result <- list(method = "lrt", fit_null = fit_null, fit_alt = fit_alt,
+                 statistic = lrt_stat, lrt_stat = lrt_stat, df = df,
                  p_value = p_value, p_value_chibar = p_value_chibar,
                  bic_null = bic_null, bic_alt = bic_alt, bic_selected = bic_selected, table = table,
                  settings = list(order_null = order_null, order_alt = order_alt, thinning = thinning,
                                  innovation = innovation, n_subjects = n_subjects, n_time = n_time,
                                  n_blocks = n_blocks, use_chibar = use_chibar))
-  class(result) <- "lrt_order_inad"
+  class(result) <- "test_order_inad"
   result
 }
 
 #' @export
-print.lrt_order_inad <- function(x, digits = 4, ...) {
+print.test_order_inad <- function(x, digits = 4, ...) {
+  stat <- if (!is.null(x$statistic)) x$statistic else x$lrt_stat
   cat("\nLikelihood Ratio Test for INAD Model Order\n")
   cat("===========================================\n\n")
   cat("H0: Order", x$settings$order_null, " vs H1: Order", x$settings$order_alt, "\n\n")
   print(x$table, row.names = FALSE, digits = digits)
-  cat("\nLRT:", round(x$lrt_stat, digits), " df:", x$df, " p-value:", format.pval(x$p_value, digits = digits))
+  cat("\nLRT:", round(stat, digits), " df:", x$df, " p-value:", format.pval(x$p_value, digits = digits))
   if (!is.na(x$p_value_chibar)) cat(" p-value(chi-bar):", format.pval(x$p_value_chibar, digits = digits))
   cat("\nBIC selects: Order", ifelse(x$bic_selected == "null", x$settings$order_null, x$settings$order_alt), "\n")
   invisible(x)
@@ -173,13 +177,22 @@ print.lrt_order_inad <- function(x, digits = 4, ...) {
 }
 
 #' BIC-based order selection for INAD models
+#'
+#' Fits INAD models across candidate orders and reports BIC-based selection.
 #' @param y Integer matrix.
 #' @param max_order Maximum order (1 or 2).
 #' @param thinning Thinning operator.
 #' @param innovation Innovation distribution.
 #' @param blocks Optional block assignments.
 #' @param ... Additional arguments.
-#' @return A list with class "bic_order_inad".
+#' @return A list with class \code{"bic_order_inad"} containing:
+#' \describe{
+#'   \item{fits}{List of fitted INAD models by candidate order}
+#'   \item{bic}{Named numeric vector of BIC values by order}
+#'   \item{best_order}{Order with minimum BIC}
+#'   \item{table}{Data frame with order, logLik, n_params, and BIC}
+#'   \item{settings}{Input and derived settings used for selection}
+#' }
 #'
 #' @examples
 #' \donttest{
@@ -211,7 +224,8 @@ bic_order_inad <- function(y, max_order = 2, thinning = "binom", innovation = "p
                       n_params = sapply(orders, function(ord) .count_params_inad(ord, n_time, n_blocks, thinning, innovation)),
                       stringsAsFactors = FALSE)
   table$BIC <- -2 * table$logLik + table$n_params * log(n_subjects)
-  result <- list(fits = fits, table = table, best_order = orders[which.min(table$BIC)],
+  bic_vals <- stats::setNames(table$BIC, paste0("order_", orders))
+  result <- list(fits = fits, bic = bic_vals, table = table, best_order = orders[which.min(table$BIC)],
                  settings = list(thinning = thinning, innovation = innovation, n_subjects = n_subjects, 
                                  n_time = n_time, n_blocks = n_blocks))
   class(result) <- "bic_order_inad"

@@ -259,6 +259,13 @@ em_inad <- function(y, order = 1, thinning = "binom", innovation = "pois",
            error = function(e) -Inf)
 }
 
+#' Print method for INAD model fits
+#'
+#' @param x An object of class \code{inad_fit}.
+#' @param digits Number of digits to print.
+#' @param ... Unused.
+#'
+#' @return The input object, invisibly.
 #' @export
 print.inad_fit <- function(x, digits = 4, ...) {
   cat("\nINAD Model Fit")

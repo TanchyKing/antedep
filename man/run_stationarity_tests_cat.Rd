@@ -33,8 +33,8 @@ all groups.}
 \value{
 A list containing:
 \describe{
-\item{time_invariance}{Result of lrt_timeinvariance_cat}
-\item{stationarity}{Result of lrt_stationarity_cat}
+\item{time_invariance}{Result of test_timeinvariance_cat}
+\item{stationarity}{Result of test_stationarity_cat}
 \item{table}{Summary data frame}
 }
 }

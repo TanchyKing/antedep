@@ -44,7 +44,7 @@ Integer matrix with n_subjects rows and n_time columns, where each
 entry is a category code from 1 to c.
 }
 \description{
-Generates simulated longitudinal categorical data from an AD(p) model with
+Generate simulated longitudinal categorical data from an AD(p) model with
 specified transition probabilities.
 }
 \details{

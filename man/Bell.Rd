@@ -19,7 +19,7 @@ qbell(p, theta, max_z = 100L)
 \arguments{
 \item{x}{vector of nonnegative integers (for \code{dbell} and \code{pbell}).}
 
-\item{theta}{scalar real parameter.}
+\item{theta}{scalar nonnegative Bell parameter.}
 
 \item{log}{logical; if TRUE, probabilities p are given as log(p).}
 
@@ -46,7 +46,10 @@ probability mass function
 \deqn{
 P(X = x) = \theta^x \exp(-\exp(\theta) + 1) \frac{B_x}{x!},
 }
-for nonnegative integers \eqn{x} and real \eqn{\theta}.
+for nonnegative integers \eqn{x} and \eqn{\theta \ge 0}.
+
+For \eqn{\theta > 0}, the Bell mean is \eqn{E[X] = \theta e^\theta}.
+At \eqn{\theta = 0}, the distribution is degenerate at 0.
 
 The functions follow the standard naming used in base R:
 \code{dbell} for the density, \code{pbell} for the distribution function,

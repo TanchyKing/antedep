@@ -13,9 +13,9 @@
 #' @param tau Block effects, first element constrained to zero
 #' @param na_action How to handle missing values:
 #'   \itemize{
-#'     \item marginalize: Compute observed-data likelihood (default)
-#'     \item complete: Use only complete cases
-#'     \item fail: Error if any NA present
+#'     \item \code{fail}: Error if any NA is present (default)
+#'     \item \code{complete}: Use only complete cases
+#'     \item \code{marginalize}: Compute observed-data likelihood
 #'   }
 #'
 #' @return Scalar log-likelihood value.
@@ -40,7 +40,7 @@
 #' @export
 #' @importFrom stats dnorm
 logL_gau <- function(y, order, mu = NULL, phi = NULL, sigma = NULL, blocks = NULL, tau = 0,
-                    na_action = c("marginalize", "complete", "fail")) {
+                    na_action = c("fail", "complete", "marginalize")) {
   na_action <- match.arg(na_action)
 
   if (!is.matrix(y)) y <- as.matrix(y)

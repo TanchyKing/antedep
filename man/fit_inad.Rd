@@ -54,7 +54,20 @@ For order 2 matrix n_time by 2 or list(alpha1, alpha2).}
 }}
 }
 \value{
-A list with estimators, log likelihood, and settings.
+A list of class \code{"inad_fit"} containing:
+\describe{
+\item{alpha}{Estimated antedependence parameter(s)}
+\item{theta}{Estimated innovation parameter(s)}
+\item{tau}{Estimated block effects (if applicable)}
+\item{nb_inno_size}{Estimated innovation NB size parameter(s), when
+\code{innovation = "nbinom"}}
+\item{log_l}{Maximized log-likelihood}
+\item{aic}{Akaike information criterion}
+\item{bic}{Bayesian information criterion}
+\item{n_params}{Number of free parameters}
+\item{convergence}{Convergence code}
+\item{settings}{Model and fitting settings}
+}
 }
 \description{
 Fits INAD models by maximum likelihood.

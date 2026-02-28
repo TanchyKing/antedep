@@ -1,4 +1,4 @@
-# File: R/lrt_order_gau.R
+# File: R/test_order_gau.R
 # Likelihood ratio tests for the order of antedependence (Chapter 6.2)
 
 #' Likelihood ratio test for antedependence order (Gaussian AD data)
@@ -16,6 +16,7 @@
 #'
 #' @return A list with class \code{gau_order_test} containing:
 #' \describe{
+#'   \item{method}{Inference method used (\code{"lrt"}).}
 #'   \item{p}{Order under null hypothesis}
 #'   \item{q}{Order increment}
 #'   \item{statistic}{Test statistic value}
@@ -47,7 +48,7 @@
 #' Kenward, M.G. (1987). A method for comparing profiles of repeated measurements.
 #' Applied Statistics, 36, 296-308.
 #'
-#' @seealso \code{\link{lrt_one_sample_gau}}, \code{\link{lrt_homogeneity_gau}}
+#' @seealso \code{\link{test_one_sample_gau}}, \code{\link{test_homogeneity_gau}}
 #'
 #' @examples
 #' \dontrun{
@@ -55,21 +56,21 @@
 #' y <- simulate_gau(n_subjects = 50, n_time = 6, order = 1, phi = 0.5)
 #'
 #' # Test AD(0) vs AD(1)
-#' test01 <- lrt_order_gau(y, p = 0, q = 1)
+#' test01 <- test_order_gau(y, p = 0, q = 1)
 #' print(test01)
 #'
 #' # Test AD(1) vs AD(2)
-#' test12 <- lrt_order_gau(y, p = 1, q = 1)
+#' test12 <- test_order_gau(y, p = 1, q = 1)
 #' print(test12)
 #' }
 #'
 #' @export
-lrt_order_gau <- function(y, p = 0L, q = 1L, mu = NULL, use_modified = TRUE) {
+test_order_gau <- function(y, p = 0L, q = 1L, mu = NULL, use_modified = TRUE) {
 
     if (!is.matrix(y)) y <- as.matrix(y)
     if (anyNA(y)) {
         stop(
-            "lrt_order_gau currently supports complete data only. Missing-data AD likelihood-ratio tests are not implemented yet.",
+            "test_order_gau currently supports complete data only. Missing-data AD likelihood-ratio tests are not implemented yet.",
             call. = FALSE
         )
     }
@@ -170,6 +171,7 @@ lrt_order_gau <- function(y, p = 0L, q = 1L, mu = NULL, use_modified = TRUE) {
     }
 
     out <- list(
+        method = "lrt",
         p = p,
         q = q,
         statistic = statistic,
@@ -202,8 +204,8 @@ lrt_order_gau <- function(y, p = 0L, q = 1L, mu = NULL, use_modified = TRUE) {
 #'   \item{table}{Summary table}
 #' }
 #'
-#' @seealso \code{\link{bic_order_gau}}, \code{\link{bic_order_cat}},
-#'   \code{\link{bic_order_inad}}
+#' @seealso \code{\link{bic_order_cat}}, \code{\link{bic_order_inad}},
+#'   \code{\link{fit_gau}}
 #'
 #' @examples
 #' \dontrun{
@@ -263,7 +265,7 @@ bic_order_gau <- function(y, max_order = 2L, ...) {
 #'
 #' @export
 print.gau_order_test <- function(x, ...) {
-    cat("Likelihood Ratio Test for Order of Antedependence\n")
+    cat("Order Test for Antedependence\n")
     cat("==================================================\n\n")
 
     cat("H0: AD(", x$p, ")\n", sep = "")
@@ -271,7 +273,7 @@ print.gau_order_test <- function(x, ...) {
 
     cat("Sample size: n =", x$n_subjects, "subjects,", x$n_time, "time points\n\n")
 
-    cat("Standard LRT:\n")
+    cat("Standard statistic (LRT):\n")
     cat("  Statistic:", round(x$statistic, 4), "\n")
     cat("  df:", x$df, "\n")
     cat("  p-value:", format.pval(x$p_value, digits = 4), "\n")

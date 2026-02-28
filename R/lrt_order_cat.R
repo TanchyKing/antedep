@@ -1,4 +1,4 @@
-# lrt_order_cat.R - Likelihood ratio tests for order in categorical AD models
+# test_order_cat.R - Likelihood ratio tests for order in categorical AD models
 
 .cat_fit_uses_missing_likelihood <- function(fit) {
   na_effective <- fit$settings$na_action_effective
@@ -43,6 +43,8 @@
 #'
 #' @return A list of class \code{"cat_lrt"} containing:
 #' \describe{
+#'   \item{method}{Inference method used: one of \code{"lrt"}, \code{"score"},
+#'     \code{"mlrt"}, or \code{"wald"}.}
 #'   \item{lrt_stat}{Likelihood ratio test statistic}
 #'   \item{df}{Degrees of freedom}
 #'   \item{p_value}{P-value from chi-square distribution}
@@ -73,17 +75,17 @@
 #' y <- simulate_cat(200, 6, order = 1, n_categories = 2)
 #'
 #' # Test AD(0) vs AD(1)
-#' test_01 <- lrt_order_cat(y, order_null = 0, order_alt = 1)
+#' test_01 <- test_order_cat(y, order_null = 0, order_alt = 1)
 #' print(test_01$table)
 #'
 #' # Test AD(1) vs AD(2)
-#' test_12 <- lrt_order_cat(y, order_null = 1, order_alt = 2)
+#' test_12 <- test_order_cat(y, order_null = 1, order_alt = 2)
 #' print(test_12$table)
 #'
 #' # Using pre-fitted models
 #' fit0 <- fit_cat(y, order = 0)
 #' fit1 <- fit_cat(y, order = 1)
-#' test_prefitted <- lrt_order_cat(fit_null = fit0, fit_alt = fit1)
+#' test_prefitted <- test_order_cat(fit_null = fit0, fit_alt = fit1)
 #' }
 #'
 #' @references
@@ -94,7 +96,7 @@
 #' @seealso \code{\link{fit_cat}}, \code{\link{bic_order_cat}}
 #'
 #' @export
-lrt_order_cat <- function(y = NULL, order_null = 0, order_alt = 1,
+test_order_cat <- function(y = NULL, order_null = 0, order_alt = 1,
                           blocks = NULL, homogeneous = TRUE, n_categories = NULL,
                           fit_null = NULL, fit_alt = NULL,
                           test = c("lrt", "score", "mlrt", "wald")) {
@@ -166,7 +168,7 @@ lrt_order_cat <- function(y = NULL, order_null = 0, order_alt = 1,
       stop("y must be provided when test = 'score'")
     }
     if (anyNA(y) || .cat_fit_uses_missing_likelihood(fit_null) || .cat_fit_uses_missing_likelihood(fit_alt)) {
-      .stop_cat_missing_inference("lrt_order_cat(test = 'score')")
+      .stop_cat_missing_inference("test_order_cat(test = 'score')")
     }
 
     c <- fit_null$settings$n_categories
@@ -193,7 +195,7 @@ lrt_order_cat <- function(y = NULL, order_null = 0, order_alt = 1,
       stop("y must be provided when test = 'wald'")
     }
     if (anyNA(y) || .cat_fit_uses_missing_likelihood(fit_null) || .cat_fit_uses_missing_likelihood(fit_alt)) {
-      .stop_cat_missing_inference("lrt_order_cat(test = 'wald')")
+      .stop_cat_missing_inference("test_order_cat(test = 'wald')")
     }
     if (!identical(fit_null$settings$homogeneous, fit_alt$settings$homogeneous)) {
       stop("fit_null and fit_alt must both be homogeneous or both heterogeneous for Wald order test")
@@ -236,6 +238,7 @@ lrt_order_cat <- function(y = NULL, order_null = 0, order_alt = 1,
   
   # Assemble output
   out <- list(
+    method = test,
     lrt_stat = stat_value,
     statistic = stat_value,
     lrt_stat_raw = lrt_stat_raw,
@@ -308,7 +311,7 @@ print.cat_lrt <- function(x, ...) {
 #' @param n_categories Number of categories (inferred if NULL).
 #'
 #' @return A list containing:
-#'   \item{tests}{List of lrt_order_cat results for each comparison}
+#'   \item{tests}{List of test_order_cat results for each comparison}
 #'   \item{table}{Summary data frame with all comparisons}
 #'   \item{fits}{List of all fitted models}
 #'   \item{selected_order}{Recommended order based on sequential testing at alpha=0.05}
@@ -370,6 +373,7 @@ run_order_tests_cat <- function(y, max_order = 2, blocks = NULL,
     comparison = character(n_tests),
     order_null = integer(n_tests),
     order_alt = integer(n_tests),
+    method = character(n_tests),
     lrt_stat = numeric(n_tests),
     df = integer(n_tests),
     p_value = numeric(n_tests),
@@ -381,7 +385,7 @@ run_order_tests_cat <- function(y, max_order = 2, blocks = NULL,
     p_null <- orders[i]
     p_alt <- orders[i + 1]
 
-    tests[[i]] <- lrt_order_cat(
+    tests[[i]] <- test_order_cat(
       y = if (identical(test, "lrt")) NULL else y,
       blocks = if (identical(test, "lrt")) NULL else blocks,
       homogeneous = homogeneous,
@@ -394,6 +398,7 @@ run_order_tests_cat <- function(y, max_order = 2, blocks = NULL,
     test_results$comparison[i] <- paste0("AD(", p_null, ") vs AD(", p_alt, ")")
     test_results$order_null[i] <- p_null
     test_results$order_alt[i] <- p_alt
+    test_results$method[i] <- tests[[i]]$method
     test_results$lrt_stat[i] <- tests[[i]]$lrt_stat
     test_results$df[i] <- tests[[i]]$df
     test_results$p_value[i] <- tests[[i]]$p_value
@@ -412,6 +417,7 @@ run_order_tests_cat <- function(y, max_order = 2, blocks = NULL,
   }
   
   list(
+    method = test,
     tests = tests,
     table = test_results,
     fits = fits,

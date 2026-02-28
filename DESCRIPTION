@@ -14,10 +14,11 @@ Description: Provides functions for fitting, simulating, and inference for
     antedependence models for longitudinal data. Supports integer-valued 
     antedependence (INAD) models for count data with thinning operators 
     (binomial, Poisson, negative binomial) and flexible innovation distributions 
-    (Poisson, Bell, negative binomial), as well as Gaussian antedependence (AD) 
-    models for continuous data. Implements maximum likelihood estimation via 
-    time-separable optimization and block coordinate descent, with confidence 
-    intervals based on Louis' identity and profile likelihood.
+    (Poisson, Bell, negative binomial), categorical antedependence models for 
+    discrete-state longitudinal outcomes, and Gaussian antedependence (AD) models 
+    for continuous data. Implements maximum likelihood estimation via time-separable 
+    optimization and block coordinate descent, with confidence intervals based on 
+    Louis' identity and profile likelihood.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)

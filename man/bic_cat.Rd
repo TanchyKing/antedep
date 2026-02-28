@@ -7,7 +7,8 @@
 bic_cat(fit, n_subjects = NULL)
 }
 \arguments{
-\item{fit}{A fitted model object of class \code{"cat_fit"} from \code{fit_cat()}.}
+\item{fit}{A fitted model object of class \code{"cat_fit"} returned by
+\code{\link{fit_cat}}.}
 
 \item{n_subjects}{Number of subjects. If NULL, extracted from fit.}
 }
@@ -25,9 +26,8 @@ where \eqn{\ell} is the log-likelihood, \eqn{k} is the number of free parameters
 and \eqn{N} is the number of subjects.
 }
 \examples{
-\dontrun{
-# Simulate data
-y <- simulate_cat(100, 5, order = 1, n_categories = 2)
+set.seed(1)
+y <- simulate_cat(40, 5, order = 1, n_categories = 2)
 
 # Fit models of different orders
 fit0 <- fit_cat(y, order = 0)
@@ -36,6 +36,5 @@ fit2 <- fit_cat(y, order = 2)
 
 # Compare BIC
 c(BIC_0 = bic_cat(fit0), BIC_1 = bic_cat(fit1), BIC_2 = bic_cat(fit2))
-}
 
 }

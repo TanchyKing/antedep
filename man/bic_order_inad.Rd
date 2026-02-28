@@ -27,10 +27,17 @@ bic_order_inad(
 \item{...}{Additional arguments.}
 }
 \value{
-A list with class "bic_order_inad".
+A list with class \code{"bic_order_inad"} containing:
+\describe{
+\item{fits}{List of fitted INAD models by candidate order}
+\item{bic}{Named numeric vector of BIC values by order}
+\item{best_order}{Order with minimum BIC}
+\item{table}{Data frame with order, logLik, n_params, and BIC}
+\item{settings}{Input and derived settings used for selection}
+}
 }
 \description{
-BIC-based order selection for INAD models
+Fits INAD models across candidate orders and reports BIC-based selection.
 }
 \examples{
 \donttest{

@@ -9,7 +9,10 @@
 #' @param innovation One of "pois", "bell", "nbinom".
 #' @param alpha Thinning parameters. For order 1, numeric length 1 or n_time.
 #'   For order 2, either a matrix n_time by 2 or a list(alpha1, alpha2).
-#' @param theta Innovation mean parameters. Numeric length 1 or n_time.
+#' @param theta Innovation parameter(s). Numeric length 1 or n_time. For
+#'   Poisson and negative binomial innovations, this is the innovation mean.
+#'   For Bell innovations, this is the Bell rate parameter
+#'   (mean \eqn{\theta e^\theta}).
 #' @param nb_inno_size Size parameter for innovation "nbinom". Numeric length 1 or n_time.
 #' @param blocks Optional integer vector of length n_sub. If NULL, no fixed effect.
 #' @param tau Optional numeric vector. Only used if blocks is not NULL.
@@ -227,7 +230,10 @@ logL_inad <- function(
 #' @param innovation One of "pois", "bell", "nbinom".
 #' @param alpha Thinning parameters. For order 1, numeric length 1 or n_time.
 #'   For order 2, either a matrix n_time by 2 or a list(alpha1, alpha2).
-#' @param theta Innovation mean parameter at time i, or a vector length 1 or n_time.
+#' @param theta Innovation parameter at time i, or a vector length 1 or n_time.
+#'   For Poisson and negative binomial innovations, this is the innovation
+#'   mean. For Bell innovations, this is the Bell rate parameter
+#'   (mean \eqn{\theta e^\theta}).
 #' @param nb_inno_size Size parameter for innovation "nbinom". Numeric length 1 or n_time.
 #'
 #' @return A scalar log likelihood contribution for time i.

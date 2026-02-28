@@ -21,15 +21,15 @@ test_that("CAT missing-data inference support boundaries are explicit", {
   )
   expect_error(ci_cat(fit_missing_ci), "complete-data fits only")
 
-  expect_s3_class(lrt_order_cat(y_miss, order_null = 0, order_alt = 1), "cat_lrt")
+  expect_s3_class(test_order_cat(y_miss, order_null = 0, order_alt = 1), "cat_lrt")
   expect_s3_class(
-    lrt_homogeneity_cat(y_miss, blocks = c(1, 1, 2, 2), order = 1),
+    test_homogeneity_cat(y_miss, blocks = c(1, 1, 2, 2), order = 1),
     "cat_lrt"
   )
   expect_true(is.list(run_order_tests_cat(y_miss)))
 
-  expect_error(lrt_timeinvariance_cat(y_miss, order = 1), "complete data only")
-  expect_error(lrt_stationarity_cat(y_miss, order = 1), "complete data only")
+  expect_error(test_timeinvariance_cat(y_miss, order = 1), "complete data only")
+  expect_error(test_stationarity_cat(y_miss, order = 1), "complete data only")
   expect_error(run_stationarity_tests_cat(y_miss, order = 1), "complete data only")
 
   fit_null <- structure(
@@ -57,7 +57,7 @@ test_that("CAT missing-data inference support boundaries are explicit", {
     class = "cat_fit"
   )
   expect_s3_class(
-    lrt_order_cat(fit_null = fit_null, fit_alt = fit_alt),
+    test_order_cat(fit_null = fit_null, fit_alt = fit_alt),
     "cat_lrt"
   )
 })
@@ -84,16 +84,16 @@ test_that("INAD missing-data LRT support is enabled while CI remains complete-da
 
   expect_error(ci_inad(y_miss, fit_stub, blocks = blocks), "complete data only")
   ord_test <- suppressWarnings(
-    lrt_order_inad(y_miss, order_null = 0, order_alt = 1, blocks = blocks)
+    test_order_inad(y_miss, order_null = 0, order_alt = 1, blocks = blocks)
   )
-  expect_s3_class(ord_test, "lrt_order_inad")
+  expect_s3_class(ord_test, "test_order_inad")
   expect_s3_class(
-    lrt_stationarity_inad(y_miss, order = 1, blocks = blocks),
-    "lrt_stationarity_inad"
+    test_stationarity_inad(y_miss, order = 1, blocks = blocks),
+    "test_stationarity_inad"
   )
   expect_s3_class(
-    lrt_homogeneity_inad(y_miss, blocks = blocks, order = 1),
-    "lrt_homogeneity_inad"
+    test_homogeneity_inad(y_miss, blocks = blocks, order = 1),
+    "test_homogeneity_inad"
   )
   stat_tests <- suppressWarnings(
     run_stationarity_tests_inad(y_miss, order = 1, blocks = blocks, verbose = FALSE)
@@ -116,17 +116,17 @@ test_that("AD likelihood-ratio utilities reject missing-data inference clearly",
   )
   blocks <- c(1, 1, 2, 2)
 
-  expect_error(lrt_order_gau(y_miss, p = 0, q = 1), "complete data only")
-  expect_error(lrt_homogeneity_gau(y_miss, blocks = blocks, p = 1), "monotone dropout")
+  expect_error(test_order_gau(y_miss, p = 0, q = 1), "complete data only")
+  expect_error(test_homogeneity_gau(y_miss, blocks = blocks, p = 1), "monotone dropout")
   expect_error(
-    lrt_one_sample_gau(y_miss, mu0 = c(0, 0, 0), p = 1),
+    test_one_sample_gau(y_miss, mu0 = c(0, 0, 0), p = 1),
     "complete data only"
   )
-  expect_error(lrt_two_sample_gau(y_miss, blocks = blocks, p = 1), "complete data only")
+  expect_error(test_two_sample_gau(y_miss, blocks = blocks, p = 1), "complete data only")
   expect_error(
-    lrt_contrast_gau(y_miss, C = matrix(c(1, -1, 0), nrow = 1), p = 1),
+    test_contrast_gau(y_miss, C = matrix(c(1, -1, 0), nrow = 1), p = 1),
     "complete data only"
   )
-  expect_error(lrt_stationarity_gau(y_miss, order = 1), "complete data only")
+  expect_error(test_stationarity_gau(y_miss, order = 1), "complete data only")
   expect_error(run_stationarity_tests_gau(y_miss, order = 1), "complete data only")
 })

@@ -33,9 +33,11 @@ simulate_inad(
 \item{alpha}{thinning parameter or vector or matrix; if \code{NULL}, defaults
 are used depending on the order}
 
-\item{theta}{innovation mean parameter or vector; if \code{NULL}, defaults are used
-depending on the innovation type. For negative binomial innovations, theta
-represents the mean of the innovation distribution.}
+\item{theta}{innovation parameter or vector; if \code{NULL}, defaults are used
+depending on the innovation type. For Poisson and negative binomial
+innovations, \code{theta} is the innovation mean parameter. For Bell
+innovations, \code{theta} is the Bell rate parameter, with innovation mean
+\code{theta * exp(theta)}.}
 
 \item{nb_inno_size}{size (dispersion) parameter for negative binomial innovations
 when \code{innovation = "nbinom"}; must be positive. If \code{NULL}, defaults to 1.

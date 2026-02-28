@@ -1,4 +1,4 @@
-# File: R/lrt_stationarity_gau.R
+# File: R/test_stationarity_gau.R
 # Likelihood ratio tests for Gaussian AD stationarity constraints
 
 #' Likelihood ratio test for stationarity (Gaussian AD data)
@@ -21,8 +21,9 @@
 #' @param ... Additional arguments passed to \code{\link{fit_gau}} when
 #'   \code{fit_unconstrained} is not provided.
 #'
-#' @return A list with class \code{"lrt_stationarity_gau"} containing:
+#' @return A list with class \code{"test_stationarity_gau"} containing:
 #' \describe{
+#'   \item{method}{Inference method used (\code{"lrt"}).}
 #'   \item{fit_unconstrained}{Unconstrained Gaussian AD fit}
 #'   \item{fit_constrained}{Constrained Gaussian AD fit}
 #'   \item{constraint}{Human-readable null constraint description}
@@ -57,20 +58,20 @@
 #' y <- simulate_gau(n_subjects = 80, n_time = 6, order = 1, phi = 0.4, sigma = 1)
 #'
 #' # Test jointly constant phi and sigma (order 1)
-#' out <- lrt_stationarity_gau(y, order = 1, constrain = "both")
+#' out <- test_stationarity_gau(y, order = 1, constrain = "both")
 #' out$p_value
 #'
-#' @seealso \code{\link{run_stationarity_tests_gau}}, \code{\link{lrt_order_gau}},
+#' @seealso \code{\link{run_stationarity_tests_gau}}, \code{\link{test_order_gau}},
 #'   \code{\link{fit_gau}}
 #'
 #' @export
-lrt_stationarity_gau <- function(y, order = 1L, blocks = NULL, constrain = "both",
+test_stationarity_gau <- function(y, order = 1L, blocks = NULL, constrain = "both",
                                  fit_unconstrained = NULL, verbose = FALSE,
                                  max_iter = 2000L, rel_tol = 1e-8, ...) {
     if (!is.matrix(y)) y <- as.matrix(y)
     if (anyNA(y)) {
         stop(
-            "lrt_stationarity_gau currently supports complete data only. Missing-data AD likelihood-ratio tests are not implemented yet.",
+            "test_stationarity_gau currently supports complete data only. Missing-data AD likelihood-ratio tests are not implemented yet.",
             call. = FALSE
         )
     }
@@ -178,6 +179,7 @@ lrt_stationarity_gau <- function(y, order = 1L, blocks = NULL, constrain = "both
     )
 
     out <- list(
+        method = "lrt",
         fit_unconstrained = fit_unconstrained,
         fit_constrained = fit_constrained,
         constraint = cinfo$description,
@@ -202,7 +204,7 @@ lrt_stationarity_gau <- function(y, order = 1L, blocks = NULL, constrain = "both
         )
     )
 
-    class(out) <- "lrt_stationarity_gau"
+    class(out) <- "test_stationarity_gau"
     out
 }
 
@@ -223,7 +225,7 @@ lrt_stationarity_gau <- function(y, order = 1L, blocks = NULL, constrain = "both
 #' @return A list with class \code{"stationarity_tests_gau"} containing:
 #' \describe{
 #'   \item{fit_unconstrained}{Unconstrained Gaussian AD fit}
-#'   \item{tests}{Named list of \code{\link{lrt_stationarity_gau}} results}
+#'   \item{tests}{Named list of \code{\link{test_stationarity_gau}} results}
 #'   \item{summary}{Summary table of all constraints}
 #' }
 #'
@@ -233,10 +235,10 @@ lrt_stationarity_gau <- function(y, order = 1L, blocks = NULL, constrain = "both
 #' out <- run_stationarity_tests_gau(y, order = 1, verbose = FALSE)
 #' out$summary
 #'
-#' @seealso \code{\link{lrt_stationarity_gau}}
+#' @seealso \code{\link{test_stationarity_gau}}
 #'
 #' @export
-run_stationarity_tests_gau <- function(y, order = 1L, blocks = NULL, verbose = TRUE,
+run_stationarity_tests_gau <- function(y, order = 1L, blocks = NULL, verbose = FALSE,
                                        max_iter = 2000L, rel_tol = 1e-8, ...) {
     if (!is.matrix(y)) y <- as.matrix(y)
     if (anyNA(y)) {
@@ -285,7 +287,7 @@ run_stationarity_tests_gau <- function(y, order = 1L, blocks = NULL, verbose = T
 
     for (name in tests_to_run) {
         if (verbose) cat("Testing constraint:", name, "\n")
-        results[[name]] <- lrt_stationarity_gau(
+        results[[name]] <- test_stationarity_gau(
             y = y,
             order = order,
             blocks = blocks_fit,
@@ -299,6 +301,7 @@ run_stationarity_tests_gau <- function(y, order = 1L, blocks = NULL, verbose = T
 
     summary_df <- data.frame(
         constraint = tests_to_run,
+        method = vapply(results, function(x) x$method, character(1)),
         df = vapply(results, function(x) x$df, numeric(1)),
         LRT = vapply(results, function(x) x$lrt_stat, numeric(1)),
         p_value = vapply(results, function(x) x$p_value, numeric(1)),
@@ -307,6 +310,7 @@ run_stationarity_tests_gau <- function(y, order = 1L, blocks = NULL, verbose = T
     )
 
     out <- list(
+        method = "lrt",
         fit_unconstrained = fit_uncon,
         tests = results,
         summary = summary_df,
@@ -324,7 +328,7 @@ run_stationarity_tests_gau <- function(y, order = 1L, blocks = NULL, verbose = T
 
 
 #' @export
-print.lrt_stationarity_gau <- function(x, digits = 4, ...) {
+print.test_stationarity_gau <- function(x, digits = 4, ...) {
     cat("\nLikelihood Ratio Test for Gaussian AD Stationarity\n")
     cat("==================================================\n\n")
     cat("Constraint: H0:", x$constraint, "\n\n")

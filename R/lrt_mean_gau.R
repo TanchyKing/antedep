@@ -15,6 +15,7 @@
 #'
 #' @return A list with class \code{gau_mean_test} containing:
 #' \describe{
+#'   \item{method}{Inference method used (\code{"lrt"}).}
 #'   \item{test_type}{"one-sample"}
 #'   \item{mu0}{Hypothesized mean under null}
 #'   \item{mu_hat}{MLE of mean (sample mean)}
@@ -41,7 +42,7 @@
 #' Zimmerman, D.L. and Núñez-Antón, V. (2009). Antedependence Models for
 #' Longitudinal Data. Chapman & Hall/CRC. Chapter 7.
 #'
-#' @seealso \code{\link{lrt_two_sample_gau}}, \code{\link{lrt_order_gau}}
+#' @seealso \code{\link{test_two_sample_gau}}, \code{\link{test_order_gau}}
 #'
 #' @examples
 #' \dontrun{
@@ -50,21 +51,21 @@
 #' y <- simulate_gau(n_subjects = 50, n_time = 6, order = 1, mu = mu_true)
 #'
 #' # Test if mean is zero
-#' test <- lrt_one_sample_gau(y, mu0 = rep(0, 6), p = 1)
+#' test <- test_one_sample_gau(y, mu0 = rep(0, 6), p = 1)
 #' print(test)
 #'
 #' # Test if mean equals true value (should not reject)
-#' test2 <- lrt_one_sample_gau(y, mu0 = mu_true, p = 1)
+#' test2 <- test_one_sample_gau(y, mu0 = mu_true, p = 1)
 #' print(test2)
 #' }
 #'
 #' @export
-lrt_one_sample_gau <- function(y, mu0, p = 1L, use_modified = TRUE) {
+test_one_sample_gau <- function(y, mu0, p = 1L, use_modified = TRUE) {
 
     if (!is.matrix(y)) y <- as.matrix(y)
     if (anyNA(y)) {
         stop(
-            "lrt_one_sample_gau currently supports complete data only. Missing-data AD likelihood-ratio tests are not implemented yet.",
+            "test_one_sample_gau currently supports complete data only. Missing-data AD likelihood-ratio tests are not implemented yet.",
             call. = FALSE
         )
     }
@@ -126,6 +127,7 @@ lrt_one_sample_gau <- function(y, mu0, p = 1L, use_modified = TRUE) {
     }
 
     out <- list(
+        method = "lrt",
         test_type = "one-sample",
         mu0 = mu0,
         mu_hat = mu_hat,
@@ -159,6 +161,7 @@ lrt_one_sample_gau <- function(y, mu0, p = 1L, use_modified = TRUE) {
 #'
 #' @return A list with class \code{gau_mean_test} containing:
 #' \describe{
+#'   \item{method}{Inference method used (\code{"lrt"}).}
 #'   \item{test_type}{"two-sample"}
 #'   \item{mu1_hat}{Estimated mean for group 1}
 #'   \item{mu2_hat}{Estimated mean for group 2}
@@ -196,17 +199,17 @@ lrt_one_sample_gau <- function(y, mu0, p = 1L, use_modified = TRUE) {
 #' blocks <- c(rep(1, n1), rep(2, n2))
 #'
 #' # Test equality of profiles
-#' test <- lrt_two_sample_gau(y, blocks, p = 1)
+#' test <- test_two_sample_gau(y, blocks, p = 1)
 #' print(test)
 #' }
 #'
 #' @export
-lrt_two_sample_gau <- function(y, blocks, p = 1L, use_modified = TRUE) {
+test_two_sample_gau <- function(y, blocks, p = 1L, use_modified = TRUE) {
 
     if (!is.matrix(y)) y <- as.matrix(y)
     if (anyNA(y)) {
         stop(
-            "lrt_two_sample_gau currently supports complete data only. Missing-data AD likelihood-ratio tests are not implemented yet.",
+            "test_two_sample_gau currently supports complete data only. Missing-data AD likelihood-ratio tests are not implemented yet.",
             call. = FALSE
         )
     }
@@ -294,6 +297,7 @@ lrt_two_sample_gau <- function(y, blocks, p = 1L, use_modified = TRUE) {
     }
 
     out <- list(
+        method = "lrt",
         test_type = "two-sample",
         mu1_hat = mu1_hat,
         mu2_hat = mu2_hat,
@@ -330,6 +334,7 @@ lrt_two_sample_gau <- function(y, blocks, p = 1L, use_modified = TRUE) {
 #'
 #' @return A list with class \code{gau_contrast_test} containing:
 #' \describe{
+#'   \item{method}{Inference method used (\code{"wald"}).}
 #'   \item{C}{Contrast matrix}
 #'   \item{c}{Right-hand side vector}
 #'   \item{mu_hat}{Estimated mean vector}
@@ -367,18 +372,18 @@ lrt_two_sample_gau <- function(y, blocks, p = 1L, use_modified = TRUE) {
 #'   C[i, i] <- 1
 #'   C[i, i+1] <- -1
 #' }
-#' test <- lrt_contrast_gau(y, C = C, p = 1)
+#' test <- test_contrast_gau(y, C = C, p = 1)
 #' print(test)
 #' }
 #'
 #' @export
-lrt_contrast_gau <- function(y, C, c = NULL, p = 1L) {
+test_contrast_gau <- function(y, C, c = NULL, p = 1L) {
 
     if (!is.matrix(y)) y <- as.matrix(y)
     if (!is.matrix(C)) C <- as.matrix(C)
     if (anyNA(y)) {
         stop(
-            "lrt_contrast_gau currently supports complete data only. Missing-data AD likelihood-ratio tests are not implemented yet.",
+            "test_contrast_gau currently supports complete data only. Missing-data AD likelihood-ratio tests are not implemented yet.",
             call. = FALSE
         )
     }
@@ -437,6 +442,7 @@ lrt_contrast_gau <- function(y, C, c = NULL, p = 1L) {
     }
 
     out <- list(
+        method = "wald",
         C = C,
         c = c,
         mu_hat = mu_hat,

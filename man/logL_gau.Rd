@@ -12,7 +12,7 @@ logL_gau(
   sigma = NULL,
   blocks = NULL,
   tau = 0,
-  na_action = c("marginalize", "complete", "fail")
+  na_action = c("fail", "complete", "marginalize")
 )
 }
 \arguments{
@@ -33,9 +33,9 @@ For order 2: matrix with 2 columns or vector of length 2*(n_time-2).}
 
 \item{na_action}{How to handle missing values:
 \itemize{
-\item marginalize: Compute observed-data likelihood (default)
-\item complete: Use only complete cases
-\item fail: Error if any NA present
+\item \code{fail}: Error if any NA is present (default)
+\item \code{complete}: Use only complete cases
+\item \code{marginalize}: Compute observed-data likelihood
 }}
 }
 \value{

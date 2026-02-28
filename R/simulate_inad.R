@@ -21,9 +21,11 @@
 #'   `"nbinom"`
 #' @param alpha thinning parameter or vector or matrix; if `NULL`, defaults
 #'   are used depending on the order
-#' @param theta innovation mean parameter or vector; if `NULL`, defaults are used
-#'   depending on the innovation type. For negative binomial innovations, theta
-#'   represents the mean of the innovation distribution.
+#' @param theta innovation parameter or vector; if `NULL`, defaults are used
+#'   depending on the innovation type. For Poisson and negative binomial
+#'   innovations, `theta` is the innovation mean parameter. For Bell
+#'   innovations, `theta` is the Bell rate parameter, with innovation mean
+#'   `theta * exp(theta)`.
 #' @param nb_inno_size size (dispersion) parameter for negative binomial innovations
 #'   when `innovation = "nbinom"`; must be positive. If `NULL`, defaults to 1.
 #'   Larger values correspond to less overdispersion (approaching Poisson as

@@ -26,7 +26,7 @@ run_order_tests_cat(
 }
 \value{
 A list containing:
-\item{tests}{List of lrt_order_cat results for each comparison}
+\item{tests}{List of test_order_cat results for each comparison}
 \item{table}{Summary data frame with all comparisons}
 \item{fits}{List of all fitted models}
 \item{selected_order}{Recommended order based on sequential testing at alpha=0.05}

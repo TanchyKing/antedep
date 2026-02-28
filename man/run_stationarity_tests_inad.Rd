@@ -10,7 +10,7 @@ run_stationarity_tests_inad(
   thinning = "binom",
   innovation = "pois",
   blocks = NULL,
-  verbose = TRUE,
+  verbose = FALSE,
   ...
 )
 }

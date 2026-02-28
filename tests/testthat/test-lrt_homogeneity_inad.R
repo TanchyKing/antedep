@@ -1,25 +1,25 @@
-# test-lrt_homogeneity_inad.R
+# test-test_homogeneity_inad.R
 
-testthat::test_that("lrt_homogeneity_inad validates inputs correctly", {
+testthat::test_that("test_homogeneity_inad validates inputs correctly", {
   set.seed(123)
   y <- matrix(rpois(100, 5), nrow = 20, ncol = 5)
   blocks <- c(rep(1, 10), rep(2, 10))
   
   # blocks required
   testthat::expect_error(
-    lrt_homogeneity_inad(y, order = 1),
+    test_homogeneity_inad(y, order = 1),
     "blocks must be provided"
   )
   
   # blocks length must match
   testthat::expect_error(
-    lrt_homogeneity_inad(y, blocks = c(1, 2, 3), order = 1),
+    test_homogeneity_inad(y, blocks = c(1, 2, 3), order = 1),
     "length equal to nrow"
   )
   
   # Need at least 2 groups
   testthat::expect_error(
-    lrt_homogeneity_inad(y, blocks = rep(1, 20), order = 1),
+    test_homogeneity_inad(y, blocks = rep(1, 20), order = 1),
     "at least 2 groups"
   )
   
@@ -27,13 +27,13 @@ testthat::test_that("lrt_homogeneity_inad validates inputs correctly", {
   y_bad <- y
   y_bad[1, 1] <- -1
   testthat::expect_error(
-    lrt_homogeneity_inad(y_bad, blocks, order = 1),
+    test_homogeneity_inad(y_bad, blocks, order = 1),
     "non-negative integers"
   )
 })
 
 
-testthat::test_that("lrt_homogeneity_inad runs all test types", {
+testthat::test_that("test_homogeneity_inad runs all test types", {
   set.seed(456)
   
   # Small simulated data
@@ -50,24 +50,24 @@ testthat::test_that("lrt_homogeneity_inad runs all test types", {
   blocks <- c(rep(1, n1), rep(2, n2))
   
   # Test all three test types
-  test_all <- lrt_homogeneity_inad(y, blocks, order = 1, test = "all")
-  testthat::expect_s3_class(test_all, "lrt_homogeneity_inad")
+  test_all <- test_homogeneity_inad(y, blocks, order = 1, test = "all")
+  testthat::expect_s3_class(test_all, "test_homogeneity_inad")
   testthat::expect_true(test_all$lrt_stat >= 0)
   testthat::expect_true(test_all$df > 0)
   testthat::expect_true(test_all$p_value >= 0 && test_all$p_value <= 1)
   testthat::expect_equal(test_all$test, "all")
   
-  test_mean <- lrt_homogeneity_inad(y, blocks, order = 1, test = "mean")
-  testthat::expect_s3_class(test_mean, "lrt_homogeneity_inad")
+  test_mean <- test_homogeneity_inad(y, blocks, order = 1, test = "mean")
+  testthat::expect_s3_class(test_mean, "test_homogeneity_inad")
   testthat::expect_equal(test_mean$test, "mean")
   
-  test_dep <- lrt_homogeneity_inad(y, blocks, order = 1, test = "dependence")
-  testthat::expect_s3_class(test_dep, "lrt_homogeneity_inad")
+  test_dep <- test_homogeneity_inad(y, blocks, order = 1, test = "dependence")
+  testthat::expect_s3_class(test_dep, "test_homogeneity_inad")
   testthat::expect_equal(test_dep$test, "dependence")
 })
 
 
-testthat::test_that("lrt_homogeneity_inad detects heterogeneous groups", {
+testthat::test_that("test_homogeneity_inad detects heterogeneous groups", {
   set.seed(789)
   
   n1 <- 40
@@ -83,7 +83,7 @@ testthat::test_that("lrt_homogeneity_inad detects heterogeneous groups", {
   blocks <- c(rep(1, n1), rep(2, n2))
   
   # Test for overall heterogeneity - should detect differences
-  test_all <- lrt_homogeneity_inad(y, blocks, order = 1, test = "all")
+  test_all <- test_homogeneity_inad(y, blocks, order = 1, test = "all")
   
   # With very different parameters, we expect to reject H0
   # (p_value should be small)
@@ -91,7 +91,7 @@ testthat::test_that("lrt_homogeneity_inad detects heterogeneous groups", {
 })
 
 
-testthat::test_that("lrt_homogeneity_inad detects mean differences", {
+testthat::test_that("test_homogeneity_inad detects mean differences", {
   set.seed(101)
   
   n1 <- 50
@@ -107,7 +107,7 @@ testthat::test_that("lrt_homogeneity_inad detects mean differences", {
   blocks <- c(rep(1, n1), rep(2, n2))
   
   # Test for mean differences - should detect
-  test_mean <- lrt_homogeneity_inad(y, blocks, order = 1, test = "mean")
+  test_mean <- test_homogeneity_inad(y, blocks, order = 1, test = "mean")
   testthat::expect_true(test_mean$p_value < 0.10)
 })
 
@@ -149,7 +149,7 @@ testthat::test_that("run_homogeneity_tests_inad works correctly", {
 })
 
 
-testthat::test_that("lrt_homogeneity_inad works with order 0", {
+testthat::test_that("test_homogeneity_inad works with order 0", {
   set.seed(303)
   
   n1 <- 25
@@ -162,14 +162,14 @@ testthat::test_that("lrt_homogeneity_inad works with order 0", {
   y <- rbind(y1, y2)
   blocks <- c(rep(1, n1), rep(2, n2))
   
-  test <- lrt_homogeneity_inad(y, blocks, order = 0, test = "all")
+  test <- test_homogeneity_inad(y, blocks, order = 0, test = "all")
   
-  testthat::expect_s3_class(test, "lrt_homogeneity_inad")
+  testthat::expect_s3_class(test, "test_homogeneity_inad")
   testthat::expect_true(test$lrt_stat >= 0)
 })
 
 
-testthat::test_that("lrt_homogeneity_inad works with more than 2 groups", {
+testthat::test_that("test_homogeneity_inad works with more than 2 groups", {
   set.seed(404)
   
   n1 <- 20
@@ -186,14 +186,14 @@ testthat::test_that("lrt_homogeneity_inad works with more than 2 groups", {
   y <- rbind(y1, y2, y3)
   blocks <- c(rep(1, n1), rep(2, n2), rep(3, n3))
   
-  test <- lrt_homogeneity_inad(y, blocks, order = 1, test = "all")
+  test <- test_homogeneity_inad(y, blocks, order = 1, test = "all")
   
-  testthat::expect_s3_class(test, "lrt_homogeneity_inad")
+  testthat::expect_s3_class(test, "test_homogeneity_inad")
   testthat::expect_equal(test$settings$n_blocks, 3)
 })
 
 
-testthat::test_that("lrt_homogeneity_inad BIC selects simpler model when homogeneous", {
+testthat::test_that("test_homogeneity_inad BIC selects simpler model when homogeneous", {
   set.seed(505)
   
   n1 <- 50
@@ -231,7 +231,7 @@ testthat::test_that("print methods work without error", {
   blocks <- c(rep(1, n1), rep(2, n2))
   
   # Single test print
-  test <- lrt_homogeneity_inad(y, blocks, order = 1, test = "mean")
+  test <- test_homogeneity_inad(y, blocks, order = 1, test = "mean")
   testthat::expect_output(print(test), "Homogeneity")
   
   # All tests print
@@ -240,7 +240,7 @@ testthat::test_that("print methods work without error", {
 })
 
 
-testthat::test_that("lrt_homogeneity_inad uses pre-fitted models", {
+testthat::test_that("test_homogeneity_inad uses pre-fitted models", {
   set.seed(707)
   
   n1 <- 25
@@ -261,11 +261,11 @@ testthat::test_that("lrt_homogeneity_inad uses pre-fitted models", {
                          innovation = "pois", blocks = blocks)
   
   # Use pre-fitted pooled and inadfe
-  test_mean <- lrt_homogeneity_inad(y, blocks, order = 1, test = "mean",
+  test_mean <- test_homogeneity_inad(y, blocks, order = 1, test = "mean",
                                      fit_pooled = fit_pooled, 
                                      fit_inadfe = fit_inadfe)
   
-  testthat::expect_s3_class(test_mean, "lrt_homogeneity_inad")
+  testthat::expect_s3_class(test_mean, "test_homogeneity_inad")
   testthat::expect_equal(test_mean$fit_null$log_l, fit_pooled$log_l)
   testthat::expect_equal(test_mean$fit_alt$log_l, fit_inadfe$log_l)
 })

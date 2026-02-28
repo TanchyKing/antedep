@@ -1,4 +1,4 @@
-test_that("lrt_stationarity_gau returns expected df for order-1 constraints", {
+test_that("test_stationarity_gau returns expected df for order-1 constraints", {
   set.seed(1201)
   y <- simulate_gau(
     n_subjects = 90,
@@ -11,21 +11,21 @@ test_that("lrt_stationarity_gau returns expected df for order-1 constraints", {
 
   fit_uncon <- fit_gau(y, order = 1, na_action = "fail")
 
-  res_phi <- lrt_stationarity_gau(
+  res_phi <- test_stationarity_gau(
     y,
     order = 1,
     constrain = "phi",
     fit_unconstrained = fit_uncon,
     max_iter = 700
   )
-  res_sigma <- lrt_stationarity_gau(
+  res_sigma <- test_stationarity_gau(
     y,
     order = 1,
     constrain = "sigma",
     fit_unconstrained = fit_uncon,
     max_iter = 700
   )
-  res_both <- lrt_stationarity_gau(
+  res_both <- test_stationarity_gau(
     y,
     order = 1,
     constrain = "both",
@@ -33,9 +33,9 @@ test_that("lrt_stationarity_gau returns expected df for order-1 constraints", {
     max_iter = 700
   )
 
-  expect_s3_class(res_phi, "lrt_stationarity_gau")
-  expect_s3_class(res_sigma, "lrt_stationarity_gau")
-  expect_s3_class(res_both, "lrt_stationarity_gau")
+  expect_s3_class(res_phi, "test_stationarity_gau")
+  expect_s3_class(res_sigma, "test_stationarity_gau")
+  expect_s3_class(res_both, "test_stationarity_gau")
 
   expect_equal(res_phi$df, ncol(y) - 2)
   expect_equal(res_sigma$df, ncol(y) - 1)
@@ -50,7 +50,7 @@ test_that("lrt_stationarity_gau returns expected df for order-1 constraints", {
 })
 
 
-test_that("lrt_stationarity_gau detects strong order-1 non-stationarity", {
+test_that("test_stationarity_gau detects strong order-1 non-stationarity", {
   set.seed(1202)
   y <- simulate_gau(
     n_subjects = 280,
@@ -61,14 +61,14 @@ test_that("lrt_stationarity_gau detects strong order-1 non-stationarity", {
     sigma = c(1.0, 1.8, 0.6, 1.7, 0.55, 1.6)
   )
 
-  res <- lrt_stationarity_gau(
+  res <- test_stationarity_gau(
     y,
     order = 1,
     constrain = "both",
     max_iter = 1000
   )
 
-  expect_s3_class(res, "lrt_stationarity_gau")
+  expect_s3_class(res, "test_stationarity_gau")
   expect_lt(res$p_value, 0.05)
 })
 

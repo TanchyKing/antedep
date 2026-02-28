@@ -1,4 +1,4 @@
-# File: R/lrt_homogeneity_inad.R
+# File: R/test_homogeneity_inad.R
 # Likelihood ratio tests for homogeneity across groups in INAD models
 # Based on Section 3.7 of Li & Zimmerman (2026) Biostatistics
 
@@ -24,8 +24,10 @@
 #' @param fit_hetero Optional pre-computed heterogeneous fit (M3).
 #' @param ... Additional arguments passed to \code{fit_inad}.
 #'
-#' @return A list with class \code{"lrt_homogeneity_inad"} containing:
+#' @return A list with class \code{"test_homogeneity_inad"} containing:
 #' \describe{
+#'   \item{method}{Inference method used (\code{"lrt"}).}
+#'   \item{statistic}{Test statistic value}
 #'   \item{lrt_stat}{Likelihood ratio test statistic}
 #'   \item{df}{Degrees of freedom}
 #'   \item{p_value}{P-value from chi-square distribution}
@@ -66,8 +68,8 @@
 #' Li, C. and Zimmerman, D.L. (2026). Integer-valued antedependence models for
 #' longitudinal count data. \emph{Biostatistics}. Section 3.7.
 #'
-#' @seealso \code{\link{fit_inad}}, \code{\link{lrt_order_inad}},
-#'   \code{\link{lrt_stationarity_inad}}
+#' @seealso \code{\link{fit_inad}}, \code{\link{test_order_inad}},
+#'   \code{\link{test_stationarity_inad}}
 #'
 #' @examples
 #' \dontrun{
@@ -76,19 +78,19 @@
 #' blocks <- bolus_inad$blocks
 #'
 #' # Test for any group differences (M1 vs M3)
-#' test_all <- lrt_homogeneity_inad(y, blocks, order = 1,
+#' test_all <- test_homogeneity_inad(y, blocks, order = 1,
 #'                                   thinning = "nbinom", innovation = "bell",
 #'                                   test = "all")
 #' print(test_all)
 #'
 #' # Test only for mean differences (M1 vs M2)
-#' test_mean <- lrt_homogeneity_inad(y, blocks, order = 1,
+#' test_mean <- test_homogeneity_inad(y, blocks, order = 1,
 #'                                    thinning = "nbinom", innovation = "bell",
 #'                                    test = "mean")
 #' print(test_mean)
 #'
 #' # Test for dependence differences given different means (M2 vs M3)
-#' test_dep <- lrt_homogeneity_inad(y, blocks, order = 1,
+#' test_dep <- test_homogeneity_inad(y, blocks, order = 1,
 #'                                   thinning = "nbinom", innovation = "bell",
 #'                                   test = "dependence")
 #' print(test_dep)
@@ -96,7 +98,7 @@
 #'
 #' @importFrom stats pchisq
 #' @export
-lrt_homogeneity_inad <- function(y, blocks, order = 1,
+test_homogeneity_inad <- function(y, blocks, order = 1,
                                   thinning = "binom", innovation = "pois",
                                   test = c("all", "mean", "dependence"),
                                   fit_pooled = NULL, fit_inadfe = NULL,
@@ -251,6 +253,8 @@ lrt_homogeneity_inad <- function(y, blocks, order = 1,
   
   # Assemble output
   result <- list(
+    method = "lrt",
+    statistic = lrt_stat,
     lrt_stat = lrt_stat,
     df = df,
     p_value = p_value,
@@ -272,7 +276,7 @@ lrt_homogeneity_inad <- function(y, blocks, order = 1,
     )
   )
   
-  class(result) <- "lrt_homogeneity_inad"
+  class(result) <- "test_homogeneity_inad"
   result
 }
 
@@ -386,7 +390,7 @@ lrt_homogeneity_inad <- function(y, blocks, order = 1,
 #' Convenience function to run all three homogeneity tests at once and
 #' return a summary.
 #'
-#' @inheritParams lrt_homogeneity_inad
+#' @inheritParams test_homogeneity_inad
 #'
 #' @return A list with class \code{"homogeneity_tests_inad"} containing results
 #'   for all three tests and a summary table.
@@ -457,21 +461,21 @@ run_homogeneity_tests_inad <- function(y, blocks, order = 1,
   )
   
   # Run all three tests
-  test_all <- lrt_homogeneity_inad(y, blocks, order = order,
+  test_all <- test_homogeneity_inad(y, blocks, order = order,
                                     thinning = thinning, innovation = innovation,
                                     test = "all",
                                     fit_pooled = fit_pooled,
                                     fit_hetero = fit_hetero,
                                     na_action = fit_args$na_action)
   
-  test_mean <- lrt_homogeneity_inad(y, blocks, order = order,
+  test_mean <- test_homogeneity_inad(y, blocks, order = order,
                                      thinning = thinning, innovation = innovation,
                                      test = "mean",
                                      fit_pooled = fit_pooled,
                                      fit_inadfe = fit_inadfe,
                                      na_action = fit_args$na_action)
   
-  test_dep <- lrt_homogeneity_inad(y, blocks, order = order,
+  test_dep <- test_homogeneity_inad(y, blocks, order = order,
                                     thinning = thinning, innovation = innovation,
                                     test = "dependence",
                                     fit_inadfe = fit_inadfe,
@@ -481,6 +485,8 @@ run_homogeneity_tests_inad <- function(y, blocks, order = 1,
   # Create summary table
   summary_table <- data.frame(
     test = c("M1 vs M3 (all)", "M1 vs M2 (mean)", "M2 vs M3 (dependence)"),
+    method = c(test_all$method, test_mean$method, test_dep$method),
+    statistic = c(test_all$statistic, test_mean$statistic, test_dep$statistic),
     lrt_stat = c(test_all$lrt_stat, test_mean$lrt_stat, test_dep$lrt_stat),
     df = c(test_all$df, test_mean$df, test_dep$df),
     p_value = c(test_all$p_value, test_mean$p_value, test_dep$p_value),
@@ -505,6 +511,7 @@ run_homogeneity_tests_inad <- function(y, blocks, order = 1,
   model_table$BIC <- -2 * model_table$logLik + model_table$n_params * log(n_subjects)
   
   result <- list(
+    method = "lrt",
     test_all = test_all,
     test_mean = test_mean,
     test_dependence = test_dep,
@@ -531,14 +538,15 @@ run_homogeneity_tests_inad <- function(y, blocks, order = 1,
 }
 
 
-#' Print method for lrt_homogeneity_inad
+#' Print method for test_homogeneity_inad
 #'
-#' @param x Object of class \code{lrt_homogeneity_inad}
+#' @param x Object of class \code{test_homogeneity_inad}
 #' @param digits Number of digits for printing
 #' @param ... Unused
 #'
 #' @export
-print.lrt_homogeneity_inad <- function(x, digits = 4, ...) {
+print.test_homogeneity_inad <- function(x, digits = 4, ...) {
+  stat <- if (!is.null(x$statistic)) x$statistic else x$lrt_stat
   cat("\nLikelihood Ratio Test for Homogeneity (INAD)\n")
   cat("=============================================\n\n")
   
@@ -556,7 +564,7 @@ print.lrt_homogeneity_inad <- function(x, digits = 4, ...) {
   
   print(x$table, row.names = FALSE, digits = digits)
   
-  cat("\nLRT statistic:", round(x$lrt_stat, digits), "\n")
+  cat("\nLRT statistic:", round(stat, digits), "\n")
   cat("Degrees of freedom:", x$df, "\n")
   cat("P-value:", format.pval(x$p_value, digits = digits), "\n")
   cat("BIC selects:", ifelse(x$bic_selected == "null", 

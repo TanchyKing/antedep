@@ -1,4 +1,4 @@
-# File: R/lrt_homogeneity_gau.R
+# File: R/test_homogeneity_gau.R
 # Likelihood ratio test for homogeneity of covariance across groups (Section 6.4)
 
 #' Likelihood ratio test for homogeneity across groups (Gaussian AD data)
@@ -15,6 +15,7 @@
 #'
 #' @return A list with class \code{gau_homogeneity_test} containing:
 #' \describe{
+#'   \item{method}{Inference method used (\code{"lrt"}).}
 #'   \item{statistic}{Test statistic value}
 #'   \item{statistic_modified}{Modified test statistic (if use_modified = TRUE)}
 #'   \item{df}{Degrees of freedom}
@@ -46,7 +47,7 @@
 #' Kenward, M.G. (1987). A method for comparing profiles of repeated measurements.
 #' Applied Statistics, 36, 296-308.
 #'
-#' @seealso \code{\link{lrt_order_gau}}, \code{\link{lrt_two_sample_gau}}
+#' @seealso \code{\link{test_order_gau}}, \code{\link{test_two_sample_gau}}
 #'
 #' @importFrom stats setNames
 #'
@@ -61,12 +62,12 @@
 #' blocks <- c(rep(1, n1), rep(2, n2))
 #'
 #' # Test homogeneity
-#' test <- lrt_homogeneity_gau(y, blocks, p = 1)
+#' test <- test_homogeneity_gau(y, blocks, p = 1)
 #' print(test)
 #' }
 #'
 #' @export
-lrt_homogeneity_gau <- function(y, blocks, p = 1L, use_modified = TRUE) {
+test_homogeneity_gau <- function(y, blocks, p = 1L, use_modified = TRUE) {
 
     if (!is.matrix(y)) y <- as.matrix(y)
     if (any(!is.finite(y[!is.na(y)]))) stop("y must contain finite values")
@@ -94,7 +95,7 @@ lrt_homogeneity_gau <- function(y, blocks, p = 1L, use_modified = TRUE) {
         if (length(bad_patterns) > 0) {
             stop(
                 paste0(
-                    "lrt_homogeneity_gau with missing data currently supports monotone dropout only ",
+                    "test_homogeneity_gau with missing data currently supports monotone dropout only ",
                     "(missing values allowed only at the end of each subject profile). ",
                     "Found unsupported patterns: ",
                     paste(bad_patterns, collapse = ", "),
@@ -279,6 +280,7 @@ lrt_homogeneity_gau <- function(y, blocks, p = 1L, use_modified = TRUE) {
     }
 
     out <- list(
+        method = "lrt",
         statistic = statistic,
         statistic_modified = statistic_modified,
         df = df,

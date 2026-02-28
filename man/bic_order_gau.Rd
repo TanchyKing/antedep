@@ -36,6 +36,6 @@ ord$table
 
 }
 \seealso{
-\code{\link{bic_order_gau}}, \code{\link{bic_order_cat}},
-\code{\link{bic_order_inad}}
+\code{\link{bic_order_cat}}, \code{\link{bic_order_inad}},
+\code{\link{fit_gau}}
 }

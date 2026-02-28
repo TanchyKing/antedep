@@ -7,10 +7,11 @@
 aic_cat(fit)
 }
 \arguments{
-\item{fit}{A fitted model object of class \code{"cat_fit"} from \code{fit_cat()}.}
+\item{fit}{A fitted model object of class \code{"cat_fit"} returned by
+\code{\link{fit_cat}}.}
 }
 \value{
-Scalar AIC value.
+A numeric scalar AIC value.
 }
 \description{
 Computes AIC using the fitted log likelihood and a parameter count for
@@ -23,10 +24,9 @@ where \eqn{\ell} is the log-likelihood and \eqn{k} is the number of free
 parameters.
 }
 \examples{
-\dontrun{
-y <- simulate_cat(100, 5, order = 1, n_categories = 2)
+set.seed(1)
+y <- simulate_cat(40, 5, order = 1, n_categories = 2)
 fit <- fit_cat(y, order = 1)
 aic_cat(fit)
-}
 
 }

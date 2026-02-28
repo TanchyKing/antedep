@@ -1,4 +1,4 @@
-# lrt_homogeneity_cat.R - Likelihood ratio test for homogeneity in categorical AD
+# test_homogeneity_cat.R - Likelihood ratio test for homogeneity in categorical AD
 
 #' Likelihood ratio test for homogeneity across groups (categorical AD data)
 #'
@@ -21,6 +21,8 @@
 #'
 #' @return A list of class \code{"cat_lrt"} containing:
 #' \describe{
+#'   \item{method}{Inference method used: one of \code{"lrt"}, \code{"score"},
+#'     \code{"mlrt"}, or \code{"wald"}.}
 #'   \item{lrt_stat}{Likelihood ratio test statistic}
 #'   \item{df}{Degrees of freedom}
 #'   \item{p_value}{P-value from chi-square distribution}
@@ -61,7 +63,7 @@
 #' blocks <- c(rep(1, 100), rep(2, 100))
 #'
 #' # Test homogeneity
-#' test <- lrt_homogeneity_cat(y, blocks, order = 1)
+#' test <- test_homogeneity_cat(y, blocks, order = 1)
 #' print(test)
 #' }
 #'
@@ -70,10 +72,10 @@
 #' categorical longitudinal data with ignorable missingness: likelihood-based
 #' inference. \emph{Statistics in Medicine}, 32, 3274-3289.
 #'
-#' @seealso \code{\link{fit_cat}}, \code{\link{lrt_order_cat}}
+#' @seealso \code{\link{fit_cat}}, \code{\link{test_order_cat}}
 #'
 #' @export
-lrt_homogeneity_cat <- function(y = NULL, blocks = NULL, order = 1,
+test_homogeneity_cat <- function(y = NULL, blocks = NULL, order = 1,
                                  n_categories = NULL,
                                  fit_null = NULL, fit_alt = NULL,
                                  test = c("lrt", "score", "mlrt")) {
@@ -143,7 +145,7 @@ lrt_homogeneity_cat <- function(y = NULL, blocks = NULL, order = 1,
       stop("y and blocks must be provided when test = 'score'")
     }
     if (anyNA(y) || .cat_fit_uses_missing_likelihood(fit_null) || .cat_fit_uses_missing_likelihood(fit_alt)) {
-      .stop_cat_missing_inference("lrt_homogeneity_cat(test = 'score')")
+      .stop_cat_missing_inference("test_homogeneity_cat(test = 'score')")
     }
     stat_value <- .cat_score_homogeneity(
       y = y,
@@ -220,6 +222,7 @@ lrt_homogeneity_cat <- function(y = NULL, blocks = NULL, order = 1,
   
   # Assemble output
   out <- list(
+    method = test,
     lrt_stat = stat_value,
     statistic = stat_value,
     lrt_stat_raw = lrt_stat_raw,
@@ -257,6 +260,8 @@ lrt_homogeneity_cat <- function(y = NULL, blocks = NULL, order = 1,
 #'
 #' @return A list of class \code{"cat_lrt"} containing:
 #' \describe{
+#'   \item{method}{Inference method used: one of \code{"lrt"}, \code{"score"},
+#'     \code{"mlrt"}, or \code{"wald"}.}
 #'   \item{lrt_stat}{Likelihood ratio test statistic}
 #'   \item{df}{Degrees of freedom}
 #'   \item{p_value}{P-value from chi-square distribution}
@@ -282,7 +287,7 @@ lrt_homogeneity_cat <- function(y = NULL, blocks = NULL, order = 1,
 #' y <- simulate_cat(200, 6, order = 1, n_categories = 2)
 #'
 #' # Test time-invariance
-#' test <- lrt_timeinvariance_cat(y, order = 1)
+#' test <- test_timeinvariance_cat(y, order = 1)
 #' print(test)
 #' }
 #'
@@ -291,15 +296,15 @@ lrt_homogeneity_cat <- function(y = NULL, blocks = NULL, order = 1,
 #' categorical longitudinal data with ignorable missingness: likelihood-based
 #' inference. \emph{Statistics in Medicine}, 32, 3274-3289.
 #'
-#' @seealso \code{\link{fit_cat}}, \code{\link{lrt_order_cat}}
+#' @seealso \code{\link{fit_cat}}, \code{\link{test_order_cat}}
 #'
 #' @export
-lrt_timeinvariance_cat <- function(y, order = 1, blocks = NULL,
+test_timeinvariance_cat <- function(y, order = 1, blocks = NULL,
                                     homogeneous = TRUE, n_categories = NULL,
                                     test = c("lrt", "score", "mlrt")) {
   test <- match.arg(test)
   if (anyNA(y)) {
-    .stop_cat_missing_inference("lrt_timeinvariance_cat")
+    .stop_cat_missing_inference("test_timeinvariance_cat")
   }
   
   # Validate data
@@ -420,6 +425,7 @@ lrt_timeinvariance_cat <- function(y, order = 1, blocks = NULL,
   
   # Assemble output
   out <- list(
+    method = test,
     lrt_stat = stat_value,
     statistic = stat_value,
     lrt_stat_raw = lrt_stat_raw,

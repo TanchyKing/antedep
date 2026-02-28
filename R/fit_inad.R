@@ -28,7 +28,20 @@
 #'     \item \code{"marginalize"}: maximize observed-data likelihood under MAR.
 #'   }
 #'
-#' @return A list with estimators, log likelihood, and settings.
+#' @return A list of class \code{"inad_fit"} containing:
+#' \describe{
+#'   \item{alpha}{Estimated antedependence parameter(s)}
+#'   \item{theta}{Estimated innovation parameter(s)}
+#'   \item{tau}{Estimated block effects (if applicable)}
+#'   \item{nb_inno_size}{Estimated innovation NB size parameter(s), when
+#'     \code{innovation = "nbinom"}}
+#'   \item{log_l}{Maximized log-likelihood}
+#'   \item{aic}{Akaike information criterion}
+#'   \item{bic}{Bayesian information criterion}
+#'   \item{n_params}{Number of free parameters}
+#'   \item{convergence}{Convergence code}
+#'   \item{settings}{Model and fitting settings}
+#' }
 #'
 #' @examples
 #' set.seed(1)

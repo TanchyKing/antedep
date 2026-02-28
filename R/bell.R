@@ -36,7 +36,10 @@ Bz <- function(z) {
 #' \deqn{
 #' P(X = x) = \theta^x \exp(-\exp(\theta) + 1) \frac{B_x}{x!},
 #' }
-#' for nonnegative integers \eqn{x} and real \eqn{\theta}.
+#' for nonnegative integers \eqn{x} and \eqn{\theta \ge 0}.
+#'
+#' For \eqn{\theta > 0}, the Bell mean is \eqn{E[X] = \theta e^\theta}.
+#' At \eqn{\theta = 0}, the distribution is degenerate at 0.
 #'
 #' The functions follow the standard naming used in base R:
 #' \code{dbell} for the density, \code{pbell} for the distribution function,
@@ -48,7 +51,7 @@ Bz <- function(z) {
 #' @param x vector of nonnegative integers (for \code{dbell} and \code{pbell}).
 #' @param p numeric vector of probabilities between 0 and 1 inclusive (for \code{qbell}).
 #' @param n number of observations to generate (for \code{rbell}).
-#' @param theta scalar real parameter.
+#' @param theta scalar nonnegative Bell parameter.
 #' @param log logical; if TRUE, probabilities p are given as log(p).
 #' @param max_z maximum support value used for approximation in
 #'   \code{rbell} and \code{qbell}.
@@ -75,8 +78,12 @@ dbell <- function(x, theta, log = FALSE) {
     if (any(x_int > .BELL_MAX_Z)) {
         stop("x exceeds precomputed Bell numbers; increase .BELL_MAX_Z if needed")
     }
-    if (length(theta) != 1L) {
-        stop("theta must be scalar")
+    theta <- .check_bell_theta(theta)
+
+    if (theta == 0) {
+        log_p0 <- ifelse(x_int == 0L, 0, -Inf)
+        if (log) return(log_p0)
+        return(exp(log_p0))
     }
 
     # Use log-scale computation to avoid overflow for large x
@@ -92,6 +99,7 @@ dbell <- function(x, theta, log = FALSE) {
 #' @rdname Bell
 #' @export
 pbell <- function(x, theta) {
+    theta <- .check_bell_theta(theta)
     x_int <- as.integer(x)
     if (any(x_int < 0L)) {
         stop("x must be nonnegative")
@@ -107,6 +115,7 @@ pbell <- function(x, theta) {
 #' @rdname Bell
 #' @export
 rbell <- function(n, theta, max_z = 100L) {
+    theta <- .check_bell_theta(theta)
     if (length(n) != 1L || n < 0L) {
         stop("n must be a nonnegative integer")
     }
@@ -130,6 +139,7 @@ rbell <- function(n, theta, max_z = 100L) {
 #' @rdname Bell
 #' @export
 qbell <- function(p, theta, max_z = 100L) {
+    theta <- .check_bell_theta(theta)
     if (any(p < 0 | p > 1)) {
         stop("p must be between 0 and 1 inclusive")
     }
@@ -146,4 +156,12 @@ qbell <- function(p, theta, max_z = 100L) {
             which(cdf >= prob)[1L] - 1L
         }
     )
+}
+
+#' @keywords internal
+.check_bell_theta <- function(theta) {
+    if (length(theta) != 1L || !is.finite(theta) || theta < 0) {
+        stop("theta must be a finite scalar >= 0")
+    }
+    as.numeric(theta)
 }
