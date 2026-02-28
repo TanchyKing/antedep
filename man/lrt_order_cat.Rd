@@ -12,7 +12,8 @@ lrt_order_cat(
   homogeneous = TRUE,
   n_categories = NULL,
   fit_null = NULL,
-  fit_alt = NULL
+  fit_alt = NULL,
+  test = c("lrt", "score", "mlrt", "wald")
 )
 }
 \arguments{
@@ -61,11 +62,17 @@ where \eqn{\ell_0} and \eqn{\ell_1} are the maximized log-likelihoods under
 the null and alternative hypotheses.
 
 Under H0, \eqn{\lambda} follows a chi-square distribution with degrees of
-freedom equal to the difference in the number of free parameters.
+freedom computed as the difference in free parameters between the fitted
+alternative and null models:
+\deqn{df = n_{\mathrm{par}}(H_1) - n_{\mathrm{par}}(H_0)}
 
-For testing AD(p) vs AD(p+1), the degrees of freedom are:
-\deqn{df = (c-1) \times c^p \times (n - p - 1)}
-where c is the number of categories and n is the number of time points.
+For adjacent-order tests AD(p) vs AD(p+1) under the standard parameterization,
+this reduces to \eqn{(c-1)^2 c^p (n-p-1)} where c is the number of categories
+and n is the number of time points.
+
+If \code{y} contains missing values and pre-fitted models are not supplied,
+model fitting defaults to \code{na_action = "marginalize"}. The score and
+Wald variants currently require complete-data fits.
 }
 \examples{
 \dontrun{
