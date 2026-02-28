@@ -100,10 +100,12 @@ testthat::test_that("logL_gau input validation behavior", {
 
     y_bad <- y
     y_bad[1, 1] <- NA
-    ll_default <- logL_gau(y_bad, order = 0)
+    testthat::expect_error(
+        logL_gau(y_bad, order = 0),
+        "na_action = 'marginalize' or 'complete'"
+    )
     ll_marginalize <- logL_gau(y_bad, order = 0, na_action = "marginalize")
-    testthat::expect_equal(ll_default, ll_marginalize)
-    testthat::expect_true(is.finite(ll_default))
+    testthat::expect_true(is.finite(ll_marginalize))
 })
 
 testthat::test_that("logL_gau is higher near the generating parameters", {
