@@ -4,7 +4,7 @@
 \alias{test_two_sample_gau}
 \title{Two-sample test for equality of mean profiles under antedependence}
 \usage{
-test_two_sample_gau(y, blocks, p = 1L, use_modified = TRUE)
+test_two_sample_gau(y, blocks, p = 1L, order = NULL, use_modified = TRUE)
 }
 \arguments{
 \item{y}{Numeric matrix with n_subjects rows and n_time columns.}
@@ -14,6 +14,9 @@ test_two_sample_gau(y, blocks, p = 1L, use_modified = TRUE)
 
 \item{p}{Antedependence order of the common covariance structure. This is the
 same order parameter named \code{order} in \code{\link{fit_gau}}.}
+
+\item{order}{Optional alias for \code{p}. Supply only one of \code{p} or
+\code{order}.}
 
 \item{use_modified}{Logical. If TRUE (default), use modified test statistic.}
 }

@@ -4,7 +4,7 @@
 \alias{test_one_sample_gau}
 \title{One-sample test for mean structure under antedependence}
 \usage{
-test_one_sample_gau(y, mu0, p = 1L, use_modified = TRUE)
+test_one_sample_gau(y, mu0, p = 1L, order = NULL, use_modified = TRUE)
 }
 \arguments{
 \item{y}{Numeric matrix with n_subjects rows and n_time columns.}
@@ -13,6 +13,9 @@ test_one_sample_gau(y, mu0, p = 1L, use_modified = TRUE)
 
 \item{p}{Antedependence order of the covariance structure. This is the same
 order parameter named \code{order} in \code{\link{fit_gau}}.}
+
+\item{order}{Optional alias for \code{p}. Supply only one of \code{p} or
+\code{order}.}
 
 \item{use_modified}{Logical. If TRUE (default), use the modified test statistic
 (formula 7.7) for better small-sample approximation.}

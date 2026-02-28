@@ -68,6 +68,10 @@
 #' \deqn{df = (c-1) \times c^p \times (n - p - 1)}
 #' where c is the number of categories and n is the number of time points.
 #'
+#' If \code{y} contains missing values and models are fit internally, this
+#' function defaults to \code{na_action = "marginalize"} for fitting.
+#' Score- and Wald-based variants currently require complete data.
+#'
 #' @examples
 #' \dontrun{
 #' # Simulate AD(1) data
@@ -320,9 +324,6 @@ print.cat_lrt <- function(x, ...) {
 #' This function performs forward selection: starting from order 0, it tests
 #' whether increasing the order provides significant improvement. The selected
 #' order is the highest order where the test was significant (at alpha = 0.05).
-#'
-#' This convenience wrapper is currently implemented for categorical AD models.
-#' Analogous batch order wrappers for Gaussian and INAD models are planned.
 #'
 #' @examples
 #' \dontrun{

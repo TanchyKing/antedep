@@ -11,6 +11,8 @@
 #' @param mu0 Hypothesized mean vector under the null (length n_time).
 #' @param p Antedependence order of the covariance structure. This is the same
 #'   order parameter named \code{order} in \code{\link{fit_gau}}.
+#' @param order Optional alias for \code{p}. Supply only one of \code{p} or
+#'   \code{order}.
 #' @param use_modified Logical. If TRUE (default), use the modified test statistic
 #'   (formula 7.7) for better small-sample approximation.
 #'
@@ -61,7 +63,7 @@
 #' }
 #'
 #' @export
-test_one_sample_gau <- function(y, mu0, p = 1L, use_modified = TRUE) {
+test_one_sample_gau <- function(y, mu0, p = 1L, order = NULL, use_modified = TRUE) {
 
     if (!is.matrix(y)) y <- as.matrix(y)
     if (anyNA(y)) {
@@ -75,6 +77,12 @@ test_one_sample_gau <- function(y, mu0, p = 1L, use_modified = TRUE) {
     n <- nrow(y)  # N in the book
     n_time <- ncol(y)  # n in the book
 
+    if (!is.null(order)) {
+        if (!missing(p)) {
+            stop("Specify only one of 'p' or 'order'.", call. = FALSE)
+        }
+        p <- order
+    }
     p <- as.integer(p)
     if (p < 0 || p >= n_time) stop("p must be in [0, n_time - 1)")
 
@@ -159,6 +167,8 @@ test_one_sample_gau <- function(y, mu0, p = 1L, use_modified = TRUE) {
 #'   (must contain exactly two unique values, typically 1 and 2).
 #' @param p Antedependence order of the common covariance structure. This is the
 #'   same order parameter named \code{order} in \code{\link{fit_gau}}.
+#' @param order Optional alias for \code{p}. Supply only one of \code{p} or
+#'   \code{order}.
 #' @param use_modified Logical. If TRUE (default), use modified test statistic.
 #'
 #' @return A list with class \code{gau_mean_test} containing:
@@ -206,7 +216,7 @@ test_one_sample_gau <- function(y, mu0, p = 1L, use_modified = TRUE) {
 #' }
 #'
 #' @export
-test_two_sample_gau <- function(y, blocks, p = 1L, use_modified = TRUE) {
+test_two_sample_gau <- function(y, blocks, p = 1L, order = NULL, use_modified = TRUE) {
 
     if (!is.matrix(y)) y <- as.matrix(y)
     if (anyNA(y)) {
@@ -236,6 +246,12 @@ test_two_sample_gau <- function(y, blocks, p = 1L, use_modified = TRUE) {
     n1 <- length(g1)
     n2 <- length(g2)
 
+    if (!is.null(order)) {
+        if (!missing(p)) {
+            stop("Specify only one of 'p' or 'order'.", call. = FALSE)
+        }
+        p <- order
+    }
     p <- as.integer(p)
     if (p < 0 || p >= n_time) stop("p must be in [0, n_time - 1)")
 

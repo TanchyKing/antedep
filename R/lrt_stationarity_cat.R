@@ -43,6 +43,8 @@
 #'
 #' This is stronger than time-invariance alone, which only requires condition 2.
 #'
+#' This function currently supports complete data only.
+#'
 #' The null hypothesis is tested against the general (non-stationary) AD(p)
 #' model. The degrees of freedom are computed from the fitted parameter counts:
 #' \deqn{df = n_{params}(H_1) - n_{params}(H_0)}
@@ -435,6 +437,7 @@ test_stationarity_cat <- function(y, order = 1, blocks = NULL,
 #' \code{order = 1}, the stationarity test corresponds to strict stationarity;
 #' for \code{order > 1}, it tests marginal-constancy plus time-invariant
 #' transitions.
+#' Currently supports complete data only.
 #'
 #' @param y Integer matrix with n_subjects rows and n_time columns. Each entry
 #'   should be a category code from 1 to c.

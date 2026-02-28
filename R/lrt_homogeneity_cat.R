@@ -280,6 +280,10 @@ test_homogeneity_cat <- function(y = NULL, blocks = NULL, order = 1,
 #' The degrees of freedom are:
 #' \deqn{df = (c-1) \times c^p \times (n - p - 1)}
 #'
+#' This function currently supports complete data only. If \code{y} contains
+#' missing values, use model-fitting functions (for example \code{fit_cat})
+#' directly with missing-data handling instead of this test wrapper.
+#'
 #' @examples
 #' \dontrun{
 #' # Simulate data with time-invariant transitions

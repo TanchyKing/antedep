@@ -62,6 +62,8 @@ not, in general, sufficient for full strict stationarity.
 
 This is stronger than time-invariance alone, which only requires condition 2.
 
+This function currently supports complete data only.
+
 The null hypothesis is tested against the general (non-stationary) AD(p)
 model. The degrees of freedom are computed from the fitted parameter counts:
 \deqn{df = n_{params}(H_1) - n_{params}(H_0)}
