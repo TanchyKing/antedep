@@ -65,7 +65,7 @@
 #' freedom equal to the difference in the number of free parameters.
 #'
 #' For testing AD(p) vs AD(p+1), the degrees of freedom are:
-#' \deqn{df = (c-1) \times c^p \times (n - p - 1)}
+#' \deqn{df = (c-1)^2 \times c^p \times (n - p - 1)}
 #' where c is the number of categories and n is the number of time points.
 #'
 #' If \code{y} contains missing values and models are fit internally, this
