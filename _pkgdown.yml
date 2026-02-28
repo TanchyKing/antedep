@@ -32,34 +32,19 @@ reference:
   desc: Fitting, simulation, model selection, and inference for continuous outcomes.
   contents:
   - aic_gau
-  - aic_gau
-  - bic_gau
   - bic_gau
   - bic_order_gau
-  - bic_order_gau
-  - ci_gau
   - ci_gau
   - em_gau
-  - em_gau
-  - fit_gau
   - fit_gau
   - logL_gau
-  - logL_gau
-  - lrt_contrast_gau
-  - lrt_contrast_gau
-  - lrt_homogeneity_gau
-  - lrt_homogeneity_gau
-  - lrt_one_sample_gau
-  - lrt_one_sample_gau
-  - lrt_order_gau
-  - lrt_order_gau
-  - lrt_stationarity_gau
-  - lrt_stationarity_gau
-  - lrt_two_sample_gau
-  - lrt_two_sample_gau
+  - test_contrast_gau
+  - test_homogeneity_gau
+  - test_one_sample_gau
+  - test_order_gau
+  - test_stationarity_gau
+  - test_two_sample_gau
   - run_stationarity_tests_gau
-  - run_stationarity_tests_gau
-  - simulate_gau
   - simulate_gau
 
 - title: INAD (Count models)
@@ -74,9 +59,9 @@ reference:
   - aic_inad
   - bic_inad
   - bic_order_inad
-  - lrt_order_inad
-  - lrt_homogeneity_inad
-  - lrt_stationarity_inad
+  - test_order_inad
+  - test_homogeneity_inad
+  - test_stationarity_inad
   - run_homogeneity_tests_inad
   - run_stationarity_tests_inad
 
@@ -91,10 +76,10 @@ reference:
   - aic_cat
   - bic_cat
   - bic_order_cat
-  - lrt_order_cat
-  - lrt_homogeneity_cat
-  - lrt_timeinvariance_cat
-  - lrt_stationarity_cat
+  - test_order_cat
+  - test_homogeneity_cat
+  - test_timeinvariance_cat
+  - test_stationarity_cat
   - run_order_tests_cat
   - run_stationarity_tests_cat
 
