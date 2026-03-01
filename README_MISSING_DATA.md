@@ -1,14 +1,14 @@
 # Missing Data Support (Current State)
 
-This note reflects the integrated package behavior on the `refactor/remove-ad-main` line.
+This note reflects the integrated package behavior on the mainline package code.
 It replaces earlier implementation-draft instructions that referenced temporary files.
 
 ## Current API Behavior
 
 ### Gaussian (`gau`)
 
-- `logL_gau()` supports `na_action = c("marginalize", "complete", "fail")`.
-- `logL_gau()` default is `"marginalize"`.
+- `logL_gau()` supports `na_action = c("fail", "complete", "marginalize")`.
+- `logL_gau()` default is `"fail"`.
 - `fit_gau()` supports `na_action = c("fail", "complete", "em")`.
 - `fit_gau()` default is `"fail"`.
 - `fit_gau(na_action = "em")` is the missing-data estimation path.
@@ -34,8 +34,9 @@ Do not `source()` individual files from `R/`.
 ```r
 library(antedep)
 
-# Gaussian observed-data likelihood (default is marginalize)
-ll <- logL_gau(y, order = 1, mu = mu, phi = phi, sigma = sigma)
+# Gaussian observed-data likelihood under MAR
+ll <- logL_gau(y, order = 1, mu = mu, phi = phi, sigma = sigma,
+               na_action = "marginalize")
 
 # Gaussian fitting with EM for missing values
 fit <- fit_gau(y, order = 1, na_action = "em")
