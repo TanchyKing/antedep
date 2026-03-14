@@ -569,7 +569,7 @@ summary.inad_ci <- function(object, ...) {
         maxeval,
         xtol_rel,
         expand = 2,
-        max_bracket_iter = 20
+        max_bracket_iter = 50
 ) {
     if (!requireNamespace("nloptr", quietly = TRUE)) stop("nloptr is required for tau profiling")
 
@@ -617,8 +617,8 @@ summary.inad_ci <- function(object, ...) {
 
         out <- c(out, theta)
 
-        if (innovation == "nbinom") out <- c(out, nb_inno_size)
-
+        # nb_inno_size is NOT included: held fixed at its full-model MLE during
+        # profile refits (Variant 1 / constrained-fit paradigm).
         out
     }
 
@@ -670,12 +670,12 @@ summary.inad_ci <- function(object, ...) {
         k <- k + N
         theta <- pmax(theta, eps_pos)
 
+        # nb_inno_size is held fixed at its full-model MLE (nb0) throughout the
+        # profile refit.  Re-optimising it as a nuisance parameter (Variant 2)
+        # would widen the CI inconsistently with the constrained-fit paradigm
+        # used everywhere else in the package and can yield intervals that
+        # contradict the LRT p-value.
         nb_inno_size <- nb0
-        if (innovation == "nbinom") {
-            nb_inno_size <- par[(k + 1):(k + N)]
-            k <- k + N
-            nb_inno_size <- pmax(nb_inno_size, eps_pos)
-        }
 
         list(alpha = alpha, theta = theta, tau = tau, nb_inno_size = nb_inno_size)
     }
@@ -759,17 +759,19 @@ summary.inad_ci <- function(object, ...) {
         } else {
             -min(fit$theta)
         }
-        upper_bound <- max(abs(tau_mle) + 1, 1)
 
         x1 <- tau_mle
         step <- step0 * direction
 
         for (k in 1:max_bracket_iter) {
             x2 <- x1 + step
-            x2 <- max(lower_bound, min(upper_bound, x2))
+            # Enforce only the physical lower bound (innovation mean must be
+            # positive); no artificial upper cap so the search is free to expand
+            # as far as the profile likelihood requires.
+            x2 <- max(lower_bound, x2)
             f2 <- prof_target(b, x2)
             if (is.finite(f2) && f2 >= 0) return(sort(c(x1, x2)))
-            if (x2 == lower_bound || x2 == upper_bound) break
+            if (x2 == lower_bound) break   # hit hard physical constraint
             x1 <- x2
             step <- step * expand
         }
@@ -780,13 +782,10 @@ summary.inad_ci <- function(object, ...) {
     tau_ci <- vector("list", length = B - 1)
     for (b in 2:B) {
         tau_mle <- fit$tau[b]
-        lower_bound <- if (innovation == "bell") {
-            -min(.bell_mean_from_theta(fit$theta))
-        } else {
-            -min(fit$theta)
-        }
-        upper_bound <- max(abs(tau_mle) + 1, 1)
-        step0 <- (upper_bound - lower_bound) / 40
+        # Initial step: 20 % of |tau_mle| (min 0.1).  With expand = 2 and
+        # max_bracket_iter = 50 the bracket can reach tau_mle ± step0*(2^50-1),
+        # far beyond any realistic CI bound.
+        step0 <- max(0.1, abs(tau_mle) * 0.2)
         if (!is.finite(step0) || step0 <= 0) step0 <- 0.1
 
         f_mle <- prof_target(b, tau_mle)
