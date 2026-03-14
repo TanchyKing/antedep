@@ -591,6 +591,17 @@ summary.inad_ci <- function(object, ...) {
     eps_pos <- 1e-10
     eps_alpha <- 1e-10
     alpha_ub <- 1 - eps_alpha
+    alpha_share_tol <- 1e-6
+
+    # If order-1 alpha is supplied as time-constant, profile tau under the same
+    # shared-alpha nuisance structure (rather than a fully time-varying alpha).
+    alpha_profile_shared <- FALSE
+    if (ord == 1 && N >= 2 && length(fit$alpha) == N) {
+        a <- as.numeric(fit$alpha)
+        if (all(is.finite(a[2:N])) && max(abs(a[2:N] - a[2])) <= alpha_share_tol) {
+            alpha_profile_shared <- TRUE
+        }
+    }
 
     lambda_ok <- function(theta_vec, tau_vec) {
         mu <- if (innovation == "bell") {
@@ -601,14 +612,21 @@ summary.inad_ci <- function(object, ...) {
         all(is.finite(mu)) && all(mu > eps_pos)
     }
 
-    pack_par <- function(alpha, theta, tau, nb_inno_size, ord, B, N, innovation, tau_fix_idx) {
+    pack_par <- function(alpha, theta, tau, nb_inno_size, ord, B, N, innovation,
+                         tau_fix_idx, alpha_profile_shared = FALSE) {
         out <- numeric(0)
         tau_free_idx <- 2:B
         if (length(tau_fix_idx) > 0) tau_free_idx <- setdiff(tau_free_idx, tau_fix_idx)
         if (length(tau_free_idx) > 0) out <- c(out, tau[tau_free_idx])
 
         if (ord == 1) {
-            if (N >= 2) out <- c(out, alpha[2:N])
+            if (N >= 2) {
+                if (alpha_profile_shared) {
+                    out <- c(out, alpha[2])
+                } else {
+                    out <- c(out, alpha[2:N])
+                }
+            }
         }
         if (ord == 2) {
             if (N >= 2) out <- c(out, alpha[2:N, 1])
@@ -622,7 +640,8 @@ summary.inad_ci <- function(object, ...) {
         out
     }
 
-    unpack_par <- function(par, alpha0, theta0, tau0, nb0, ord, B, N, innovation, tau_fix_idx, tau_fix_val) {
+    unpack_par <- function(par, alpha0, theta0, tau0, nb0, ord, B, N, innovation,
+                           tau_fix_idx, tau_fix_val, alpha_profile_shared = FALSE) {
         k <- 0
 
         tau <- tau0
@@ -641,8 +660,13 @@ summary.inad_ci <- function(object, ...) {
         alpha <- alpha0
         if (ord == 1) {
             if (N >= 2) {
-                alpha[2:N] <- par[(k + 1):(k + (N - 1))]
-                k <- k + (N - 1)
+                if (alpha_profile_shared) {
+                    alpha[2:N] <- par[k + 1]
+                    k <- k + 1
+                } else {
+                    alpha[2:N] <- par[(k + 1):(k + (N - 1))]
+                    k <- k + (N - 1)
+                }
             }
             alpha[1] <- 0
             alpha <- pmin(pmax(alpha, 0), alpha_ub)
@@ -698,7 +722,8 @@ summary.inad_ci <- function(object, ...) {
             nb0 <- NULL
         }
 
-        par0 <- pack_par(alpha0, theta0, tau0, nb0, ord, B, N, innovation, tau_fix_idx)
+        par0 <- pack_par(alpha0, theta0, tau0, nb0, ord, B, N, innovation,
+                         tau_fix_idx, alpha_profile_shared = alpha_profile_shared)
 
         obj <- function(par) {
             cur <- unpack_par(
@@ -712,7 +737,8 @@ summary.inad_ci <- function(object, ...) {
                 N = N,
                 innovation = innovation,
                 tau_fix_idx = tau_fix_idx,
-                tau_fix_val = tau_fix_val
+                tau_fix_val = tau_fix_val,
+                alpha_profile_shared = alpha_profile_shared
             )
             if (!lambda_ok(cur$theta, cur$tau)) return(1e8)
 
@@ -747,9 +773,10 @@ summary.inad_ci <- function(object, ...) {
         -opt$objective
     }
 
+    q_chi_1 <- qchisq(level, df = 1)
     prof_target <- function(b, tval) {
         ll_prof <- refit_tau_fixed(tau_fix_idx = b, tau_fix_val = tval)
-        2 * (fit$log_l - ll_prof) - qchisq(level, df = 1)
+        2 * (fit$log_l - ll_prof) - q_chi_1
     }
 
     bracket_one_side <- function(b, direction, step0) {
@@ -782,6 +809,11 @@ summary.inad_ci <- function(object, ...) {
     tau_ci <- vector("list", length = B - 1)
     for (b in 2:B) {
         tau_mle <- fit$tau[b]
+        lower_bound <- if (innovation == "bell") {
+            -min(.bell_mean_from_theta(fit$theta))
+        } else {
+            -min(fit$theta)
+        }
         # Initial step: 20 % of |tau_mle| (min 0.1).  With expand = 2 and
         # max_bracket_iter = 50 the bracket can reach tau_mle ± step0*(2^50-1),
         # far beyond any realistic CI bound.
@@ -800,11 +832,32 @@ summary.inad_ci <- function(object, ...) {
         if (!is.null(left_int)) left <- uniroot(function(x) prof_target(b, x), interval = left_int)$root
         if (!is.null(right_int)) right <- uniroot(function(x) prof_target(b, x), interval = right_int)$root
 
+        # Approximate SE from observed profile curvature at tau_mle.
+        # Fall back to CI-width-based approximation if curvature is unavailable.
+        se <- NA_real_
+        h <- max(1e-4, min(0.1, abs(tau_mle) * 0.05))
+        if (tau_mle - h > lower_bound + 1e-10) {
+            ll_m <- refit_tau_fixed(tau_fix_idx = b, tau_fix_val = tau_mle - h)
+            ll_0 <- fit$log_l - (f_mle + q_chi_1) / 2
+            ll_p <- refit_tau_fixed(tau_fix_idx = b, tau_fix_val = tau_mle + h)
+            if (is.finite(ll_m) && is.finite(ll_0) && is.finite(ll_p)) {
+                d2 <- (ll_p - 2 * ll_0 + ll_m) / (h^2)
+                info <- -d2
+                if (is.finite(info) && info > 0) se <- sqrt(1 / info)
+            }
+        }
+        if (!is.finite(se) && is.finite(left) && is.finite(right)) {
+            z <- qnorm(1 - (1 - level) / 2)
+            if (is.finite(z) && z > 0) se <- (right - left) / (2 * z)
+        }
+
         tau_ci[[b - 1]] <- data.frame(
             param = paste0("tau[", b, "]"),
             est = tau_mle,
+            se = se,
             lower = left,
             upper = right,
+            width = if (is.finite(left) && is.finite(right)) right - left else NA_real_,
             level = level,
             row.names = NULL
         )

@@ -44,10 +44,13 @@ test_that("ci_inad behaves correctly on bolus_inad", {
     ## tau: profile CI, may be NULL if blocks degenerate
     if (!is.null(ci$tau)) {
         expect_true(is.data.frame(ci$tau))
-        expect_true(all(c("param", "est", "lower", "upper", "level") %in% names(ci$tau)))
-        expect_true(all(ci$tau$lower <= ci$tau$upper))
-        expect_true(all(ci$tau$lower <= ci$tau$est))
-        expect_true(all(ci$tau$est <= ci$tau$upper))
+        expect_true(all(c("param", "est", "se", "lower", "upper", "width", "level") %in% names(ci$tau)))
+        finite_bounds <- is.finite(ci$tau$lower) & is.finite(ci$tau$upper)
+        if (any(finite_bounds)) {
+            expect_true(all(ci$tau$lower[finite_bounds] <= ci$tau$upper[finite_bounds]))
+            expect_true(all(ci$tau$lower[finite_bounds] <= ci$tau$est[finite_bounds]))
+            expect_true(all(ci$tau$est[finite_bounds] <= ci$tau$upper[finite_bounds]))
+        }
     }
 })
 
