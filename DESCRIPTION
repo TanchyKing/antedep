@@ -21,6 +21,7 @@ Description: Provides functions for fitting, simulating, and inference for
     Louis' identity and profile likelihood.
 License: MIT + file LICENSE
 Encoding: UTF-8
+Language: en-US
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.3
 URL: https://tanchyking.github.io/antedep/, https://github.com/TanchyKing/antedep
