@@ -20,4 +20,5 @@
 ^antedep-reference-manual\.pdf$
 ^antedep-reference-manual-.*\.pdf$
 ^\.git$
+^\.claude$
 ^cran-comments\.md$
