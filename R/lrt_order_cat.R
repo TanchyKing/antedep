@@ -313,6 +313,9 @@ print.cat_lrt <- function(x, ...) {
 #' @param blocks Optional block membership vector.
 #' @param homogeneous Whether to use homogeneous parameters across blocks.
 #' @param n_categories Number of categories (inferred if NULL).
+#' @param test Type of test statistic for each pairwise comparison. One of
+#'   \code{"lrt"} (default), \code{"score"}, \code{"mlrt"}, or \code{"wald"}.
+#'   Passed to \code{\link{test_order_cat}}.
 #'
 #' @return A list containing:
 #'   \item{tests}{List of test_order_cat results for each comparison}

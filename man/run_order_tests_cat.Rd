@@ -23,6 +23,10 @@ run_order_tests_cat(
 \item{homogeneous}{Whether to use homogeneous parameters across blocks.}
 
 \item{n_categories}{Number of categories (inferred if NULL).}
+
+\item{test}{Type of test statistic for each pairwise comparison. One of
+\code{"lrt"} (default), \code{"score"}, \code{"mlrt"}, or \code{"wald"}.
+Passed to \code{\link{test_order_cat}}.}
 }
 \value{
 A list containing:
