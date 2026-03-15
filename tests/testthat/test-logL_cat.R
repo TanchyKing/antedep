@@ -55,7 +55,7 @@ test_that("logL_cat marginalize is finite for MAR-style missingness", {
   
   # Monotone missingness (dropout)
   y_monotone <- y
-  dropout_time <- sample(2:6, nrow(y_monotone), replace = TRUE)
+  dropout_time <- sample(2:5, nrow(y_monotone), replace = TRUE)
   dropout_flag <- runif(nrow(y_monotone)) < 0.35
   for (i in seq_len(nrow(y_monotone))) {
     if (dropout_flag[i]) {
