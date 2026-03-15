@@ -59,7 +59,7 @@ plot_prism(bolus_inad$y)
 ### Complete-data fit and order comparison
 
 ```{r, warning=FALSE, message=FALSE}
-y_gau <- simulate_gau(n_subjects = 25, n_time = 4, order = 1, phi = 0.5)
+y_gau <- simulate_gau(n_subjects = 20, n_time = 4, order = 1, phi = 0.5)
 fit_gau1 <- fit_gau(y_gau, order = 1)
 fit_gau2 <- fit_gau(y_gau, order = 2)
 
@@ -115,7 +115,7 @@ test_homogeneity_gau(y_gau, blocks = blocks_gau, p = 1)$p_value
 
 ```{r}
 y_inad <- simulate_inad(
-  n_subjects = 25,
+  n_subjects = 20,
   n_time = 4,
   order = 1,
   thinning = "binom",
