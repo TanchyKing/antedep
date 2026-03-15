@@ -16,7 +16,7 @@ test_that("logL_cat validates inputs correctly", {
 
 test_that("logL_cat missing-data modes behave correctly", {
   set.seed(124)
-  y <- simulate_cat(120, 5, order = 1, n_categories = 2)
+  y <- simulate_cat(50, 5, order = 1, n_categories = 2)
   fit <- fit_cat(y, order = 1)
   
   y_miss <- y
@@ -51,7 +51,7 @@ test_that("logL_cat missing-data modes behave correctly", {
 
 test_that("logL_cat marginalize is finite for MAR-style missingness", {
   set.seed(125)
-  y <- simulate_cat(160, 6, order = 1, n_categories = 2)
+  y <- simulate_cat(60, 5, order = 1, n_categories = 2)
   
   # Monotone missingness (dropout)
   y_monotone <- y
@@ -305,7 +305,7 @@ test_that("logL_cat handles n_categories override", {
 
 test_that("logL_cat likelihood increases with correct model", {
   set.seed(223)
-  n_subjects <- 150
+  n_subjects <- 60
   n_time <- 5
   c <- 2
   

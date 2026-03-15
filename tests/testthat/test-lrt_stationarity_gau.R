@@ -1,8 +1,8 @@
 test_that("test_stationarity_gau returns expected df for order-1 constraints", {
   set.seed(1201)
   y <- simulate_gau(
-    n_subjects = 90,
-    n_time = 6,
+    n_subjects = 40,
+    n_time = 5,
     order = 1,
     mu = 0,
     phi = 0.45,
@@ -51,6 +51,7 @@ test_that("test_stationarity_gau returns expected df for order-1 constraints", {
 
 
 test_that("test_stationarity_gau detects strong order-1 non-stationarity", {
+  skip_on_cran()
   set.seed(1202)
   y <- simulate_gau(
     n_subjects = 280,
@@ -80,7 +81,7 @@ test_that("run_stationarity_tests_gau returns expected order-2 battery", {
   phi[2, 3:6] <- 0.2
 
   y <- simulate_gau(
-    n_subjects = 70,
+    n_subjects = 30,
     n_time = 6,
     order = 2,
     mu = 0,

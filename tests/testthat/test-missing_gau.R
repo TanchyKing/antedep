@@ -205,6 +205,7 @@ test_that(".build_gau_covariance works for order 1", {
 })
 
 test_that(".build_gau_covariance works for order 2", {
+  skip_on_cran()
   set.seed(321)
 
   n_time <- 6

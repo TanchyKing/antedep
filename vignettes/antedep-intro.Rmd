@@ -59,7 +59,7 @@ plot_prism(bolus_inad$y)
 ### Complete-data fit and order comparison
 
 ```{r, warning=FALSE, message=FALSE}
-y_gau <- simulate_gau(n_subjects = 80, n_time = 6, order = 1, phi = 0.5)
+y_gau <- simulate_gau(n_subjects = 25, n_time = 4, order = 1, phi = 0.5)
 fit_gau1 <- fit_gau(y_gau, order = 1)
 fit_gau2 <- fit_gau(y_gau, order = 2)
 
@@ -76,9 +76,9 @@ test_order_gau(y_gau, p = 0, q = 1)$p_value
 
 ```{r}
 y_gau_miss <- y_gau
-y_gau_miss[sample(length(y_gau_miss), 24)] <- NA
+y_gau_miss[sample(length(y_gau_miss), 8)] <- NA
 
-fit_gau_em <- fit_gau(y_gau_miss, order = 1, na_action = "em", em_max_iter = 40)
+fit_gau_em <- fit_gau(y_gau_miss, order = 1, na_action = "em", em_max_iter = 10)
 fit_gau_cc <- fit_gau(y_gau_miss, order = 1, na_action = "complete")
 
 c(em_logLik = fit_gau_em$log_l, complete_case_logLik = fit_gau_cc$log_l)
@@ -115,8 +115,8 @@ test_homogeneity_gau(y_gau, blocks = blocks_gau, p = 1)$p_value
 
 ```{r}
 y_inad <- simulate_inad(
-  n_subjects = 80,
-  n_time = 6,
+  n_subjects = 25,
+  n_time = 4,
   order = 1,
   thinning = "binom",
   innovation = "pois",
@@ -133,7 +133,7 @@ bic_order_inad(y_inad, max_order = 2, thinning = "binom", innovation = "pois")$t
 
 ```{r}
 y_inad_miss <- y_inad
-y_inad_miss[sample(length(y_inad_miss), 30)] <- NA
+y_inad_miss[sample(length(y_inad_miss), 10)] <- NA
 
 fit_inad_miss <- fit_inad(
   y_inad_miss,
@@ -141,7 +141,7 @@ fit_inad_miss <- fit_inad(
   thinning = "binom",
   innovation = "pois",
   na_action = "marginalize",
-  max_iter = 20
+  max_iter = 10
 )
 
 fit_inad_miss$log_l
@@ -160,7 +160,7 @@ test_homogeneity_inad(y_inad_miss, blocks = blocks_inad, order = 1, test = "mean
 ### Complete-data CAT fit and inference
 
 ```{r}
-y_cat <- simulate_cat(n_subjects = 150, n_time = 6, order = 1, n_categories = 3)
+y_cat <- simulate_cat(n_subjects = 50, n_time = 4, order = 1, n_categories = 3)
 fit_cat1 <- fit_cat(y_cat, order = 1)
 fit_cat1$log_l
 
@@ -178,7 +178,7 @@ run_order_tests_cat(y_cat, max_order = 2)$table
 
 ```{r}
 y_cat_miss <- y_cat
-y_cat_miss[sample(length(y_cat_miss), 35)] <- NA
+y_cat_miss[sample(length(y_cat_miss), 12)] <- NA
 
 fit_cat_miss <- fit_cat(y_cat_miss, order = 1, na_action = "marginalize")
 fit_cat_miss$log_l
@@ -187,7 +187,7 @@ fit_cat_miss$settings$na_action_effective
 
 ```{r}
 # EM alternative for CAT missing data (orders 0/1)
-fit_cat_miss_em <- fit_cat(y_cat_miss, order = 1, na_action = "em", em_max_iter = 80)
+fit_cat_miss_em <- fit_cat(y_cat_miss, order = 1, na_action = "em", em_max_iter = 10)
 fit_cat_miss_em$log_l
 ```
 

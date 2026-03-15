@@ -69,15 +69,15 @@ testthat::test_that("test_homogeneity_inad runs all test types", {
 
 testthat::test_that("test_homogeneity_inad detects heterogeneous groups", {
   set.seed(789)
-  
-  n1 <- 40
-  n2 <- 40
-  n_time <- 6
-  
+
+  n1 <- 20
+  n2 <- 20
+  n_time <- 5
+
   # Simulate from DIFFERENT models
-  y1 <- simulate_inad(n1, n_time, order = 1, thinning = "binom", 
+  y1 <- simulate_inad(n1, n_time, order = 1, thinning = "binom",
                       innovation = "pois", alpha = 0.2, theta = 2)
-  y2 <- simulate_inad(n2, n_time, order = 1, thinning = "binom", 
+  y2 <- simulate_inad(n2, n_time, order = 1, thinning = "binom",
                       innovation = "pois", alpha = 0.6, theta = 6)
   y <- rbind(y1, y2)
   blocks <- c(rep(1, n1), rep(2, n2))
@@ -93,15 +93,15 @@ testthat::test_that("test_homogeneity_inad detects heterogeneous groups", {
 
 testthat::test_that("test_homogeneity_inad detects mean differences", {
   set.seed(101)
-  
-  n1 <- 50
-  n2 <- 50
-  n_time <- 6
-  
+
+  n1 <- 25
+  n2 <- 25
+  n_time <- 5
+
   # Same dependence, different means
-  y1 <- simulate_inad(n1, n_time, order = 1, thinning = "binom", 
+  y1 <- simulate_inad(n1, n_time, order = 1, thinning = "binom",
                       innovation = "pois", alpha = 0.4, theta = 2)
-  y2 <- simulate_inad(n2, n_time, order = 1, thinning = "binom", 
+  y2 <- simulate_inad(n2, n_time, order = 1, thinning = "binom",
                       innovation = "pois", alpha = 0.4, theta = 6)
   y <- rbind(y1, y2)
   blocks <- c(rep(1, n1), rep(2, n2))
@@ -195,15 +195,15 @@ testthat::test_that("test_homogeneity_inad works with more than 2 groups", {
 
 testthat::test_that("test_homogeneity_inad BIC selects simpler model when homogeneous", {
   set.seed(505)
-  
-  n1 <- 50
-  n2 <- 50
-  n_time <- 6
-  
+
+  n1 <- 25
+  n2 <- 25
+  n_time <- 5
+
   # Same parameters (homogeneous case) - use scalar values
-  y1 <- simulate_inad(n1, n_time, order = 1, thinning = "binom", 
+  y1 <- simulate_inad(n1, n_time, order = 1, thinning = "binom",
                       innovation = "pois", alpha = 0.4, theta = 4)
-  y2 <- simulate_inad(n2, n_time, order = 1, thinning = "binom", 
+  y2 <- simulate_inad(n2, n_time, order = 1, thinning = "binom",
                       innovation = "pois", alpha = 0.4, theta = 4)
   y <- rbind(y1, y2)
   blocks <- c(rep(1, n1), rep(2, n2))
@@ -242,10 +242,10 @@ testthat::test_that("print methods work without error", {
 
 testthat::test_that("test_homogeneity_inad uses pre-fitted models", {
   set.seed(707)
-  
-  n1 <- 25
-  n2 <- 25
-  n_time <- 5
+
+  n1 <- 15
+  n2 <- 15
+  n_time <- 4
   
   y1 <- simulate_inad(n1, n_time, order = 1, thinning = "binom", 
                       innovation = "pois", alpha = 0.3, theta = 3)

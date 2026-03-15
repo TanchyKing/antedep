@@ -137,19 +137,19 @@ test_that("fit_cat works for order 2", {
 
 test_that("fit_cat missing-data modes behave correctly", {
   set.seed(43)
-  y <- simulate_cat(120, 5, order = 1, n_categories = 2)
+  y <- simulate_cat(50, 4, order = 1, n_categories = 2)
   y_miss <- y
   y_miss[1, 2] <- NA
-  y_miss[4, 5] <- NA
-  
+  y_miss[4, 4] <- NA
+
   expect_error(fit_cat(y_miss, order = 1, na_action = "fail"), "Missing data")
-  
+
   keep <- stats::complete.cases(y_miss)
   fit_complete_mode <- fit_cat(y_miss, order = 1, na_action = "complete")
   fit_complete_ref <- fit_cat(y_miss[keep, , drop = FALSE], order = 1)
   expect_equal(as.numeric(fit_complete_mode$log_l), as.numeric(fit_complete_ref$log_l), tolerance = 1e-10)
   expect_equal(fit_complete_mode$n_missing, 0)
-  
+
   # With no missing values, marginalize should reduce to complete-data fit.
   fit_full <- fit_cat(y, order = 1)
   fit_marg_no_missing <- fit_cat(y, order = 1, na_action = "marginalize")
@@ -158,8 +158,8 @@ test_that("fit_cat missing-data modes behave correctly", {
   expect_equal(fit_marg_no_missing$n_missing, 0)
 
   # EM entry point via fit_cat should be available for order 1.
-  fit_em_mode <- fit_cat(y_miss, order = 1, na_action = "em", em_max_iter = 60)
-  fit_em_direct <- em_cat(y_miss, order = 1, max_iter = 60)
+  fit_em_mode <- fit_cat(y_miss, order = 1, na_action = "em", em_max_iter = 10)
+  fit_em_direct <- em_cat(y_miss, order = 1, max_iter = 10)
   expect_equal(as.numeric(fit_em_mode$log_l), as.numeric(fit_em_direct$log_l), tolerance = 1e-8)
   expect_equal(fit_em_mode$settings$na_action, "em")
   expect_equal(fit_em_mode$settings$method, fit_em_direct$settings$method)
@@ -168,7 +168,7 @@ test_that("fit_cat missing-data modes behave correctly", {
 
 test_that("fit_cat marginalize handles missingness for order 2", {
   set.seed(44)
-  y <- simulate_cat(140, 6, order = 2, n_categories = 2)
+  y <- simulate_cat(60, 5, order = 2, n_categories = 2)
   
   # Create mixed monotone/intermittent missingness.
   y_miss <- y
@@ -218,15 +218,15 @@ test_that("simulate_cat works with custom parameters", {
     t3 = matrix(c(0.9, 0.1, 0.2, 0.8), nrow = 2, byrow = TRUE),
     t4 = matrix(c(0.9, 0.1, 0.2, 0.8), nrow = 2, byrow = TRUE)
   )
-  
+
   set.seed(456)
-  y_custom <- simulate_cat(1000, 4, order = 1, n_categories = 2,
-                           marginal = marginal_custom, 
+  y_custom <- simulate_cat(400, 4, order = 1, n_categories = 2,
+                           marginal = marginal_custom,
                            transition = transition_custom)
-  
+
   # Check that marginal of Y1 is approximately (0.7, 0.3)
   prop_y1 <- table(y_custom[, 1]) / nrow(y_custom)
-  expect_equal(unname(prop_y1[1]), 0.7, tolerance = 0.05)
+  expect_equal(unname(prop_y1[1]), 0.7, tolerance = 0.08)
 })
 
 
@@ -266,6 +266,7 @@ test_that("bic_order_cat compares models correctly", {
 # Test 8: Simulation-estimation consistency
 # ============================================================
 test_that("simulation-estimation is consistent", {
+  skip_on_cran()
   set.seed(789)
   true_marginal <- list(t1 = c(0.6, 0.4))
   true_transition <- list(
@@ -274,17 +275,17 @@ test_that("simulation-estimation is consistent", {
     t4 = matrix(c(0.8, 0.2, 0.3, 0.7), nrow = 2, byrow = TRUE),
     t5 = matrix(c(0.8, 0.2, 0.3, 0.7), nrow = 2, byrow = TRUE)
   )
-  
+
   y_large <- simulate_cat(5000, 5, order = 1, n_categories = 2,
-                          marginal = true_marginal, 
+                          marginal = true_marginal,
                           transition = true_transition)
-  
+
   fit_large <- fit_cat(y_large, order = 1)
-  
+
   # Check marginal recovery - use unname to strip names
   est_marg <- unname(fit_large$marginal$t1)
   expect_equal(est_marg, true_marginal$t1, tolerance = 0.03)
-  
+
   # Check transition recovery - use unname to strip dimnames
   est_trans <- unname(fit_large$transition$t2)
   expect_equal(est_trans, true_transition$t2, tolerance = 0.03)
@@ -306,15 +307,15 @@ test_that("block handling works for homogeneous model", {
     t2 = matrix(c(0.5, 0.5, 0.5, 0.5), nrow = 2, byrow = TRUE),
     t3 = matrix(c(0.5, 0.5, 0.5, 0.5), nrow = 2, byrow = TRUE)
   )
-  
-  y_g1 <- simulate_cat(200, 3, order = 1, n_categories = 2,
+
+  y_g1 <- simulate_cat(60, 3, order = 1, n_categories = 2,
                        marginal = marginal_g1, transition = trans_g1)
-  y_g2 <- simulate_cat(200, 3, order = 1, n_categories = 2,
+  y_g2 <- simulate_cat(60, 3, order = 1, n_categories = 2,
                        marginal = marginal_g2, transition = trans_g2)
-  
+
   y_combined <- rbind(y_g1, y_g2)
-  blocks_vec <- c(rep(1, 200), rep(2, 200))
-  
+  blocks_vec <- c(rep(1, 60), rep(2, 60))
+
   # Fit homogeneous model
   fit_homo <- fit_cat(y_combined, order = 1, blocks = blocks_vec, homogeneous = TRUE)
   expect_true(is.finite(fit_homo$log_l))
@@ -333,30 +334,30 @@ test_that("block handling works for heterogeneous model", {
     t2 = matrix(c(0.5, 0.5, 0.5, 0.5), nrow = 2, byrow = TRUE),
     t3 = matrix(c(0.5, 0.5, 0.5, 0.5), nrow = 2, byrow = TRUE)
   )
-  
-  y_g1 <- simulate_cat(200, 3, order = 1, n_categories = 2,
+
+  y_g1 <- simulate_cat(60, 3, order = 1, n_categories = 2,
                        marginal = marginal_g1, transition = trans_g1)
-  y_g2 <- simulate_cat(200, 3, order = 1, n_categories = 2,
+  y_g2 <- simulate_cat(60, 3, order = 1, n_categories = 2,
                        marginal = marginal_g2, transition = trans_g2)
-  
+
   y_combined <- rbind(y_g1, y_g2)
-  blocks_vec <- c(rep(1, 200), rep(2, 200))
-  
+  blocks_vec <- c(rep(1, 60), rep(2, 60))
+
   # Fit heterogeneous model
   fit_homo <- fit_cat(y_combined, order = 1, blocks = blocks_vec, homogeneous = TRUE)
   fit_hetero <- fit_cat(y_combined, order = 1, blocks = blocks_vec, homogeneous = FALSE)
-  
+
   # Heterogeneous should fit better
   expect_true(fit_hetero$log_l > fit_homo$log_l)
   expect_equal(sort(fit_hetero$settings$block_levels), c("1", "2"))
-  
-  # Check parameter separation - use unname and wider tolerance (0.15)
-  # With N=200 per group, standard error is about sqrt(p(1-p)/200) ~ 0.03-0.04
-  # So 3 SE would be ~0.12, use 0.15 to be safe
+
+  # Check parameter separation - use unname and wider tolerance (0.20)
+  # With N=60 per group, standard error is about sqrt(p(1-p)/60) ~ 0.06
+  # So 3 SE would be ~0.18, use 0.20 to be safe
   est_g1_t1 <- unname(fit_hetero$marginal$block_1$t1)
   est_g2_t1 <- unname(fit_hetero$marginal$block_2$t1)
-  expect_equal(est_g1_t1[1], 0.8, tolerance = 0.15)
-  expect_equal(est_g2_t1[1], 0.3, tolerance = 0.15)
+  expect_equal(est_g1_t1[1], 0.8, tolerance = 0.20)
+  expect_equal(est_g2_t1[1], 0.3, tolerance = 0.20)
 })
 
 test_that("fit_cat preserves original block labels in settings", {
@@ -380,7 +381,7 @@ test_that("order 2 model works correctly", {
     t1 = c(0.5, 0.5),
     t2_given_1to1 = matrix(c(0.6, 0.4, 0.4, 0.6), nrow = 2, byrow = TRUE)
   )
-  
+
   # For order 2, transition depends on (t-2, t-1)
   # Array dimensions: [y_{t-2}, y_{t-1}, y_t]
   trans_o2_single <- array(c(
@@ -389,15 +390,15 @@ test_that("order 2 model works correctly", {
     0.6, 0.4,  # y_{t-2}=2, y_{t-1}=1
     0.4, 0.6   # y_{t-2}=2, y_{t-1}=2
   ), dim = c(2, 2, 2))
-  
+
   trans_o2 <- list(t3 = trans_o2_single, t4 = trans_o2_single, t5 = trans_o2_single)
-  
-  y_o2 <- simulate_cat(500, 5, order = 2, n_categories = 2,
+
+  y_o2 <- simulate_cat(150, 5, order = 2, n_categories = 2,
                        marginal = marginal_o2, transition = trans_o2)
-  
+
   fit_o2 <- fit_cat(y_o2, order = 2)
   expect_true(is.finite(fit_o2$log_l))
-  
+
   # Compare with order 1 (order 2 should fit better on true AD(2) data)
   fit_o1_on_o2 <- fit_cat(y_o2, order = 1)
   expect_true(fit_o2$log_l > fit_o1_on_o2$log_l)

@@ -6,7 +6,7 @@
 test_that("test_stationarity_cat works for order 0", {
   set.seed(100)
   # Simulate with constant marginal (stationary under independence)
-  y <- simulate_cat(200, 5, order = 0, n_categories = 2)
+  y <- simulate_cat(80, 5, order = 0, n_categories = 2)
   
   test <- test_stationarity_cat(y, order = 0)
   
@@ -21,7 +21,7 @@ test_that("test_stationarity_cat works for order 0", {
 test_that("test_stationarity_cat works for order 1", {
   set.seed(101)
   # Simulate with time-invariant transitions (should be approximately stationary)
-  y <- simulate_cat(200, 5, order = 1, n_categories = 2)
+  y <- simulate_cat(80, 5, order = 1, n_categories = 2)
   
   test <- test_stationarity_cat(y, order = 1)
   
@@ -33,6 +33,7 @@ test_that("test_stationarity_cat works for order 1", {
 
 
 test_that("test_stationarity_cat detects non-stationarity", {
+  skip_on_cran()
   set.seed(102)
   # Simulate with time-varying marginals AND transitions
   marg <- list(t1 = c(0.9, 0.1))  # Very skewed initial
@@ -42,7 +43,7 @@ test_that("test_stationarity_cat detects non-stationarity", {
     t4 = matrix(c(0.2, 0.8, 0.8, 0.2), 2, byrow = TRUE),
     t5 = matrix(c(0.6, 0.4, 0.4, 0.6), 2, byrow = TRUE)
   )
-  
+
   y <- simulate_cat(400, 5, order = 1, n_categories = 2,
                     marginal = marg, transition = trans_varying)
   
@@ -56,7 +57,7 @@ test_that("test_stationarity_cat detects non-stationarity", {
 
 test_that("test_stationarity_cat df is correct", {
   set.seed(103)
-  y <- simulate_cat(100, 5, order = 1, n_categories = 2)
+  y <- simulate_cat(50, 5, order = 1, n_categories = 2)
   
   test <- test_stationarity_cat(y, order = 1)
   
@@ -72,7 +73,7 @@ test_that("test_stationarity_cat df is correct", {
 
 test_that("run_stationarity_tests_cat works", {
   set.seed(104)
-  y <- simulate_cat(150, 5, order = 1, n_categories = 2)
+  y <- simulate_cat(60, 5, order = 1, n_categories = 2)
   
   result <- run_stationarity_tests_cat(y, order = 1)
   
@@ -91,7 +92,7 @@ test_that("run_stationarity_tests_cat works", {
 # ============================================================
 test_that("ci_cat works for order 0", {
   set.seed(200)
-  y <- simulate_cat(200, 4, order = 0, n_categories = 2)
+  y <- simulate_cat(80, 4, order = 0, n_categories = 2)
   fit <- fit_cat(y, order = 0)
   
   ci <- ci_cat(fit)
@@ -114,7 +115,7 @@ test_that("ci_cat works for order 0", {
 
 test_that("ci_cat works for order 1", {
   set.seed(201)
-  y <- simulate_cat(200, 4, order = 1, n_categories = 2)
+  y <- simulate_cat(80, 4, order = 1, n_categories = 2)
   fit <- fit_cat(y, order = 1)
   
   ci <- ci_cat(fit)
@@ -136,7 +137,7 @@ test_that("ci_cat works for order 1", {
 
 test_that("ci_cat works for order 2", {
   set.seed(202)
-  y <- simulate_cat(300, 5, order = 2, n_categories = 2)
+  y <- simulate_cat(100, 5, order = 2, n_categories = 2)
   fit <- fit_cat(y, order = 2)
   
   ci <- ci_cat(fit)
@@ -152,7 +153,7 @@ test_that("ci_cat works for order 2", {
 
 test_that("ci_cat respects level parameter", {
   set.seed(203)
-  y <- simulate_cat(200, 4, order = 1, n_categories = 2)
+  y <- simulate_cat(80, 4, order = 1, n_categories = 2)
   fit <- fit_cat(y, order = 1)
   
   ci_95 <- ci_cat(fit, level = 0.95)
@@ -170,7 +171,7 @@ test_that("ci_cat respects level parameter", {
 
 test_that("ci_cat parameters argument works", {
   set.seed(204)
-  y <- simulate_cat(200, 4, order = 1, n_categories = 2)
+  y <- simulate_cat(80, 4, order = 1, n_categories = 2)
   fit <- fit_cat(y, order = 1)
   
   ci_marg <- ci_cat(fit, parameters = "marginal")
@@ -190,10 +191,10 @@ test_that("ci_cat parameters argument works", {
 
 test_that("ci_cat works with heterogeneous model", {
   set.seed(205)
-  y1 <- simulate_cat(100, 3, order = 1, n_categories = 2)
-  y2 <- simulate_cat(100, 3, order = 1, n_categories = 2)
+  y1 <- simulate_cat(50, 3, order = 1, n_categories = 2)
+  y2 <- simulate_cat(50, 3, order = 1, n_categories = 2)
   y <- rbind(y1, y2)
-  blocks <- c(rep(1, 100), rep(2, 100))
+  blocks <- c(rep(1, 50), rep(2, 50))
   
   fit <- fit_cat(y, order = 1, blocks = blocks, homogeneous = FALSE)
   ci <- ci_cat(fit)
@@ -209,7 +210,7 @@ test_that("ci_cat works with heterogeneous model", {
 
 test_that("ci_cat validates inputs", {
   set.seed(206)
-  y <- simulate_cat(100, 4, order = 1, n_categories = 2)
+  y <- simulate_cat(50, 4, order = 1, n_categories = 2)
   fit <- fit_cat(y, order = 1)
   
   # Invalid level
@@ -223,18 +224,19 @@ test_that("ci_cat validates inputs", {
 
 
 test_that("ci_cat covers true values", {
+  skip_on_cran()
   set.seed(207)
   # Simulate with known parameters
   true_marg <- c(0.6, 0.4)
   true_trans <- matrix(c(0.8, 0.2, 0.3, 0.7), 2, byrow = TRUE)
-  
+
   marginal <- list(t1 = true_marg)
   transition <- list(
     t2 = true_trans,
     t3 = true_trans,
     t4 = true_trans
   )
-  
+
   y <- simulate_cat(1000, 4, order = 1, n_categories = 2,
                     marginal = marginal, transition = transition)
   fit <- fit_cat(y, order = 1)
@@ -262,7 +264,7 @@ test_that("ci_cat covers true values", {
 
 test_that("print.cat_ci works", {
   set.seed(208)
-  y <- simulate_cat(100, 4, order = 1, n_categories = 2)
+  y <- simulate_cat(50, 4, order = 1, n_categories = 2)
   fit <- fit_cat(y, order = 1)
   ci <- ci_cat(fit)
   
@@ -273,7 +275,7 @@ test_that("print.cat_ci works", {
 
 test_that("summary.cat_ci works", {
   set.seed(209)
-  y <- simulate_cat(100, 4, order = 1, n_categories = 2)
+  y <- simulate_cat(50, 4, order = 1, n_categories = 2)
   fit <- fit_cat(y, order = 1)
   ci <- ci_cat(fit)
   

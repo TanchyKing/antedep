@@ -1,7 +1,7 @@
 test_that("aic_gau matches manual formula for Gaussian AD fit", {
   set.seed(410)
   y <- simulate_gau(
-    n_subjects = 70,
+    n_subjects = 30,
     n_time = 5,
     order = 1,
     phi = c(0, rep(0.35, 4))

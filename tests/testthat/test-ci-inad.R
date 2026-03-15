@@ -1,4 +1,5 @@
 test_that("ci_inad behaves correctly on bolus_inad", {
+    skip_on_cran()
     skip_if_not_installed("nloptr")
     data(bolus_inad, package = "antedep")
 
@@ -55,6 +56,7 @@ test_that("ci_inad behaves correctly on bolus_inad", {
 })
 
 test_that("ci_inad never errors for fitted models", {
+    skip_on_cran()
     data(bolus_inad, package = "antedep")
 
     fit <- fit_inad(

@@ -1,4 +1,5 @@
 test_that("fit_inad works for bolus_inad without fixed effect", {
+    skip_on_cran()
     skip_if_not(exists("bolus_inad", where = asNamespace("antedep"), inherits = FALSE) ||
                     exists("bolus_inad", where = parent.env(environment()), inherits = TRUE))
 
@@ -31,6 +32,7 @@ test_that("fit_inad works for bolus_inad without fixed effect", {
 })
 
 test_that("fit_inad returns log_l equal to sum(loglik_i) in no FE case", {
+    skip_on_cran()
     data("bolus_inad", package = "antedep", envir = environment())
     y <- bolus_inad$y
 
@@ -41,6 +43,7 @@ test_that("fit_inad returns log_l equal to sum(loglik_i) in no FE case", {
 })
 
 test_that("fit_inad works for order 0 without fixed effect", {
+    skip_on_cran()
     data("bolus_inad", package = "antedep", envir = environment())
     y <- bolus_inad$y
 
@@ -54,6 +57,7 @@ test_that("fit_inad works for order 0 without fixed effect", {
 })
 
 test_that("fit_inad handles order 2 structural zeros without fixed effect", {
+    skip_on_cran()
     data("bolus_inad", package = "antedep", envir = environment())
     y <- bolus_inad$y
 

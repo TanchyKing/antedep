@@ -6,7 +6,7 @@ test_that("bic_gau matches manual formula for order 1 without blocks", {
 
     set.seed(1)
     y <- simulate_gau(
-        n_subjects = 80,
+        n_subjects = 30,
         n_time = 5,
         order = 1,
         mu = seq(0, 0.4, length.out = 5),
