@@ -344,33 +344,45 @@ test_homogeneity_inad <- function(y, blocks, order = 1,
 #' @keywords internal
 .count_params_homogeneity <- function(fit, test, n_blocks, order, n_time,
                                        thinning, innovation, is_null) {
-  
-  # Base parameter counts (per group)
+
+  # Base parameter counts (per group, excluding NB innovation size)
   n_alpha <- switch(as.character(order),
                     "0" = 0,
                     "1" = n_time - 1,
                     "2" = 2 * (n_time - 2))
   n_theta <- n_time
-  n_nb_inno <- if (innovation == "nbinom") 1 else 0
-  
-  # Single population params
-  k_single <- n_alpha + n_theta + n_nb_inno
-  
+
+  # NB innovation size params: count directly from the fit so this matches
+  # what fit_inad() actually produced (length 1 or n_time per group). For
+  # heterogeneous (M3) fits, sum across per-group fits.
+  count_nb <- function(f) {
+    if (innovation != "nbinom") return(0L)
+    if (!is.null(f$nb_inno_size)) return(length(f$nb_inno_size))
+    if (!is.null(f$fits_by_group)) {
+      return(sum(vapply(f$fits_by_group,
+                        function(g) length(g$nb_inno_size), integer(1))))
+    }
+    n_time  # conservative fallback
+  }
+
+  n_nb_inno <- count_nb(fit)
+  k_single  <- n_alpha + n_theta + n_nb_inno
+
   if (test == "all") {
     if (is_null) {
-      # M1: Pooled - single set of parameters
+      # M1: Pooled - single set of parameters (one shared NB size vector)
       return(k_single)
     } else {
-      # M3: Heterogeneous - G sets of parameters
-      return(n_blocks * k_single)
+      # M3: Heterogeneous - G sets of alpha+theta, NB sizes already counted
+      # across groups via count_nb(fit)
+      return(n_blocks * (n_alpha + n_theta) + n_nb_inno)
     }
   } else if (test == "mean") {
     if (is_null) {
       # M1: Pooled
       return(k_single)
     } else {
-      # M2: INADFE - shared alpha, group-specific tau
-      # n_alpha + n_theta + (n_blocks - 1) for tau + n_nb_inno
+      # M2: INADFE - shared alpha, theta, and NB size; group-specific tau
       return(n_alpha + n_theta + (n_blocks - 1) + n_nb_inno)
     }
   } else {  # test == "dependence"
@@ -379,7 +391,7 @@ test_homogeneity_inad <- function(y, blocks, order = 1,
       return(n_alpha + n_theta + (n_blocks - 1) + n_nb_inno)
     } else {
       # M3: Heterogeneous
-      return(n_blocks * k_single)
+      return(n_blocks * (n_alpha + n_theta) + n_nb_inno)
     }
   }
 }

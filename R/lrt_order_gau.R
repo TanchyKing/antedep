@@ -11,6 +11,9 @@
 #' @param p Order under the null hypothesis (default 0). This is the same
 #'   antedependence order parameter named \code{order} in \code{\link{fit_gau}}.
 #' @param q Order increment under the alternative (default 1, so alternative is AD(p+q)).
+#' @param order_null Optional alias for \code{p} (null order).
+#' @param order_alt Optional absolute order under the alternative. When supplied,
+#'   \code{q} is computed as \code{order_alt - p}.
 #' @param mu Optional mean vector. If NULL, the saturated mean (sample means) is used.
 #' @param use_modified Logical. If TRUE (default), use the modified test statistic
 #'   (formula 6.9) which has better small-sample properties.
@@ -66,7 +69,8 @@
 #' }
 #'
 #' @export
-test_order_gau <- function(y, p = 0L, q = 1L, mu = NULL, use_modified = TRUE) {
+test_order_gau <- function(y, p = 0L, q = 1L, mu = NULL, use_modified = TRUE,
+                           order_null = NULL, order_alt = NULL) {
 
     if (!is.matrix(y)) y <- as.matrix(y)
     if (anyNA(y)) {
@@ -79,6 +83,9 @@ test_order_gau <- function(y, p = 0L, q = 1L, mu = NULL, use_modified = TRUE) {
 
     n <- nrow(y)  # Number of subjects (N in the book)
     n_time <- ncol(y)  # Number of time points (n in the book)
+
+    if (!is.null(order_null)) p <- order_null
+    if (!is.null(order_alt)) q <- as.integer(order_alt) - as.integer(p)
 
     p <- as.integer(p)
     q <- as.integer(q)
@@ -175,6 +182,8 @@ test_order_gau <- function(y, p = 0L, q = 1L, mu = NULL, use_modified = TRUE) {
         method = "lrt",
         p = p,
         q = q,
+        order_null = p,
+        order_alt = p + q,
         statistic = statistic,
         statistic_modified = statistic_modified,
         df = df,

@@ -24,6 +24,20 @@ test_that("test_two_sample_gau accepts order alias for p", {
   expect_equal(out_order$p_value, out_p$p_value)
 })
 
+test_that("test_order_gau accepts order_null and order_alt aliases", {
+  set.seed(1004)
+  y <- simulate_gau(n_subjects = 40, n_time = 5, order = 1, phi = 0.3)
+
+  out_pq       <- test_order_gau(y, p = 0, q = 1, use_modified = FALSE)
+  out_aliases  <- test_order_gau(y, order_null = 0, order_alt = 1,
+                                 use_modified = FALSE)
+
+  expect_equal(out_aliases$statistic, out_pq$statistic)
+  expect_equal(out_aliases$p_value,   out_pq$p_value)
+  expect_equal(out_aliases$order_null, 0L)
+  expect_equal(out_aliases$order_alt,  1L)
+})
+
 test_that("test_*_gau p and order cannot both be supplied", {
   set.seed(1003)
   y <- simulate_gau(n_subjects = 30, n_time = 4, order = 1, phi = 0.2)

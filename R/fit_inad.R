@@ -21,6 +21,8 @@
 #' @param init_theta Optional initial theta numeric length 1 or n_time.
 #' @param init_tau Optional initial tau. Scalar expands to c(0, x, ..., x). Vector forces first to 0.
 #' @param init_nb_inno_size Optional initial size for innovation nbinom, length 1 or n_time.
+#' @param nb_inno_size_ub Upper bound for innovation negative binomial size
+#'   parameter when \code{innovation = "nbinom"}. Default is 50.
 #' @param na_action How to handle missing values:
 #'   \itemize{
 #'     \item \code{"fail"}: stop if any NA is present.
@@ -70,6 +72,7 @@ fit_inad <- function(
         init_theta = NULL,
         init_tau = 0.4,
         init_nb_inno_size = 1,
+        nb_inno_size_ub = 50,
         na_action = c("fail", "complete", "marginalize")
 ) {
     thinning <- match.arg(thinning)
@@ -82,6 +85,10 @@ fit_inad <- function(
         stop("y must be a nonnegative integer matrix")
     }
     if (!(order %in% c(0, 1, 2))) stop("order must be 0, 1, or 2")
+    if (!is.numeric(nb_inno_size_ub) || length(nb_inno_size_ub) != 1L ||
+        !is.finite(nb_inno_size_ub) || nb_inno_size_ub <= 0) {
+        stop("nb_inno_size_ub must be a positive finite scalar")
+    }
     has_missing <- any(is.na(y))
 
     if (has_missing) {
@@ -111,7 +118,8 @@ fit_inad <- function(
                 init_alpha = init_alpha,
                 init_theta = init_theta,
                 init_tau = init_tau,
-                init_nb_inno_size = init_nb_inno_size
+                init_nb_inno_size = init_nb_inno_size,
+                nb_inno_size_ub = nb_inno_size_ub
             )
             return(.finalize_inad_fit(
                 fit, y = y, na_action = na_action,
@@ -129,7 +137,8 @@ fit_inad <- function(
             innovation = innovation,
             init_alpha = init_alpha,
             init_theta = init_theta,
-            init_nb_inno_size = init_nb_inno_size
+            init_nb_inno_size = init_nb_inno_size,
+            nb_inno_size_ub = nb_inno_size_ub
         )
         return(.finalize_inad_fit(fit, y = y, na_action = na_action, blocks_id = NULL, block_levels = NULL))
     }
@@ -148,7 +157,8 @@ fit_inad <- function(
         init_alpha = init_alpha,
         init_theta = init_theta,
         init_tau = init_tau,
-        init_nb_inno_size = init_nb_inno_size
+        init_nb_inno_size = init_nb_inno_size,
+        nb_inno_size_ub = nb_inno_size_ub
     )
     .finalize_inad_fit(
         fit, y = y, na_action = na_action,
@@ -224,7 +234,8 @@ fit_inad <- function(
         init_alpha,
         init_theta,
         init_tau,
-        init_nb_inno_size
+        init_nb_inno_size,
+        nb_inno_size_ub
 ) {
     n <- nrow(y)
     N <- ncol(y)
@@ -259,6 +270,7 @@ fit_inad <- function(
                 init_theta = init_theta,
                 init_tau = init_tau,
                 init_nb_inno_size = init_nb_inno_size,
+                nb_inno_size_ub = nb_inno_size_ub,
                 na_action = "fail"
             ),
             error = function(e) NULL
@@ -289,7 +301,7 @@ fit_inad <- function(
             if (length(nb) != N) stop("init_nb_inno_size must be length 1 or ncol(y)")
             nb
         }
-        nb_init <- pmax(nb_init, eps_pos)
+        nb_init <- pmin(pmax(nb_init, eps_pos), nb_inno_size_ub)
     }
 
     alpha_init <- NULL
@@ -411,7 +423,12 @@ fit_inad <- function(
             tau <- c(0, par[idx:(idx + B - 2L)])
         }
 
-        list(theta = pmax(theta, eps_pos), nb_inno_size = if (is.null(nb)) NULL else pmax(nb, eps_pos), alpha = alpha, tau = tau)
+        list(
+            theta = pmax(theta, eps_pos),
+            nb_inno_size = if (is.null(nb)) NULL else pmin(pmax(nb, eps_pos), nb_inno_size_ub),
+            alpha = alpha,
+            tau = tau
+        )
     }
 
     obj <- function(par) {
@@ -490,7 +507,8 @@ fit_inad_no_fe <- function(
         innovation,
         init_alpha,
         init_theta,
-        init_nb_inno_size
+        init_nb_inno_size,
+        nb_inno_size_ub
 ) {
     N <- ncol(y)
     eps_alpha <- 1e-10
@@ -524,7 +542,7 @@ fit_inad_no_fe <- function(
         nb_inno_size <- as.numeric(init_nb_inno_size)
         if (length(nb_inno_size) == 1L) nb_inno_size <- rep(nb_inno_size, N)
         if (length(nb_inno_size) != N) stop("init_nb_inno_size must be length 1 or ncol(y)")
-        nb_inno_size <- pmax(nb_inno_size, eps_pos)
+        nb_inno_size <- pmin(pmax(nb_inno_size, eps_pos), nb_inno_size_ub)
     }
 
     init_alpha_order1 <- function(init_alpha, N) {
@@ -618,11 +636,11 @@ fit_inad_no_fe <- function(
                     fn = obj0_nb,
                     method = "L-BFGS-B",
                     lower = c(eps_pos, eps_pos),
-                    upper = c(Inf, Inf)
+                    upper = c(Inf, nb_inno_size_ub)
                 )
 
                 theta[i] <- pmax(fit0$par[1], eps_pos)
-                nb_inno_size[i] <- pmax(fit0$par[2], eps_pos)
+                nb_inno_size[i] <- pmin(pmax(fit0$par[2], eps_pos), nb_inno_size_ub)
                 loglik_i[i] <- -fit0$value
                 conv[i] <- fit0$convergence
             } else {
@@ -693,11 +711,11 @@ fit_inad_no_fe <- function(
                     fn = obj1_nb,
                     method = "L-BFGS-B",
                     lower = c(eps_pos, eps_pos),
-                    upper = c(Inf, Inf)
+                    upper = c(Inf, nb_inno_size_ub)
                 )
 
                 theta[1] <- pmax(fit1$par[1], eps_pos)
-                nb_inno_size[1] <- pmax(fit1$par[2], eps_pos)
+                nb_inno_size[1] <- pmin(pmax(fit1$par[2], eps_pos), nb_inno_size_ub)
                 loglik_i[1] <- -fit1$value
                 conv[1] <- fit1$convergence
             } else {
@@ -802,10 +820,10 @@ fit_inad_no_fe <- function(
                         fn = obj_a1,
                         method = "L-BFGS-B",
                         lower = c(0, eps_pos),
-                        upper = c(alpha_ub, Inf)
+                        upper = c(alpha_ub, nb_inno_size_ub)
                     )
                     alpha_out[i] <- pmin(pmax(fit_i$par[1], 0), alpha_ub)
-                    nb_inno_size[i] <- pmax(fit_i$par[2], eps_pos)
+                    nb_inno_size[i] <- pmin(pmax(fit_i$par[2], eps_pos), nb_inno_size_ub)
                 } else {
                     fit_i <- optim(
                         par = alpha_start,
@@ -824,10 +842,10 @@ fit_inad_no_fe <- function(
                         fn = obj_a1,
                         method = "L-BFGS-B",
                         lower = c(0, eps_pos),
-                        upper = c(alpha_ub, Inf)
+                        upper = c(alpha_ub, nb_inno_size_ub)
                     )
                     alpha_out[i, 1] <- pmin(pmax(fit_i$par[1], 0), alpha_ub)
-                    nb_inno_size[i] <- pmax(fit_i$par[2], eps_pos)
+                    nb_inno_size[i] <- pmin(pmax(fit_i$par[2], eps_pos), nb_inno_size_ub)
                 } else {
                     fit_i <- optim(
                         par = alpha_start,
@@ -915,11 +933,11 @@ fit_inad_no_fe <- function(
                 fn = obj_a12,
                 method = "L-BFGS-B",
                 lower = c(0, 0, eps_pos),
-                upper = c(alpha_ub, alpha_ub, Inf)
+                upper = c(alpha_ub, alpha_ub, nb_inno_size_ub)
             )
             alpha_out[i, 1] <- pmin(pmax(fit_i$par[1], 0), alpha_ub)
             alpha_out[i, 2] <- pmin(pmax(fit_i$par[2], 0), alpha_ub)
-            nb_inno_size[i] <- pmax(fit_i$par[3], eps_pos)
+            nb_inno_size[i] <- pmin(pmax(fit_i$par[3], eps_pos), nb_inno_size_ub)
         } else {
             fit_i <- optim(
                 par = c(alpha_out[i, 1], alpha_out[i, 2]),
@@ -976,7 +994,8 @@ fit_inad_fe <- function(
         init_alpha,
         init_theta,
         init_tau,
-        init_nb_inno_size
+        init_nb_inno_size,
+        nb_inno_size_ub
 ) {
     if (!requireNamespace("nloptr", quietly = TRUE)) {
         stop("nloptr is required for fixed effect fitting")
@@ -1011,7 +1030,7 @@ fit_inad_fe <- function(
         nb_inno_size <- as.numeric(init_nb_inno_size)
         if (length(nb_inno_size) == 1L) nb_inno_size <- rep(nb_inno_size, N)
         if (length(nb_inno_size) != N) stop("init_nb_inno_size must be length 1 or ncol(y)")
-        nb_inno_size <- pmax(nb_inno_size, eps_pos)
+        nb_inno_size <- pmin(pmax(nb_inno_size, eps_pos), nb_inno_size_ub)
     }
 
     init_alpha_order1 <- function(init_alpha, N) {
@@ -1277,13 +1296,14 @@ fit_inad_fe <- function(
                 x0 = nb_inno_size,
                 eval_f = obj_sz,
                 lb = rep(eps_pos, N),
+                ub = rep(nb_inno_size_ub, N),
                 opts = list(
                     algorithm = "NLOPT_LN_BOBYQA",
                     xtol_rel = 1e-6,
                     maxeval = 2000
                 )
             )
-            nb_inno_size <- pmax(opt_sz$solution, eps_pos)
+            nb_inno_size <- pmin(pmax(opt_sz$solution, eps_pos), nb_inno_size_ub)
         }
 
         log_new <- logL_inad(

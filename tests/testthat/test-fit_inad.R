@@ -156,6 +156,40 @@ test_that("fit_inad works for innovation nbinom and returns nb_inno_size", {
     expect_true(is.finite(fit$log_l))
 })
 
+test_that("fit_inad respects nb_inno_size_ub upper bound", {
+    set.seed(42)
+    y <- matrix(rpois(60, lambda = 3), nrow = 20, ncol = 3)
+
+    ub <- 2
+    fit <- fit_inad(
+        y,
+        order = 1,
+        thinning = "binom",
+        innovation = "nbinom",
+        nb_inno_size_ub = ub,
+        init_nb_inno_size = 1,
+        max_iter = 10
+    )
+
+    expect_true(all(fit$nb_inno_size <= ub + 1e-8))
+    expect_true(is.finite(fit$log_l))
+})
+
+test_that("fit_inad validates nb_inno_size_ub", {
+    y <- matrix(rpois(40, 2), nrow = 10, ncol = 4)
+
+    expect_error(
+        fit_inad(y, order = 1, thinning = "binom", innovation = "nbinom",
+                 nb_inno_size_ub = -1),
+        "nb_inno_size_ub must be a positive finite scalar"
+    )
+    expect_error(
+        fit_inad(y, order = 1, thinning = "binom", innovation = "nbinom",
+                 nb_inno_size_ub = Inf),
+        "nb_inno_size_ub must be a positive finite scalar"
+    )
+})
+
 test_that("fit_inad with na_action='fail' errors on missing data", {
     y <- matrix(c(1L, 2L, NA, 3L, 2L, 1L), nrow = 2, byrow = TRUE)
 

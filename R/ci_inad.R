@@ -268,7 +268,7 @@ summary.inad_ci <- function(object, ...) {
         # NB(size=r, mu=lambda): score = u/lambda - (r+u)/(r+lambda)
         r <- if (is.null(nb_inno_size)) 1 else nb_inno_size
         score_lambda <- u / lambda - (r + u) / (r + lambda)
-        h_lambda <- u / (lambda^2) + (r + u) / ((r + lambda)^2)
+        h_lambda <- u / (lambda^2) - (r + u) / ((r + lambda)^2)
     }
 
     # Compute expectations
@@ -320,7 +320,7 @@ summary.inad_ci <- function(object, ...) {
                 Itt <- Itt + z / (la^2) + exp(la)
             } else {  # nbinom
                 r <- if (is.null(nb_inno_size)) 1 else nb_inno_size[1]
-                Itt <- Itt + z / (la^2) + (r + z) / ((r + la)^2)
+                Itt <- Itt + z / (la^2) - (r + z) / ((r + la)^2)
             }
         }
         mat <- matrix(Itt, 1, 1)
@@ -513,12 +513,21 @@ summary.inad_ci <- function(object, ...) {
             ll
         }
 
-        h <- max(1e-4, 1e-3 * s0)
+        h0 <- max(1e-4, 1e-3 * s0)
         f0 <- ll_at(s0)
-        fp <- ll_at(s0 + h)
-        fm <- ll_at(max(eps_pos, s0 - h))
+        d2 <- NA_real_
 
-        if (!is.finite(f0) || !is.finite(fp) || !is.finite(fm)) {
+        for (hfac in c(1, 0.1, 0.01)) {
+            h <- h0 * hfac
+            fp <- ll_at(s0 + h)
+            fm <- ll_at(max(eps_pos, s0 - h))
+            if (is.finite(f0) && is.finite(fp) && is.finite(fm)) {
+                d2 <- (fp - 2 * f0 + fm) / (h^2)
+                break
+            }
+        }
+
+        if (is.na(d2)) {
             res[[jj]] <- data.frame(
                 param = paste0("nb_inno_size[", i, "]"),
                 est = s0,
@@ -531,8 +540,6 @@ summary.inad_ci <- function(object, ...) {
             )
             next
         }
-
-        d2 <- (fp - 2 * f0 + fm) / (h^2)
         I <- max(0, -d2)
 
         if (I <= 0 || !is.finite(I)) {

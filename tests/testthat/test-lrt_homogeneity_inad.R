@@ -216,6 +216,31 @@ testthat::test_that("test_homogeneity_inad BIC selects simpler model when homoge
 })
 
 
+testthat::test_that("test_homogeneity_inad df is correct for innovation='nbinom'", {
+  set.seed(808)
+
+  n_time <- 4
+  n1 <- 20; n2 <- 20
+
+  y1 <- simulate_inad(n1, n_time, order = 1, thinning = "binom",
+                      innovation = "nbinom", alpha = 0.3, theta = 3,
+                      nb_inno_size = 2)
+  y2 <- simulate_inad(n2, n_time, order = 1, thinning = "binom",
+                      innovation = "nbinom", alpha = 0.3, theta = 3,
+                      nb_inno_size = 2)
+  y <- rbind(y1, y2)
+  blocks <- c(rep(1, n1), rep(2, n2))
+
+  # order=1: n_alpha = n_time-1 = 3, n_theta = 4, n_nb = 4 per group
+  # M1 k = 3+4+4 = 11;  M3 k = 2*(3+4)+2*4 = 22  ->  df = 11
+  test_all <- test_homogeneity_inad(y, blocks, order = 1, test = "all",
+                                    innovation = "nbinom",
+                                    thinning = "binom", max_iter = 10)
+  expected_df <- (2 - 1) * (3 + n_time + n_time)   # (n_blocks-1)*(n_alpha+n_theta+n_nb)
+  testthat::expect_equal(test_all$df, expected_df)
+})
+
+
 testthat::test_that("print methods work without error", {
   set.seed(606)
   

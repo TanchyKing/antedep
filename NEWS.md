@@ -1,6 +1,27 @@
 # antedep 0.1.0
 
+## New features
+- `fit_inad()` gains a `nb_inno_size_ub` argument (default 50) that caps the
+  upper bound of the negative-binomial innovation size parameter during
+  optimization, improving numerical stability for near-Poisson data.
+- `test_order_gau()` accepts `order_null` and `order_alt` as convenience aliases
+  for `p` and the absolute alternative order; both are also returned in the
+  result object.
+
 ## Bug fixes
+- `ci_inad()`: fixed a sign error in the observed Fisher information for the
+  negative-binomial innovation size parameter; the Hessian term
+  `(r + u) / (r + λ)²` was added instead of subtracted, producing confidence
+  intervals that were too wide.
+- `ci_inad()`: the numerical second derivative for `nb_inno_size` CIs now
+  retries with progressively smaller step sizes (×0.1, ×0.01) before falling
+  back to NA, avoiding spurious failures when the default step lands in a
+  non-finite region.
+- `test_homogeneity_inad()`: degrees of freedom for LRT tests involving
+  `innovation = "nbinom"` are now computed from the actual number of NB size
+  parameters in the fitted models rather than assuming a fixed count of 1.
+  This corrects LRT statistics and p-values whenever `nb_inno_size` is fitted
+  as a time-varying vector.
 - `ci_inad()` tau profile CI: `nb_inno_size` (negative-binomial innovation
   dispersion) is now held fixed at its full-model MLE during profile refits,
   consistent with the constrained-fit paradigm used throughout the package.
