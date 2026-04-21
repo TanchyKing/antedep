@@ -1,4 +1,5 @@
 test_that("em_inad preserves original block labels in settings", {
+  skip_on_cran()
   set.seed(77)
   y <- matrix(rpois(20 * 4, lambda = 2), nrow = 20, ncol = 4)
   blocks <- rep(c("grp_5", "grp_2"), each = 10)

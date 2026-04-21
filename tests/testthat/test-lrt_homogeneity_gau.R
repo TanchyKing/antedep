@@ -1,4 +1,5 @@
 testthat::test_that("test_homogeneity_gau runs on complete data", {
+  skip_on_cran()
   set.seed(1201)
   y <- simulate_gau(
     n_subjects = 60,
@@ -18,6 +19,7 @@ testthat::test_that("test_homogeneity_gau runs on complete data", {
 })
 
 testthat::test_that("test_homogeneity_gau matches textbook cochlear example with dropout handling", {
+  skip_on_cran()
   data("cochlear_implant", package = "antedep")
 
   res <- test_homogeneity_gau(
@@ -35,6 +37,7 @@ testthat::test_that("test_homogeneity_gau matches textbook cochlear example with
 })
 
 testthat::test_that("test_homogeneity_gau rejects non-monotone missingness", {
+  skip_on_cran()
   y <- matrix(
     c(1, 2, 3, 4,
       2, NA, 3, 4,

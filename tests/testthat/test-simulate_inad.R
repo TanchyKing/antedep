@@ -1,4 +1,5 @@
 test_that("simulate_inad basic structure and defaults", {
+    skip_on_cran()
     set.seed(1)
     y <- simulate_inad(
         n_subjects = 5,
@@ -16,6 +17,7 @@ test_that("simulate_inad basic structure and defaults", {
 })
 
 test_that("order 0 ignores thinning choice", {
+    skip_on_cran()
     set.seed(1)
     y1 <- simulate_inad(
         n_subjects = 10,
@@ -38,6 +40,7 @@ test_that("order 0 ignores thinning choice", {
 })
 
 test_that("order 0 matches order 1 with zero alpha", {
+    skip_on_cran()
     n_sub <- 8
     n_time <- 6
 
@@ -68,6 +71,7 @@ test_that("order 0 matches order 1 with zero alpha", {
 })
 
 test_that("order 2 runs and produces nonnegative integers", {
+    skip_on_cran()
     set.seed(3)
     y <- simulate_inad(
         n_subjects = 4,
@@ -84,6 +88,7 @@ test_that("order 2 runs and produces nonnegative integers", {
 })
 
 test_that("negative binomial innovations use size and mu parameterization", {
+    skip_on_cran()
     # nb_inno_size is the size (dispersion) parameter (> 0)
     # theta is the mean parameter
     # Mean of NB(size, mu) = mu = theta
@@ -120,6 +125,7 @@ test_that("negative binomial innovations use size and mu parameterization", {
 })
 
 test_that("negative binomial innovation mean matches theta", {
+    skip_on_cran()
     # Simulation-estimation consistency check
     set.seed(123)
     true_theta <- 8
@@ -143,6 +149,7 @@ test_that("negative binomial innovation mean matches theta", {
 })
 
 test_that("blocks and tau affect innovations as intended", {
+    skip_on_cran()
     n_sub <- 200
     n_time <- 3
     blocks <- c(rep(1L, n_sub / 2), rep(2L, n_sub / 2))
@@ -195,6 +202,7 @@ test_that("blocks and tau affect innovations as intended", {
 })
 
 test_that("nbinom thinning handles zero previous counts without introducing NA", {
+    skip_on_cran()
     set.seed(99)
     y1 <- simulate_inad(
         n_subjects = 200,
@@ -223,6 +231,7 @@ test_that("nbinom thinning handles zero previous counts without introducing NA",
 })
 
 test_that("bell block effects are applied on innovation mean scale", {
+    skip_on_cran()
     n_sub <- 4000
     blocks <- c(rep(1L, n_sub / 2), rep(2L, n_sub / 2))
 

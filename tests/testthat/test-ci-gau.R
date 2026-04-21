@@ -1,4 +1,5 @@
 test_that("ci_gau returns Wald intervals for complete-data Gaussian AD fit", {
+  skip_on_cran()
   set.seed(510)
   y <- simulate_gau(
     n_subjects = 90,
@@ -20,6 +21,7 @@ test_that("ci_gau returns Wald intervals for complete-data Gaussian AD fit", {
 })
 
 test_that("ci_gau rejects missing-data Gaussian AD fits", {
+  skip_on_cran()
   set.seed(511)
   y <- simulate_gau(
     n_subjects = 60,

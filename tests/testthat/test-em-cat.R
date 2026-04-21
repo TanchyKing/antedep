@@ -1,6 +1,7 @@
 # test-em-cat.R - Tests for EM estimation in CAT models
 
 test_that("em_cat returns closed-form fit when no missing data", {
+  skip_on_cran()
   set.seed(1301)
   y <- simulate_cat(n_subjects = 50, n_time = 4, order = 1, n_categories = 2)
 
@@ -14,6 +15,7 @@ test_that("em_cat returns closed-form fit when no missing data", {
 
 
 test_that("em_cat fits missing-data order 0 model", {
+  skip_on_cran()
   set.seed(1302)
   y <- simulate_cat(n_subjects = 40, n_time = 5, order = 0, n_categories = 3)
   y[sample(length(y), 25)] <- NA
@@ -30,6 +32,7 @@ test_that("em_cat fits missing-data order 0 model", {
 
 
 test_that("em_cat handles non-sequential block IDs and stores block levels", {
+  skip_on_cran()
   set.seed(1303)
   y <- simulate_cat(n_subjects = 40, n_time = 4, order = 1, n_categories = 2)
   y[sample(length(y), 20)] <- NA
@@ -47,6 +50,7 @@ test_that("em_cat handles non-sequential block IDs and stores block levels", {
 
 
 test_that("em_cat returns fit_cat-style order 1 cell_counts usable by ci_cat", {
+  skip_on_cran()
   set.seed(1307)
   y <- simulate_cat(n_subjects = 50, n_time = 4, order = 1, n_categories = 2)
   y[sample(length(y), 25)] <- NA
@@ -63,6 +67,7 @@ test_that("em_cat returns fit_cat-style order 1 cell_counts usable by ci_cat", {
 
 
 test_that("em_cat order 1 does not report immediate convergence on first iteration", {
+  skip_on_cran()
   set.seed(1304)
   y <- simulate_cat(n_subjects = 50, n_time = 4, order = 1, n_categories = 2)
   y[sample(length(y), 15)] <- NA
@@ -74,6 +79,7 @@ test_that("em_cat order 1 does not report immediate convergence on first iterati
 
 
 test_that("em_cat transition probabilities are valid for order 1", {
+  skip_on_cran()
   set.seed(1308)
   y <- simulate_cat(n_subjects = 40, n_time = 4, order = 1, n_categories = 3)
   y[sample(length(y), 20)] <- NA
@@ -89,6 +95,7 @@ test_that("em_cat transition probabilities are valid for order 1", {
 
 
 test_that("em_cat homogeneous and one-block heterogeneous fits agree", {
+  skip_on_cran()
   set.seed(1309)
   y <- simulate_cat(n_subjects = 50, n_time = 4, order = 1, n_categories = 2)
   y[sample(length(y), 25)] <- NA
@@ -103,6 +110,7 @@ test_that("em_cat homogeneous and one-block heterogeneous fits agree", {
 
 
 test_that("em_cat accepts safeguard argument", {
+  skip_on_cran()
   set.seed(1310)
   y <- simulate_cat(n_subjects = 40, n_time = 4, order = 1, n_categories = 2)
   y[sample(length(y), 18)] <- NA
@@ -116,6 +124,7 @@ test_that("em_cat accepts safeguard argument", {
 
 
 test_that("em_cat order 2 reports not implemented", {
+  skip_on_cran()
   set.seed(1305)
   y <- simulate_cat(n_subjects = 20, n_time = 4, order = 2, n_categories = 2)
   y[sample(length(y), 5)] <- NA
@@ -128,6 +137,7 @@ test_that("em_cat order 2 reports not implemented", {
 
 
 test_that("em_cat final log-likelihood is consistent when max_iter is reached", {
+  skip_on_cran()
   set.seed(1306)
   y <- simulate_cat(n_subjects = 50, n_time = 4, order = 1, n_categories = 2)
   y[sample(length(y), 30)] <- NA

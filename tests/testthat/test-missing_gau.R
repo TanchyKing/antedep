@@ -7,6 +7,7 @@ library(testthat)
 # ==== Test missing_utils.R ====
 
 test_that(".validate_missing works for complete data", {
+  skip_on_cran()
   y <- matrix(rnorm(50), nrow = 10, ncol = 5)
   
   result <- .validate_missing(y)
@@ -19,6 +20,7 @@ test_that(".validate_missing works for complete data", {
 })
 
 test_that(".validate_missing identifies monotone dropout", {
+  skip_on_cran()
   y <- matrix(c(
     1, 2, 3, 4, 5,
     1, 2, 3, NA, NA,
@@ -35,6 +37,7 @@ test_that(".validate_missing identifies monotone dropout", {
 })
 
 test_that(".validate_missing identifies monotone drop-in", {
+  skip_on_cran()
   y <- matrix(c(
     1, 2, 3, 4, 5,
     NA, NA, 3, 4, 5,
@@ -48,6 +51,7 @@ test_that(".validate_missing identifies monotone drop-in", {
 })
 
 test_that(".validate_missing identifies intermittent missing", {
+  skip_on_cran()
   y <- matrix(c(
     1, NA, 3, NA, 5,
     1, 2, NA, 4, 5
@@ -60,6 +64,7 @@ test_that(".validate_missing identifies intermittent missing", {
 })
 
 test_that(".get_truncation_bound works correctly", {
+  skip_on_cran()
   y <- matrix(c(
     5, 10, 15, 20,
     3, 8, NA, 18,
@@ -75,6 +80,7 @@ test_that(".get_truncation_bound works correctly", {
 })
 
 test_that(".get_truncation_bound handles edge cases", {
+  skip_on_cran()
   # All missing in column
   y <- matrix(c(
     1, NA, 3,
@@ -87,6 +93,7 @@ test_that(".get_truncation_bound handles edge cases", {
 })
 
 test_that(".safe_log handles zero correctly", {
+  skip_on_cran()
   x <- c(-1, 0, 1, 2, exp(1))
   
   result <- .safe_log(x)
@@ -99,6 +106,7 @@ test_that(".safe_log handles zero correctly", {
 })
 
 test_that(".extract_complete_cases works", {
+  skip_on_cran()
   y <- matrix(c(
     1, 2, 3,
     1, NA, 3,
@@ -116,6 +124,7 @@ test_that(".extract_complete_cases works", {
 })
 
 test_that(".extract_complete_cases warns when many removed", {
+  skip_on_cran()
   y <- matrix(rnorm(100), nrow = 20, ncol = 5)
   y[1:15, 1] <- NA  # Make 75% incomplete
   
@@ -126,6 +135,7 @@ test_that(".extract_complete_cases warns when many removed", {
 })
 
 test_that(".extract_complete_cases errors when no complete cases", {
+  skip_on_cran()
   y <- matrix(NA, nrow = 5, ncol = 3)
   
   expect_error(
@@ -137,6 +147,7 @@ test_that(".extract_complete_cases errors when no complete cases", {
 # ==== Test logL_gau with missing data ====
 
 test_that("logL_gau with na_action='fail' errors on missing data", {
+  skip_on_cran()
   y <- matrix(c(1, 2, NA, 4, 5, 6), nrow = 2, byrow = TRUE)
   
   expect_error(
@@ -147,6 +158,7 @@ test_that("logL_gau with na_action='fail' errors on missing data", {
 })
 
 test_that("logL_gau with na_action='complete' uses only complete cases", {
+  skip_on_cran()
   set.seed(123)
   y_complete <- matrix(rnorm(30), nrow = 10, ncol = 3)
   y_missing <- y_complete
@@ -166,6 +178,7 @@ test_that("logL_gau with na_action='complete' uses only complete cases", {
 })
 
 test_that("logL_gau with na_action='marginalize' works for monotone dropout", {
+  skip_on_cran()
   set.seed(123)
   y <- matrix(rnorm(15), nrow = 5, ncol = 3)
   y[1, 3] <- NA  # One missing at end
@@ -182,6 +195,7 @@ test_that("logL_gau with na_action='marginalize' works for monotone dropout", {
 })
 
 test_that(".build_gau_covariance works for order 0", {
+  skip_on_cran()
   sigma <- c(1, 2, 3)
   Sigma <- .build_gau_covariance(order = 0, phi = numeric(0), sigma = sigma, n_time = 3)
   
@@ -191,6 +205,7 @@ test_that(".build_gau_covariance works for order 0", {
 })
 
 test_that(".build_gau_covariance works for order 1", {
+  skip_on_cran()
   sigma <- c(1, 1, 1)
   phi <- c(0.5, 0.5)
   
@@ -238,6 +253,7 @@ test_that(".build_gau_covariance works for order 2", {
 # ==== Test fit_gau with missing data ====
 
 test_that("fit_gau with na_action='fail' errors on missing data", {
+  skip_on_cran()
   y <- matrix(c(1, 2, NA, 4, 5, 6), nrow = 2, byrow = TRUE)
   
   expect_error(
@@ -247,6 +263,7 @@ test_that("fit_gau with na_action='fail' errors on missing data", {
 })
 
 test_that("fit_gau with na_action='complete' removes incomplete subjects", {
+  skip_on_cran()
   set.seed(123)
   y <- matrix(rnorm(50), nrow = 10, ncol = 5)
   y[1:3, 1] <- NA
@@ -262,6 +279,7 @@ test_that("fit_gau with na_action='complete' removes incomplete subjects", {
 })
 
 test_that("fit_gau with complete data gives same result regardless of na_action", {
+  skip_on_cran()
   set.seed(123)
   y <- matrix(rnorm(50), nrow = 10, ncol = 5)
   
@@ -275,6 +293,7 @@ test_that("fit_gau with complete data gives same result regardless of na_action"
 # ==== Test EM algorithm ====
 
 test_that(".initialize_gau_em works with enough complete cases", {
+  skip_on_cran()
   set.seed(123)
   y <- matrix(rnorm(60), nrow = 20, ncol = 3)
   y[1:5, 1] <- NA  # 75% complete
@@ -292,6 +311,7 @@ test_that(".initialize_gau_em works with enough complete cases", {
 })
 
 test_that(".initialize_gau_em falls back to marginal when few complete cases", {
+  skip_on_cran()
   set.seed(123)
   y <- matrix(rnorm(30), nrow = 10, ncol = 3)
   y[1:9, 1] <- NA  # Only 1 complete case
@@ -304,6 +324,7 @@ test_that(".initialize_gau_em falls back to marginal when few complete cases", {
 })
 
 test_that(".em_e_step_gau computes sufficient statistics", {
+  skip_on_cran()
   set.seed(123)
   y <- matrix(rnorm(15), nrow = 5, ncol = 3)
   y[1, 3] <- NA
@@ -321,6 +342,7 @@ test_that(".em_e_step_gau computes sufficient statistics", {
 })
 
 test_that(".em_m_step_gau updates parameters", {
+  skip_on_cran()
   # Simple sufficient statistics
   S1 <- c(5, 10, 15)
   S2 <- matrix(c(

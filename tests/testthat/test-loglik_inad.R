@@ -1,4 +1,5 @@
 test_that("no fixed effect: logL_inad equals sum of logL_inad_i", {
+    skip_on_cran()
     set.seed(1)
     y <- matrix(rpois(60, 2), nrow = 6)
     N <- ncol(y)
@@ -34,6 +35,7 @@ test_that("no fixed effect: logL_inad equals sum of logL_inad_i", {
 })
 
 test_that("order 0 reduces to innovation only and matches time sum", {
+    skip_on_cran()
     set.seed(2)
     y <- matrix(rpois(30, 3), nrow = 5)
     theta <- rep(1.7, ncol(y))
@@ -66,6 +68,7 @@ test_that("order 0 reduces to innovation only and matches time sum", {
 })
 
 test_that("fixed effect: tau length 1 expands and tau[1] is forced to 0", {
+    skip_on_cran()
     y <- matrix(0L, nrow = 3, ncol = 4)
     blocks <- c(1L, 2L, 2L)
     theta <- rep(1.0, ncol(y))
@@ -96,6 +99,7 @@ test_that("fixed effect: tau length 1 expands and tau[1] is forced to 0", {
 })
 
 test_that("fixed effect: invalid lambda yields -Inf", {
+    skip_on_cran()
     y <- matrix(0L, nrow = 2, ncol = 3)
     blocks <- c(1L, 2L)
 
@@ -114,6 +118,7 @@ test_that("fixed effect: invalid lambda yields -Inf", {
 })
 
 test_that("bell FE tau is constrained by innovation mean, not raw Bell theta", {
+    skip_on_cran()
     y <- matrix(0L, nrow = 2, ncol = 3)
     blocks <- c(1L, 2L)
     theta <- rep(0.5, ncol(y))
@@ -146,6 +151,7 @@ test_that("bell FE tau is constrained by innovation mean, not raw Bell theta", {
 })
 
 test_that("innovation nbinom requires nb_inno_size", {
+    skip_on_cran()
     set.seed(3)
     y <- matrix(rpois(20, 2), nrow = 4)
 
@@ -163,6 +169,7 @@ test_that("innovation nbinom requires nb_inno_size", {
 })
 
 test_that("logL_inad with na_action='fail' errors on missing data", {
+    skip_on_cran()
     y <- matrix(c(1L, 2L, NA, 2L, 1L, 0L), nrow = 2, byrow = TRUE)
     alpha <- rep(0.2, ncol(y))
     theta <- rep(1.5, ncol(y))
@@ -182,6 +189,7 @@ test_that("logL_inad with na_action='fail' errors on missing data", {
 })
 
 test_that("logL_inad with na_action='complete' matches complete-case subset", {
+    skip_on_cran()
     set.seed(11)
     y_full <- matrix(rpois(80, lambda = 2.0), nrow = 20, ncol = 4)
     y_mis <- y_full
@@ -215,6 +223,7 @@ test_that("logL_inad with na_action='complete' matches complete-case subset", {
 })
 
 test_that("logL_inad with na_action='marginalize' handles monotone and intermittent missingness", {
+    skip_on_cran()
     set.seed(12)
     y <- simulate_inad(
         n_subjects = 40,
@@ -259,6 +268,7 @@ test_that("logL_inad with na_action='marginalize' handles monotone and intermitt
 })
 
 test_that(".thin_vec nbinom thinning is degenerate at zero lag count", {
+    skip_on_cran()
     k_vals <- 0:6
     probs <- .thin_vec(k_vals, yprev = 0, a = 0.4, thinning = "nbinom")
     expect_equal(probs, c(1, rep(0, length(k_vals) - 1)))

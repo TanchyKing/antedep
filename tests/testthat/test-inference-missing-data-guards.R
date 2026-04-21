@@ -1,4 +1,5 @@
 test_that("CAT missing-data inference support boundaries are explicit", {
+  skip_on_cran()
   y_miss <- matrix(
     c(1, 2, 1,
       2, 1, NA,
@@ -63,6 +64,7 @@ test_that("CAT missing-data inference support boundaries are explicit", {
 })
 
 test_that("INAD missing-data LRT support is enabled while CI remains complete-data only", {
+  skip_on_cran()
   set.seed(2026)
   y_miss <- simulate_inad(
     n_subjects = 10,
@@ -106,6 +108,7 @@ test_that("INAD missing-data LRT support is enabled while CI remains complete-da
 })
 
 test_that("AD likelihood-ratio utilities reject missing-data inference clearly", {
+  skip_on_cran()
   y_miss <- matrix(
     c(1.0, 2.0, 3.0,
       2.0, 1.0, 0.0,

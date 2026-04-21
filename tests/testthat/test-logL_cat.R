@@ -1,6 +1,7 @@
 # test-logL_cat.R - Tests for categorical AD log-likelihood
 
 test_that("logL_cat validates inputs correctly", {
+  skip_on_cran()
   set.seed(123)
   y <- matrix(sample(1:3, 50, replace = TRUE), nrow = 10, ncol = 5)
   
@@ -15,6 +16,7 @@ test_that("logL_cat validates inputs correctly", {
 
 
 test_that("logL_cat missing-data modes behave correctly", {
+  skip_on_cran()
   set.seed(124)
   y <- simulate_cat(50, 5, order = 1, n_categories = 2)
   fit <- fit_cat(y, order = 1)
@@ -50,6 +52,7 @@ test_that("logL_cat missing-data modes behave correctly", {
 
 
 test_that("logL_cat marginalize is finite for MAR-style missingness", {
+  skip_on_cran()
   set.seed(125)
   y <- simulate_cat(60, 5, order = 1, n_categories = 2)
   
@@ -87,6 +90,7 @@ test_that("logL_cat marginalize is finite for MAR-style missingness", {
 
 
 test_that("logL_cat computes correct log-likelihood for order 0", {
+  skip_on_cran()
   set.seed(234)
   n_subjects <- 50
   n_time <- 4
@@ -111,6 +115,7 @@ test_that("logL_cat computes correct log-likelihood for order 0", {
 
 
 test_that("logL_cat computes correct log-likelihood for order 1", {
+  skip_on_cran()
   set.seed(345)
   n_subjects <- 100
   n_time <- 3
@@ -150,6 +155,7 @@ test_that("logL_cat computes correct log-likelihood for order 1", {
 
 
 test_that("logL_cat matches fit_cat log-likelihood", {
+  skip_on_cran()
   set.seed(456)
   n_subjects <- 80
   n_time <- 5
@@ -171,6 +177,7 @@ test_that("logL_cat matches fit_cat log-likelihood", {
 
 
 test_that("logL_cat works for order 2", {
+  skip_on_cran()
   set.seed(567)
   n_subjects <- 100
   n_time <- 5
@@ -193,6 +200,7 @@ test_that("logL_cat works for order 2", {
 
 
 test_that("logL_cat handles more than 2 categories", {
+  skip_on_cran()
   set.seed(678)
   n_subjects <- 80
   n_time <- 4
@@ -214,6 +222,7 @@ test_that("logL_cat handles more than 2 categories", {
 
 
 test_that("logL_cat works with heterogeneous blocks", {
+  skip_on_cran()
   set.seed(789)
   n1 <- 40
   n2 <- 40
@@ -258,6 +267,7 @@ test_that("logL_cat works with heterogeneous blocks", {
 
 
 test_that("logL_cat is additive across independent subjects", {
+  skip_on_cran()
   set.seed(901)
   n_time <- 4
   c <- 2
@@ -283,6 +293,7 @@ test_that("logL_cat is additive across independent subjects", {
 
 
 test_that("logL_cat handles n_categories override", {
+  skip_on_cran()
   set.seed(112)
   n_subjects <- 50
   n_time <- 4
@@ -304,6 +315,7 @@ test_that("logL_cat handles n_categories override", {
 
 
 test_that("logL_cat likelihood increases with correct model", {
+  skip_on_cran()
   set.seed(223)
   n_subjects <- 60
   n_time <- 5

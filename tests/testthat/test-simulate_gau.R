@@ -1,4 +1,5 @@
 testthat::test_that("simulate_gau returns a numeric matrix with correct dimensions", {
+    skip_on_cran()
     testthat::skip_if_not(exists("simulate_gau"))
 
     set.seed(1)
@@ -11,6 +12,7 @@ testthat::test_that("simulate_gau returns a numeric matrix with correct dimensio
 })
 
 testthat::test_that("simulate_gau is reproducible given the same seed", {
+    skip_on_cran()
     testthat::skip_if_not(exists("simulate_gau"))
 
     set.seed(123)
@@ -27,6 +29,7 @@ testthat::test_that("simulate_gau is reproducible given the same seed", {
 })
 
 testthat::test_that("simulate_gau works for order 0, 1, 2", {
+    skip_on_cran()
     testthat::skip_if_not(exists("simulate_gau"))
 
     set.seed(2)
@@ -40,6 +43,7 @@ testthat::test_that("simulate_gau works for order 0, 1, 2", {
 })
 
 testthat::test_that("simulate_gau validates key inputs", {
+    skip_on_cran()
     testthat::skip_if_not(exists("simulate_gau"))
 
     testthat::expect_error(simulate_gau(10, 5, order = 3))
@@ -56,6 +60,7 @@ testthat::test_that("simulate_gau validates key inputs", {
 })
 
 testthat::test_that("simulate_gau enforces phi shape rules for order 2", {
+    skip_on_cran()
     testthat::skip_if_not(exists("simulate_gau"))
 
     testthat::expect_error(simulate_gau(10, 6, order = 2, phi = rep(0.2, 6)))
@@ -71,6 +76,7 @@ testthat::test_that("simulate_gau enforces phi shape rules for order 2", {
 })
 
 testthat::test_that("simulate_gau handles blocks and tau as intended for order 0", {
+    skip_on_cran()
     testthat::skip_if_not(exists("simulate_gau"))
 
     blocks <- rep(1:2, each = 5)

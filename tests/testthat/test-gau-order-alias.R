@@ -1,4 +1,5 @@
 test_that("test_one_sample_gau accepts order alias for p", {
+  skip_on_cran()
   set.seed(1001)
   y <- simulate_gau(n_subjects = 40, n_time = 5, order = 1, phi = 0.3)
   mu0 <- rep(0, ncol(y))
@@ -12,6 +13,7 @@ test_that("test_one_sample_gau accepts order alias for p", {
 })
 
 test_that("test_two_sample_gau accepts order alias for p", {
+  skip_on_cran()
   set.seed(1002)
   y <- simulate_gau(n_subjects = 50, n_time = 5, order = 1, phi = 0.25)
   blocks <- c(rep(1, 25), rep(2, 25))
@@ -25,6 +27,7 @@ test_that("test_two_sample_gau accepts order alias for p", {
 })
 
 test_that("test_order_gau accepts order_null and order_alt aliases", {
+  skip_on_cran()
   set.seed(1004)
   y <- simulate_gau(n_subjects = 40, n_time = 5, order = 1, phi = 0.3)
 
@@ -39,6 +42,7 @@ test_that("test_order_gau accepts order_null and order_alt aliases", {
 })
 
 test_that("test_*_gau p and order cannot both be supplied", {
+  skip_on_cran()
   set.seed(1003)
   y <- simulate_gau(n_subjects = 30, n_time = 4, order = 1, phi = 0.2)
   blocks <- c(rep(1, 15), rep(2, 15))

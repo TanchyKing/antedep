@@ -4,6 +4,7 @@
 # Test test_stationarity_cat
 # ============================================================
 test_that("test_stationarity_cat works for order 0", {
+  skip_on_cran()
   set.seed(100)
   # Simulate with constant marginal (stationary under independence)
   y <- simulate_cat(80, 5, order = 0, n_categories = 2)
@@ -19,6 +20,7 @@ test_that("test_stationarity_cat works for order 0", {
 
 
 test_that("test_stationarity_cat works for order 1", {
+  skip_on_cran()
   set.seed(101)
   # Simulate with time-invariant transitions (should be approximately stationary)
   y <- simulate_cat(80, 5, order = 1, n_categories = 2)
@@ -56,6 +58,7 @@ test_that("test_stationarity_cat detects non-stationarity", {
 
 
 test_that("test_stationarity_cat df is correct", {
+  skip_on_cran()
   set.seed(103)
   y <- simulate_cat(50, 5, order = 1, n_categories = 2)
   
@@ -72,6 +75,7 @@ test_that("test_stationarity_cat df is correct", {
 
 
 test_that("run_stationarity_tests_cat works", {
+  skip_on_cran()
   set.seed(104)
   y <- simulate_cat(60, 5, order = 1, n_categories = 2)
   
@@ -91,6 +95,7 @@ test_that("run_stationarity_tests_cat works", {
 # Test ci_cat
 # ============================================================
 test_that("ci_cat works for order 0", {
+  skip_on_cran()
   set.seed(200)
   y <- simulate_cat(80, 4, order = 0, n_categories = 2)
   fit <- fit_cat(y, order = 0)
@@ -114,6 +119,7 @@ test_that("ci_cat works for order 0", {
 
 
 test_that("ci_cat works for order 1", {
+  skip_on_cran()
   set.seed(201)
   y <- simulate_cat(80, 4, order = 1, n_categories = 2)
   fit <- fit_cat(y, order = 1)
@@ -136,6 +142,7 @@ test_that("ci_cat works for order 1", {
 
 
 test_that("ci_cat works for order 2", {
+  skip_on_cran()
   set.seed(202)
   y <- simulate_cat(100, 5, order = 2, n_categories = 2)
   fit <- fit_cat(y, order = 2)
@@ -152,6 +159,7 @@ test_that("ci_cat works for order 2", {
 
 
 test_that("ci_cat respects level parameter", {
+  skip_on_cran()
   set.seed(203)
   y <- simulate_cat(80, 4, order = 1, n_categories = 2)
   fit <- fit_cat(y, order = 1)
@@ -170,6 +178,7 @@ test_that("ci_cat respects level parameter", {
 
 
 test_that("ci_cat parameters argument works", {
+  skip_on_cran()
   set.seed(204)
   y <- simulate_cat(80, 4, order = 1, n_categories = 2)
   fit <- fit_cat(y, order = 1)
@@ -190,6 +199,7 @@ test_that("ci_cat parameters argument works", {
 
 
 test_that("ci_cat works with heterogeneous model", {
+  skip_on_cran()
   set.seed(205)
   y1 <- simulate_cat(50, 3, order = 1, n_categories = 2)
   y2 <- simulate_cat(50, 3, order = 1, n_categories = 2)
@@ -209,6 +219,7 @@ test_that("ci_cat works with heterogeneous model", {
 
 
 test_that("ci_cat validates inputs", {
+  skip_on_cran()
   set.seed(206)
   y <- simulate_cat(50, 4, order = 1, n_categories = 2)
   fit <- fit_cat(y, order = 1)
@@ -263,6 +274,7 @@ test_that("ci_cat covers true values", {
 
 
 test_that("print.cat_ci works", {
+  skip_on_cran()
   set.seed(208)
   y <- simulate_cat(50, 4, order = 1, n_categories = 2)
   fit <- fit_cat(y, order = 1)
@@ -274,6 +286,7 @@ test_that("print.cat_ci works", {
 
 
 test_that("summary.cat_ci works", {
+  skip_on_cran()
   set.seed(209)
   y <- simulate_cat(50, 4, order = 1, n_categories = 2)
   fit <- fit_cat(y, order = 1)

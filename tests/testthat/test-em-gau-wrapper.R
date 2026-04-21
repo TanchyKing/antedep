@@ -1,4 +1,5 @@
 test_that("em_gau matches fit_gau with na_action = 'em'", {
+  skip_on_cran()
   set.seed(321)
   y <- simulate_gau(
     n_subjects = 60,

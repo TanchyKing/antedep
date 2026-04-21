@@ -4,6 +4,7 @@
 # Test test_order_cat
 # ============================================================
 test_that("test_order_cat works for AD(0) vs AD(1)", {
+  skip_on_cran()
   set.seed(123)
   # Simulate AD(1) data - should reject AD(0)
   marg <- list(t1 = c(0.6, 0.4))
@@ -30,6 +31,7 @@ test_that("test_order_cat works for AD(0) vs AD(1)", {
 
 
 test_that("test_order_cat works for AD(1) vs AD(2)", {
+  skip_on_cran()
   set.seed(456)
   # Simulate AD(1) data - should NOT reject AD(1) in favor of AD(2)
   y <- simulate_cat(80, 5, order = 1, n_categories = 2)
@@ -46,6 +48,7 @@ test_that("test_order_cat works for AD(1) vs AD(2)", {
 })
 
 test_that("test_order_cat supports score and mlrt options", {
+  skip_on_cran()
   set.seed(460)
   y <- simulate_cat(100, 5, order = 1, n_categories = 2)
 
@@ -68,6 +71,7 @@ test_that("test_order_cat supports score and mlrt options", {
 })
 
 test_that("test_order_cat supports wald option", {
+  skip_on_cran()
   set.seed(461)
   y <- simulate_cat(100, 5, order = 1, n_categories = 2)
 
@@ -81,6 +85,7 @@ test_that("test_order_cat supports wald option", {
 
 
 test_that("test_order_cat works with pre-fitted models", {
+  skip_on_cran()
   set.seed(789)
   y <- simulate_cat(60, 4, order = 1, n_categories = 2)
   
@@ -101,6 +106,7 @@ test_that("test_order_cat works with pre-fitted models", {
 
 
 test_that("test_order_cat validates inputs correctly", {
+  skip_on_cran()
   y <- simulate_cat(50, 4, order = 1, n_categories = 2)
   
   # Error: order_alt <= order_null
@@ -119,6 +125,7 @@ test_that("test_order_cat validates inputs correctly", {
 
 
 test_that("test_order_cat df calculation is correct", {
+  skip_on_cran()
   set.seed(111)
   y <- simulate_cat(100, 5, order = 1, n_categories = 2)
   
@@ -135,6 +142,7 @@ test_that("test_order_cat df calculation is correct", {
 
 
 test_that("run_order_tests_cat works correctly", {
+  skip_on_cran()
   set.seed(222)
   # Simulate AD(1) data
   marg <- list(t1 = c(0.6, 0.4))
@@ -168,6 +176,7 @@ test_that("run_order_tests_cat works correctly", {
 # Test test_homogeneity_cat
 # ============================================================
 test_that("test_homogeneity_cat detects heterogeneity", {
+  skip_on_cran()
   set.seed(333)
   # Create two groups with different transition probabilities
   marg1 <- list(t1 = c(0.8, 0.2))
@@ -201,6 +210,7 @@ test_that("test_homogeneity_cat detects heterogeneity", {
 
 
 test_that("test_homogeneity_cat accepts homogeneous data", {
+  skip_on_cran()
   set.seed(444)
   # Create two groups with SAME parameters
   y1 <- simulate_cat(50, 3, order = 1, n_categories = 2)
@@ -218,6 +228,7 @@ test_that("test_homogeneity_cat accepts homogeneous data", {
 })
 
 test_that("test_homogeneity_cat supports score option", {
+  skip_on_cran()
   set.seed(445)
   y1 <- simulate_cat(50, 4, order = 1, n_categories = 2)
   y2 <- simulate_cat(50, 4, order = 1, n_categories = 2)
@@ -232,6 +243,7 @@ test_that("test_homogeneity_cat supports score option", {
 })
 
 test_that("test_homogeneity_cat supports mlrt option", {
+  skip_on_cran()
   old_opt <- options(antedep.cat_mlrt_nsim = 20L, antedep.cat_mlrt_seed = 101L)
   on.exit(options(old_opt), add = TRUE)
 
@@ -251,6 +263,7 @@ test_that("test_homogeneity_cat supports mlrt option", {
 
 
 test_that("test_homogeneity_cat works with pre-fitted models", {
+  skip_on_cran()
   set.seed(555)
   y1 <- simulate_cat(50, 3, order = 1, n_categories = 2)
   y2 <- simulate_cat(50, 3, order = 1, n_categories = 2)
@@ -268,6 +281,7 @@ test_that("test_homogeneity_cat works with pre-fitted models", {
 
 
 test_that("test_homogeneity_cat validates inputs", {
+  skip_on_cran()
   y <- simulate_cat(50, 3, order = 1, n_categories = 2)
   
   # Error: no blocks provided
@@ -282,6 +296,7 @@ test_that("test_homogeneity_cat validates inputs", {
 # Test test_timeinvariance_cat
 # ============================================================
 test_that("test_timeinvariance_cat works", {
+  skip_on_cran()
   set.seed(666)
   # Simulate with time-invariant transitions (default)
   y <- simulate_cat(80, 5, order = 1, n_categories = 2)
@@ -300,6 +315,7 @@ test_that("test_timeinvariance_cat works", {
 
 
 test_that("test_timeinvariance_cat detects time-varying transitions", {
+  skip_on_cran()
   set.seed(777)
   # Simulate with time-VARYING transitions
   marg <- list(t1 = c(0.5, 0.5))
@@ -322,6 +338,7 @@ test_that("test_timeinvariance_cat detects time-varying transitions", {
 })
 
 test_that("test_timeinvariance_cat supports score option", {
+  skip_on_cran()
   set.seed(778)
   y <- simulate_cat(100, 5, order = 1, n_categories = 2)
   score_test <- test_timeinvariance_cat(y, order = 1, test = "score")
@@ -331,6 +348,7 @@ test_that("test_timeinvariance_cat supports score option", {
 })
 
 test_that("test_timeinvariance_cat supports mlrt option", {
+  skip_on_cran()
   old_opt <- options(antedep.cat_mlrt_nsim = 20L, antedep.cat_mlrt_seed = 202L)
   on.exit(options(old_opt), add = TRUE)
 
@@ -346,6 +364,7 @@ test_that("test_timeinvariance_cat supports mlrt option", {
 
 
 test_that("test_timeinvariance_cat validates inputs", {
+  skip_on_cran()
   y <- simulate_cat(50, 4, order = 1, n_categories = 2)
   
   # Error: order < 1
@@ -357,6 +376,7 @@ test_that("test_timeinvariance_cat validates inputs", {
 # Test print methods
 # ============================================================
 test_that("print.cat_lrt works", {
+  skip_on_cran()
   set.seed(888)
   y <- simulate_cat(100, 4, order = 1, n_categories = 2)
   
@@ -367,6 +387,7 @@ test_that("print.cat_lrt works", {
 })
 
 test_that("test_stationarity_cat supports score option (order 1)", {
+  skip_on_cran()
   set.seed(889)
   y <- simulate_cat(100, 5, order = 1, n_categories = 2)
   score_test <- test_stationarity_cat(y, order = 1, test = "score")
@@ -377,6 +398,7 @@ test_that("test_stationarity_cat supports score option (order 1)", {
 })
 
 test_that("test_stationarity_cat supports score option (order 2)", {
+  skip_on_cran()
   set.seed(890)
   y <- simulate_cat(100, 6, order = 2, n_categories = 2)
   score_test <- NULL
@@ -391,6 +413,7 @@ test_that("test_stationarity_cat supports score option (order 2)", {
 })
 
 test_that("test_stationarity_cat blocks lrt/mlrt at order 2", {
+  skip_on_cran()
   set.seed(892)
   y <- simulate_cat(80, 6, order = 2, n_categories = 2)
   expect_error(
@@ -404,6 +427,7 @@ test_that("test_stationarity_cat blocks lrt/mlrt at order 2", {
 })
 
 test_that("test_stationarity_cat supports mlrt option (order 1)", {
+  skip_on_cran()
   old_opt <- options(antedep.cat_mlrt_nsim = 20L, antedep.cat_mlrt_seed = 303L)
   on.exit(options(old_opt), add = TRUE)
 

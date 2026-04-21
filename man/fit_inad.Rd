@@ -17,6 +17,7 @@ fit_inad(
   init_theta = NULL,
   init_tau = 0.4,
   init_nb_inno_size = 1,
+  nb_inno_size_ub = 50,
   na_action = c("fail", "complete", "marginalize")
 )
 }
@@ -45,6 +46,9 @@ For order 2 matrix n_time by 2 or list(alpha1, alpha2).}
 \item{init_tau}{Optional initial tau. Scalar expands to c(0, x, ..., x). Vector forces first to 0.}
 
 \item{init_nb_inno_size}{Optional initial size for innovation nbinom, length 1 or n_time.}
+
+\item{nb_inno_size_ub}{Upper bound for innovation negative binomial size
+parameter when \code{innovation = "nbinom"}. Default is 50.}
 
 \item{na_action}{How to handle missing values:
 \itemize{

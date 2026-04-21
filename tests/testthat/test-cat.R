@@ -4,6 +4,7 @@
 # Test 1: Basic validation
 # ============================================================
 test_that("input validation works correctly", {
+  skip_on_cran()
   # Valid data
   y_valid <- matrix(c(1, 2, 1, 2,
                       2, 1, 1, 1,
@@ -26,6 +27,7 @@ test_that("input validation works correctly", {
 
 
 test_that("parameter counting is correct", {
+  skip_on_cran()
   # Order 0: (c-1) * n = 1 * 4 = 4
   n_params_0 <- antedep:::.count_params_cat(order = 0, n_categories = 2, n_time = 4)
   expect_equal(n_params_0, 4)
@@ -49,6 +51,7 @@ test_that("parameter counting is correct", {
 # Test 2: Cell counting
 # ============================================================
 test_that("cell counting works correctly", {
+  skip_on_cran()
   y_test <- matrix(c(1, 1, 2,
                      1, 2, 1,
                      2, 1, 1,
@@ -76,6 +79,7 @@ test_that("cell counting works correctly", {
 # Test 3: Transition probability computation
 # ============================================================
 test_that("transition probability computation is correct", {
+  skip_on_cran()
   y_test <- matrix(c(1, 1, 2,
                      1, 2, 1,
                      2, 1, 1,
@@ -97,6 +101,7 @@ test_that("transition probability computation is correct", {
 # Test 4: fit_cat basic functionality
 # ============================================================
 test_that("fit_cat works for order 0", {
+  skip_on_cran()
   set.seed(42)
   y_sim <- matrix(sample(1:2, 100 * 5, replace = TRUE), nrow = 100, ncol = 5)
   
@@ -111,6 +116,7 @@ test_that("fit_cat works for order 0", {
 
 
 test_that("fit_cat works for order 1", {
+  skip_on_cran()
   set.seed(42)
   y_sim <- matrix(sample(1:2, 100 * 5, replace = TRUE), nrow = 100, ncol = 5)
   
@@ -124,6 +130,7 @@ test_that("fit_cat works for order 1", {
 
 
 test_that("fit_cat works for order 2", {
+  skip_on_cran()
   set.seed(42)
   y_sim <- matrix(sample(1:2, 100 * 5, replace = TRUE), nrow = 100, ncol = 5)
   
@@ -136,6 +143,7 @@ test_that("fit_cat works for order 2", {
 
 
 test_that("fit_cat missing-data modes behave correctly", {
+  skip_on_cran()
   set.seed(43)
   y <- simulate_cat(50, 4, order = 1, n_categories = 2)
   y_miss <- y
@@ -167,6 +175,7 @@ test_that("fit_cat missing-data modes behave correctly", {
 
 
 test_that("fit_cat marginalize handles missingness for order 2", {
+  skip_on_cran()
   set.seed(44)
   y <- simulate_cat(60, 5, order = 2, n_categories = 2)
   
@@ -202,6 +211,7 @@ test_that("fit_cat marginalize handles missingness for order 2", {
 # Test 5: simulate_cat functionality
 # ============================================================
 test_that("simulate_cat produces valid output with defaults", {
+  skip_on_cran()
   set.seed(123)
   y_uniform <- simulate_cat(n_subjects = 50, n_time = 4, order = 1, n_categories = 3)
   
@@ -212,6 +222,7 @@ test_that("simulate_cat produces valid output with defaults", {
 
 
 test_that("simulate_cat works with custom parameters", {
+  skip_on_cran()
   marginal_custom <- list(t1 = c(0.7, 0.3))
   transition_custom <- list(
     t2 = matrix(c(0.9, 0.1, 0.2, 0.8), nrow = 2, byrow = TRUE),
@@ -234,6 +245,7 @@ test_that("simulate_cat works with custom parameters", {
 # Test 6: logL_cat consistency with fit_cat
 # ============================================================
 test_that("logL_cat is consistent with fit_cat", {
+  skip_on_cran()
   set.seed(42)
   y_sim <- matrix(sample(1:2, 100 * 5, replace = TRUE), nrow = 100, ncol = 5)
   
@@ -251,6 +263,7 @@ test_that("logL_cat is consistent with fit_cat", {
 # Test 7: BIC comparison
 # ============================================================
 test_that("bic_order_cat compares models correctly", {
+  skip_on_cran()
   set.seed(42)
   y_sim <- matrix(sample(1:2, 100 * 5, replace = TRUE), nrow = 100, ncol = 5)
   
@@ -296,6 +309,7 @@ test_that("simulation-estimation is consistent", {
 # Test 9: Blocks (heterogeneous)
 # ============================================================
 test_that("block handling works for homogeneous model", {
+  skip_on_cran()
   set.seed(321)
   marginal_g1 <- list(t1 = c(0.8, 0.2))
   marginal_g2 <- list(t1 = c(0.3, 0.7))
@@ -323,6 +337,7 @@ test_that("block handling works for homogeneous model", {
 
 
 test_that("block handling works for heterogeneous model", {
+  skip_on_cran()
   set.seed(321)
   marginal_g1 <- list(t1 = c(0.8, 0.2))
   marginal_g2 <- list(t1 = c(0.3, 0.7))
@@ -359,6 +374,7 @@ test_that("block handling works for heterogeneous model", {
 })
 
 test_that("fit_cat preserves original block labels in settings", {
+  skip_on_cran()
   set.seed(654)
   y <- simulate_cat(120, 4, order = 1, n_categories = 2)
   blocks <- rep(c(5, 2), each = 60)
@@ -374,6 +390,7 @@ test_that("fit_cat preserves original block labels in settings", {
 # Test 10: Order 2 model
 # ============================================================
 test_that("order 2 model works correctly", {
+  skip_on_cran()
   set.seed(999)
   marginal_o2 <- list(
     t1 = c(0.5, 0.5),

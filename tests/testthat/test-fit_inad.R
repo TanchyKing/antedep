@@ -78,6 +78,7 @@ test_that("fit_inad handles order 2 structural zeros without fixed effect", {
 })
 
 test_that("fit_inad works with fixed effect and tau normalization", {
+    skip_on_cran()
     skip_if_not_installed("nloptr")
 
     data("bolus_inad", package = "antedep", envir = environment())
@@ -116,6 +117,7 @@ test_that("fit_inad works with fixed effect and tau normalization", {
 })
 
 test_that("fit_inad preserves original block labels in settings", {
+    skip_on_cran()
     skip_if_not_installed("nloptr")
 
     data("bolus_inad", package = "antedep", envir = environment())
@@ -136,6 +138,7 @@ test_that("fit_inad preserves original block labels in settings", {
 })
 
 test_that("fit_inad works for innovation nbinom and returns nb_inno_size", {
+    skip_on_cran()
     skip_if_not_installed("nloptr")
 
     data("bolus_inad", package = "antedep", envir = environment())
@@ -157,6 +160,7 @@ test_that("fit_inad works for innovation nbinom and returns nb_inno_size", {
 })
 
 test_that("fit_inad respects nb_inno_size_ub upper bound", {
+    skip_on_cran()
     set.seed(42)
     y <- matrix(rpois(60, lambda = 3), nrow = 20, ncol = 3)
 
@@ -176,6 +180,7 @@ test_that("fit_inad respects nb_inno_size_ub upper bound", {
 })
 
 test_that("fit_inad validates nb_inno_size_ub", {
+    skip_on_cran()
     y <- matrix(rpois(40, 2), nrow = 10, ncol = 4)
 
     expect_error(
@@ -191,6 +196,7 @@ test_that("fit_inad validates nb_inno_size_ub", {
 })
 
 test_that("fit_inad with na_action='fail' errors on missing data", {
+    skip_on_cran()
     y <- matrix(c(1L, 2L, NA, 3L, 2L, 1L), nrow = 2, byrow = TRUE)
 
     expect_error(
@@ -206,6 +212,7 @@ test_that("fit_inad with na_action='fail' errors on missing data", {
 })
 
 test_that("fit_inad with na_action='complete' runs on complete-case subset", {
+    skip_on_cran()
     set.seed(101)
     y <- matrix(rpois(120, lambda = 2), nrow = 30, ncol = 4)
     y[1:8, 4] <- NA

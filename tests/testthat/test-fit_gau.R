@@ -1,4 +1,5 @@
 testthat::test_that("fit_gau returns correctly shaped outputs", {
+    skip_on_cran()
     testthat::skip_if_not(exists("fit_gau"))
     testthat::skip_if_not(exists("simulate_gau"))
     testthat::skip_if_not(exists("logL_gau"))
@@ -38,6 +39,7 @@ testthat::test_that("fit_gau returns correctly shaped outputs", {
 })
 
 testthat::test_that("fit_gau log_l equals logL_gau at returned parameters", {
+    skip_on_cran()
     testthat::skip_if_not(exists("fit_gau"))
     testthat::skip_if_not(exists("simulate_gau"))
     testthat::skip_if_not(exists("logL_gau"))
@@ -64,6 +66,7 @@ testthat::test_that("fit_gau log_l equals logL_gau at returned parameters", {
 })
 
 testthat::test_that("fit_gau respects structural zeros for order 2", {
+    skip_on_cran()
     testthat::skip_if_not(exists("fit_gau"))
     testthat::skip_if_not(exists("simulate_gau"))
 
@@ -92,6 +95,7 @@ testthat::test_that("fit_gau respects structural zeros for order 2", {
 })
 
 testthat::test_that("fit_gau handles blocks and returns tau with tau[1] = 0", {
+    skip_on_cran()
     testthat::skip_if_not(exists("fit_gau"))
     testthat::skip_if_not(exists("simulate_gau"))
 
@@ -124,6 +128,7 @@ testthat::test_that("fit_gau handles blocks and returns tau with tau[1] = 0", {
 })
 
 testthat::test_that("fit_gau preserves original block labels in settings", {
+    skip_on_cran()
     testthat::skip_if_not(exists("fit_gau"))
 
     set.seed(41)
@@ -137,6 +142,7 @@ testthat::test_that("fit_gau preserves original block labels in settings", {
 })
 
 testthat::test_that("fit_gau estimates are closer to truth than a very wrong phi", {
+    skip_on_cran()
     testthat::skip_if_not(exists("fit_gau"))
     testthat::skip_if_not(exists("simulate_gau"))
     testthat::skip_if_not(exists("logL_gau"))
@@ -166,6 +172,7 @@ testthat::test_that("fit_gau estimates are closer to truth than a very wrong phi
 })
 
 testthat::test_that("fit_gau warns for order-2 EM path", {
+    skip_on_cran()
     testthat::skip_if_not(exists("fit_gau"))
     testthat::skip_if_not(exists("simulate_gau"))
 

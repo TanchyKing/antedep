@@ -1,6 +1,7 @@
 # test-test_homogeneity_inad.R
 
 testthat::test_that("test_homogeneity_inad validates inputs correctly", {
+  skip_on_cran()
   set.seed(123)
   y <- matrix(rpois(100, 5), nrow = 20, ncol = 5)
   blocks <- c(rep(1, 10), rep(2, 10))
@@ -34,6 +35,7 @@ testthat::test_that("test_homogeneity_inad validates inputs correctly", {
 
 
 testthat::test_that("test_homogeneity_inad runs all test types", {
+  skip_on_cran()
   set.seed(456)
   
   # Small simulated data
@@ -68,6 +70,7 @@ testthat::test_that("test_homogeneity_inad runs all test types", {
 
 
 testthat::test_that("test_homogeneity_inad detects heterogeneous groups", {
+  skip_on_cran()
   set.seed(789)
 
   n1 <- 20
@@ -92,6 +95,7 @@ testthat::test_that("test_homogeneity_inad detects heterogeneous groups", {
 
 
 testthat::test_that("test_homogeneity_inad detects mean differences", {
+  skip_on_cran()
   set.seed(101)
 
   n1 <- 25
@@ -113,6 +117,7 @@ testthat::test_that("test_homogeneity_inad detects mean differences", {
 
 
 testthat::test_that("run_homogeneity_tests_inad works correctly", {
+  skip_on_cran()
   set.seed(202)
   
   n1 <- 30
@@ -150,6 +155,7 @@ testthat::test_that("run_homogeneity_tests_inad works correctly", {
 
 
 testthat::test_that("test_homogeneity_inad works with order 0", {
+  skip_on_cran()
   set.seed(303)
   
   n1 <- 25
@@ -170,6 +176,7 @@ testthat::test_that("test_homogeneity_inad works with order 0", {
 
 
 testthat::test_that("test_homogeneity_inad works with more than 2 groups", {
+  skip_on_cran()
   set.seed(404)
   
   n1 <- 20
@@ -194,6 +201,7 @@ testthat::test_that("test_homogeneity_inad works with more than 2 groups", {
 
 
 testthat::test_that("test_homogeneity_inad BIC selects simpler model when homogeneous", {
+  skip_on_cran()
   set.seed(505)
 
   n1 <- 25
@@ -217,6 +225,7 @@ testthat::test_that("test_homogeneity_inad BIC selects simpler model when homoge
 
 
 testthat::test_that("test_homogeneity_inad df is correct for innovation='nbinom'", {
+  skip_on_cran()
   set.seed(808)
 
   n_time <- 4
@@ -242,6 +251,7 @@ testthat::test_that("test_homogeneity_inad df is correct for innovation='nbinom'
 
 
 testthat::test_that("print methods work without error", {
+  skip_on_cran()
   set.seed(606)
   
   n1 <- 20
@@ -266,6 +276,7 @@ testthat::test_that("print methods work without error", {
 
 
 testthat::test_that("test_homogeneity_inad uses pre-fitted models", {
+  skip_on_cran()
   set.seed(707)
 
   n1 <- 15

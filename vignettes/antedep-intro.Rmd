@@ -160,7 +160,7 @@ test_homogeneity_inad(y_inad_miss, blocks = blocks_inad, order = 1, test = "mean
 ### Complete-data CAT fit and inference
 
 ```{r}
-y_cat <- simulate_cat(n_subjects = 50, n_time = 4, order = 1, n_categories = 3)
+y_cat <- simulate_cat(n_subjects = 20, n_time = 4, order = 1, n_categories = 3)
 fit_cat1 <- fit_cat(y_cat, order = 1)
 fit_cat1$log_l
 

@@ -4,7 +4,15 @@
 \alias{test_order_gau}
 \title{Likelihood ratio test for antedependence order (Gaussian AD data)}
 \usage{
-test_order_gau(y, p = 0L, q = 1L, mu = NULL, use_modified = TRUE)
+test_order_gau(
+  y,
+  p = 0L,
+  q = 1L,
+  mu = NULL,
+  use_modified = TRUE,
+  order_null = NULL,
+  order_alt = NULL
+)
 }
 \arguments{
 \item{y}{Numeric matrix with n_subjects rows and n_time columns.}
@@ -18,6 +26,11 @@ antedependence order parameter named \code{order} in \code{\link{fit_gau}}.}
 
 \item{use_modified}{Logical. If TRUE (default), use the modified test statistic
 (formula 6.9) which has better small-sample properties.}
+
+\item{order_null}{Optional alias for \code{p} (null order).}
+
+\item{order_alt}{Optional absolute order under the alternative. When supplied,
+\code{q} is computed as \code{order_alt - p}.}
 }
 \value{
 A list with class \code{gau_order_test} containing:

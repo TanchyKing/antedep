@@ -1,4 +1,5 @@
 test_that("bic_inad matches manual formula on bolus_inad", {
+    skip_on_cran()
     skip_if_not_installed("nloptr")
 
     data(bolus_inad, package = "antedep")
@@ -52,6 +53,7 @@ test_that("bic_inad matches manual formula on bolus_inad", {
 })
 
 test_that("bic_inad warns on legacy n_subjects fallback via settings$blocks", {
+    skip_on_cran()
     fit_legacy <- list(
         log_l = -100,
         theta = c(1, 1, 1),

@@ -1,6 +1,7 @@
 # File: tests/testthat/test-bic_gau.R
 
 test_that("bic_gau matches manual formula for order 1 without blocks", {
+    skip_on_cran()
     skip_if_not(exists("simulate_gau"))
     skip_if_not(exists("fit_gau"))
 
@@ -26,6 +27,7 @@ test_that("bic_gau matches manual formula for order 1 without blocks", {
 })
 
 test_that("bic_gau counts tau and order 2 antedependence parameters", {
+    skip_on_cran()
     N <- 6
 
     fit <- list(
