@@ -55,7 +55,10 @@ per time point, holding other parameters fixed at their fitted values.
 }
 \examples{
 \donttest{
-fit <- fit_inad(y, order = 1, thinning = "nbinom", innovation = "bell", blocks = blocks)
+data("bolus_inad", package = "antedep")
+y <- bolus_inad$y
+blocks <- bolus_inad$blocks
+fit <- fit_inad(y, order = 1, thinning = "binom", innovation = "bell", blocks = blocks)
 ci <- ci_inad(y, fit, blocks = blocks)
 ci$alpha
 ci$theta
