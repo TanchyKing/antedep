@@ -50,7 +50,7 @@ Common examples include:
 }
 }
 \examples{
-\dontrun{
+\donttest{
 y <- simulate_gau(n_subjects = 50, n_time = 5, order = 1)
 
 # Test if mean is constant (all differences = 0)

@@ -43,7 +43,7 @@ corresponds roughly to a 95\% confidence bound under normality. This is a
 rough screening tool, not a formal hypothesis test.
 }
 \examples{
-\dontrun{
+\donttest{
 data("bolus_inad")
 pc <- partial_corr(bolus_inad$y, test = TRUE)
 

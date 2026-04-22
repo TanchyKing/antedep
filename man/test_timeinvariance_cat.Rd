@@ -62,7 +62,7 @@ missing values, use model-fitting functions (for example \code{fit_cat})
 directly with missing-data handling instead of this test wrapper.
 }
 \examples{
-\dontrun{
+\donttest{
 # Simulate data with time-invariant transitions
 set.seed(123)
 y <- simulate_cat(200, 6, order = 1, n_categories = 2)

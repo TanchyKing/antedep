@@ -53,7 +53,7 @@
 #' @importFrom stats setNames
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Simulate data from two groups with same covariance
 #' n1 <- 30
 #' n2 <- 35
@@ -302,7 +302,7 @@ test_homogeneity_gau <- function(y, blocks, p = 1L, use_modified = TRUE) {
 #'
 #' @param x Object of class \code{gau_homogeneity_test}.
 #' @param ... Unused.
-#'
+#' @return Invisibly returns \code{x}.
 #' @export
 print.gau_homogeneity_test <- function(x, ...) {
     cat("Test for Homogeneity of AD(", x$order, ") Covariance Across Groups\n", sep = "")

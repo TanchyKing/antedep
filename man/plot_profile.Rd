@@ -72,7 +72,7 @@ When \code{blocks} is provided, the plot is faceted by block membership,
 allowing comparison of trajectories across treatment groups or other strata.
 }
 \examples{
-\dontrun{
+\donttest{
 data("bolus_inad")
 
 # Basic profile plot

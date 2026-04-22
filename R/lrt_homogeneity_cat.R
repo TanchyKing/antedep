@@ -45,7 +45,7 @@
 #' population.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Simulate data with different transition probabilities for two groups
 #' set.seed(123)
 #' marg1 <- list(t1 = c(0.7, 0.3))
@@ -285,7 +285,7 @@ test_homogeneity_cat <- function(y = NULL, blocks = NULL, order = 1,
 #' directly with missing-data handling instead of this test wrapper.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Simulate data with time-invariant transitions
 #' set.seed(123)
 #' y <- simulate_cat(200, 6, order = 1, n_categories = 2)

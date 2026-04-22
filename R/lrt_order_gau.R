@@ -55,7 +55,7 @@
 #' @seealso \code{\link{test_one_sample_gau}}, \code{\link{test_homogeneity_gau}}
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Simulate AD(1) data
 #' y <- simulate_gau(n_subjects = 50, n_time = 6, order = 1, phi = 0.5)
 #'
@@ -218,7 +218,7 @@ test_order_gau <- function(y, p = 0L, q = 1L, mu = NULL, use_modified = TRUE,
 #'   \code{\link{fit_gau}}
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' set.seed(1)
 #' y <- simulate_gau(n_subjects = 80, n_time = 6, order = 1, phi = 0.4)
 #' ord <- bic_order_gau(y, max_order = 2)
@@ -272,7 +272,7 @@ bic_order_gau <- function(y, max_order = 2L, ...) {
 #'
 #' @param x Object of class \code{gau_order_test}.
 #' @param ... Unused.
-#'
+#' @return Invisibly returns \code{x}.
 #' @export
 print.gau_order_test <- function(x, ...) {
     cat("Order Test for Antedependence\n")
@@ -302,7 +302,7 @@ print.gau_order_test <- function(x, ...) {
 #'
 #' @param x Object of class \code{gau_bic_order}.
 #' @param ... Unused.
-#'
+#' @return Invisibly returns \code{x}.
 #' @export
 print.gau_bic_order <- function(x, ...) {
     cat("BIC-based Order Selection for Gaussian AD\n")

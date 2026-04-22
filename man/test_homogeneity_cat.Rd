@@ -66,7 +66,7 @@ where G is the number of groups and k is the number of free parameters per
 population.
 }
 \examples{
-\dontrun{
+\donttest{
 # Simulate data with different transition probabilities for two groups
 set.seed(123)
 marg1 <- list(t1 = c(0.7, 0.3))

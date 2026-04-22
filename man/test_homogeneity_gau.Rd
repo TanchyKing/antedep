@@ -51,7 +51,7 @@ This test is useful for determining whether a common covariance structure
 can be assumed across treatment groups before performing mean comparisons.
 }
 \examples{
-\dontrun{
+\donttest{
 # Simulate data from two groups with same covariance
 n1 <- 30
 n2 <- 35

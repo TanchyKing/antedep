@@ -66,7 +66,7 @@ The modified test (formula 6.9) adjusts for small-sample bias using Kenward's
 (1987) correction.
 }
 \examples{
-\dontrun{
+\donttest{
 # Simulate AD(1) data
 y <- simulate_gau(n_subjects = 50, n_time = 6, order = 1, phi = 0.5)
 

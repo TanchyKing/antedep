@@ -35,7 +35,7 @@ Standard errors are based on large-sample approximations:
 }
 }
 \examples{
-\dontrun{
+\donttest{
 y <- simulate_gau(n_subjects = 80, n_time = 6, order = 1, phi = 0.4)
 fit <- fit_gau(y, order = 1)
 ci <- ci_gau(fit)

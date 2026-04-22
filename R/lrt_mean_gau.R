@@ -48,7 +48,7 @@
 #' @seealso \code{\link{test_two_sample_gau}}, \code{\link{test_order_gau}}
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Simulate data with known mean
 #' mu_true <- c(10, 11, 12, 13, 14, 15)
 #' y <- simulate_gau(n_subjects = 50, n_time = 6, order = 1, mu = mu_true)
@@ -201,7 +201,7 @@ test_one_sample_gau <- function(y, mu0, p = 1L, order = NULL, use_modified = TRU
 #' Longitudinal Data. Chapman & Hall/CRC. Chapter 7.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Simulate data from two groups with different means
 #' n1 <- 30
 #' n2 <- 35
@@ -381,7 +381,7 @@ test_two_sample_gau <- function(y, blocks, p = 1L, order = NULL, use_modified = 
 #' Longitudinal Data. Chapman & Hall/CRC. Chapter 7.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' y <- simulate_gau(n_subjects = 50, n_time = 5, order = 1)
 #'
 #' # Test if mean is constant (all differences = 0)
@@ -529,7 +529,7 @@ test_contrast_gau <- function(y, C, c = NULL, p = 1L) {
 #'
 #' @param x Object of class \code{gau_mean_test}.
 #' @param ... Unused.
-#'
+#' @return Invisibly returns \code{x}.
 #' @export
 print.gau_mean_test <- function(x, ...) {
     if (x$test_type == "one-sample") {
@@ -566,7 +566,7 @@ print.gau_mean_test <- function(x, ...) {
 #'
 #' @param x Object of class \code{gau_contrast_test}.
 #' @param ... Unused.
-#'
+#' @return Invisibly returns \code{x}.
 #' @export
 print.gau_contrast_test <- function(x, ...) {
     cat("Wald Test for Linear Contrasts Under AD(", x$order, ")\n", sep = "")

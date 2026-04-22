@@ -80,7 +80,7 @@ function defaults to \code{na_action = "marginalize"} for fitting.
 Score- and Wald-based variants currently require complete data.
 }
 \examples{
-\dontrun{
+\donttest{
 # Simulate AD(1) data
 set.seed(123)
 y <- simulate_cat(200, 6, order = 1, n_categories = 2)

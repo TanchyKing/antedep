@@ -72,7 +72,7 @@
 #'   \code{\link{test_stationarity_inad}}
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' data("bolus_inad")
 #' y <- bolus_inad$y
 #' blocks <- bolus_inad$blocks
@@ -408,7 +408,7 @@ test_homogeneity_inad <- function(y, blocks, order = 1,
 #'   for all three tests and a summary table.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' data("bolus_inad")
 #' tests <- run_homogeneity_tests_inad(bolus_inad$y, bolus_inad$blocks,
 #'                                      order = 1, thinning = "nbinom",
@@ -555,7 +555,7 @@ run_homogeneity_tests_inad <- function(y, blocks, order = 1,
 #' @param x Object of class \code{test_homogeneity_inad}
 #' @param digits Number of digits for printing
 #' @param ... Unused
-#'
+#' @return Invisibly returns \code{x}.
 #' @export
 print.test_homogeneity_inad <- function(x, digits = 4, ...) {
   stat <- if (!is.null(x$statistic)) x$statistic else x$lrt_stat
@@ -591,7 +591,7 @@ print.test_homogeneity_inad <- function(x, digits = 4, ...) {
 #' @param x Object of class \code{homogeneity_tests_inad}
 #' @param digits Number of digits for printing
 #' @param ... Unused
-#'
+#' @return Invisibly returns \code{x}.
 #' @export
 print.homogeneity_tests_inad <- function(x, digits = 4, ...) {
   cat("\nHomogeneity Tests for INAD Models\n")

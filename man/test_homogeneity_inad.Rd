@@ -90,7 +90,7 @@ Degrees of freedom are computed as the difference in free parameters between
 the null and alternative models.
 }
 \examples{
-\dontrun{
+\donttest{
 data("bolus_inad")
 y <- bolus_inad$y
 blocks <- bolus_inad$blocks

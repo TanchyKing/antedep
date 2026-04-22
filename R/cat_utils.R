@@ -426,7 +426,7 @@
 #'
 #' @param x A cat_fit object
 #' @param ... Additional arguments (ignored)
-#'
+#' @return Invisibly returns \code{x}.
 #' @export
 print.cat_fit <- function(x, ...) {
   cat("Categorical Antedependence Model Fit\n")

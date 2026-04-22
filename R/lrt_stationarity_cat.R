@@ -52,7 +52,7 @@
 #' the stationary model.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Simulate stationary AD(1) data
 #' set.seed(123)
 #' y <- simulate_cat(200, 6, order = 1, n_categories = 2)
@@ -458,7 +458,7 @@ test_stationarity_cat <- function(y, order = 1, blocks = NULL,
 #' }
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' y <- simulate_cat(200, 6, order = 1, n_categories = 2)
 #' result <- run_stationarity_tests_cat(y, order = 1)
 #' print(result$table)

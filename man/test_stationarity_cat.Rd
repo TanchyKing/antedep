@@ -71,7 +71,7 @@ where \eqn{H_1} is the unconstrained non-stationary model and \eqn{H_0} is
 the stationary model.
 }
 \examples{
-\dontrun{
+\donttest{
 # Simulate stationary AD(1) data
 set.seed(123)
 y <- simulate_cat(200, 6, order = 1, n_categories = 2)

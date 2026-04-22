@@ -48,7 +48,7 @@ Missing-data fits with \code{na_action = "marginalize"} are not currently
 supported because observed cell counts are not stored for that path.
 }
 \examples{
-\dontrun{
+\donttest{
 # Fit a model
 set.seed(123)
 y <- simulate_cat(200, 5, order = 1, n_categories = 2)

@@ -100,7 +100,7 @@ aic_cat <- function(fit) {
 #'   \item{fits}{List of fitted models}
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' y <- simulate_cat(100, 5, order = 1, n_categories = 2)
 #' result <- bic_order_cat(y, max_order = 2)
 #' print(result$table)

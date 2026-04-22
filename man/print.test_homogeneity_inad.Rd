@@ -13,6 +13,9 @@
 
 \item{...}{Unused}
 }
+\value{
+Invisibly returns \code{x}.
+}
 \description{
 Print method for test_homogeneity_inad
 }

@@ -52,7 +52,7 @@ Y_i - mu_i on its p predecessors Y_(i-1) - mu_(i-1), ..., Y_(i-p) - mu_(i-p).
 The test has n degrees of freedom (one for each component of mu).
 }
 \examples{
-\dontrun{
+\donttest{
 # Simulate data with known mean
 mu_true <- c(10, 11, 12, 13, 14, 15)
 y <- simulate_gau(n_subjects = 50, n_time = 6, order = 1, mu = mu_true)

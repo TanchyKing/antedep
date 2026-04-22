@@ -56,7 +56,7 @@ should show association
 }
 }
 \examples{
-\dontrun{
+\donttest{
 data("bolus_inad")
 plot_prism(bolus_inad$y)
 

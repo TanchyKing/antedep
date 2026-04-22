@@ -63,7 +63,7 @@
 #' explicitly; use \code{na_action = "marginalize"}.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Simulate binary AD(1) data
 #' set.seed(123)
 #' y <- simulate_cat(n_subjects = 100, n_time = 5, order = 1, n_categories = 2)

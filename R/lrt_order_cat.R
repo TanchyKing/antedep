@@ -73,7 +73,7 @@
 #' Score- and Wald-based variants currently require complete data.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Simulate AD(1) data
 #' set.seed(123)
 #' y <- simulate_cat(200, 6, order = 1, n_categories = 2)
@@ -266,7 +266,7 @@ test_order_cat <- function(y = NULL, order_null = 0, order_alt = 1,
 #'
 #' @param x A cat_lrt object
 #' @param ... Additional arguments (ignored)
-#'
+#' @return Invisibly returns \code{x}.
 #' @export
 print.cat_lrt <- function(x, ...) {
   test_name <- x$test
@@ -329,7 +329,7 @@ print.cat_lrt <- function(x, ...) {
 #' order is the highest order where the test was significant (at alpha = 0.05).
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' y <- simulate_cat(200, 6, order = 1, n_categories = 2)
 #' result <- run_order_tests_cat(y, max_order = 2)
 #' print(result$table)

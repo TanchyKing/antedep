@@ -38,7 +38,7 @@
 #' supported because observed cell counts are not stored for that path.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Fit a model
 #' set.seed(123)
 #' y <- simulate_cat(200, 5, order = 1, n_categories = 2)
@@ -361,7 +361,7 @@ ci_cat <- function(fit, y = NULL, level = 0.95, parameters = "all") {
 #'
 #' @param x A cat_ci object
 #' @param ... Additional arguments (ignored)
-#'
+#' @return Invisibly returns \code{x}.
 #' @export
 print.cat_ci <- function(x, ...) {
   cat("Confidence Intervals for Categorical AD Model\n")

@@ -53,7 +53,7 @@ if (getRversion() >= "2.15.1") {
 #' rough screening tool, not a formal hypothesis test.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' data("bolus_inad")
 #' pc <- partial_corr(bolus_inad$y, test = TRUE)
 #'
@@ -260,7 +260,7 @@ print.partial_corr <- function(x, ...) {
 #' }
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' data("bolus_inad")
 #' plot_prism(bolus_inad$y)
 #'
@@ -400,7 +400,7 @@ plot_prism <- function(y,
 #' allowing comparison of trajectories across treatment groups or other strata.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' data("bolus_inad")
 #'
 #' # Basic profile plot

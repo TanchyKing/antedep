@@ -700,23 +700,6 @@
   as.integer(fit_blocks)
 }
 
-.cat_seeded_eval <- function(seed, expr) {
-  had_seed <- exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE)
-  if (had_seed) {
-    old_seed <- get(".Random.seed", envir = .GlobalEnv, inherits = FALSE)
-  }
-  on.exit({
-    if (had_seed) {
-      assign(".Random.seed", old_seed, envir = .GlobalEnv)
-    } else if (exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE)) {
-      rm(".Random.seed", envir = .GlobalEnv)
-    }
-  }, add = TRUE)
-
-  set.seed(as.integer(seed))
-  force(expr)
-}
-
 .cat_default_mlrt_nsim <- function() {
   nsim <- getOption("antedep.cat_mlrt_nsim", 120L)
   nsim <- as.integer(nsim)[1L]
@@ -726,26 +709,16 @@
   nsim
 }
 
-.cat_default_mlrt_seed <- function() {
-  seed <- getOption("antedep.cat_mlrt_seed", 24681357L)
-  seed <- as.integer(seed)[1L]
-  if (!is.finite(seed)) {
-    seed <- 24681357L
-  }
-  seed
-}
-
 .cat_mlrt_expected_lrt_boot <- function(simulate_fn, lrt_raw_fn,
-                                        nsim = .cat_default_mlrt_nsim(),
-                                        seed = .cat_default_mlrt_seed()) {
-  vals <- .cat_seeded_eval(seed, {
+                                        nsim = .cat_default_mlrt_nsim()) {
+  vals <- {
     out <- numeric(nsim)
     for (b in seq_len(nsim)) {
       y_b <- simulate_fn()
       out[b] <- lrt_raw_fn(y_b)
     }
     out
-  })
+  }
 
   keep <- is.finite(vals) & vals >= 0
   if (!any(keep)) {

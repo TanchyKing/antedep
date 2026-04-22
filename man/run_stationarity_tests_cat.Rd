@@ -46,7 +46,7 @@ transitions.
 Currently supports complete data only.
 }
 \examples{
-\dontrun{
+\donttest{
 y <- simulate_cat(200, 6, order = 1, n_categories = 2)
 result <- run_stationarity_tests_cat(y, order = 1)
 print(result$table)

@@ -35,7 +35,7 @@ Convenience function to run all three homogeneity tests at once and
 return a summary.
 }
 \examples{
-\dontrun{
+\donttest{
 data("bolus_inad")
 tests <- run_homogeneity_tests_inad(bolus_inad$y, bolus_inad$blocks,
                                      order = 1, thinning = "nbinom",

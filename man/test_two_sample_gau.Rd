@@ -53,7 +53,7 @@ where RSS_i(mu) uses a common mean and RSS_i(mu_1, mu_2) uses group-specific
 means.
 }
 \examples{
-\dontrun{
+\donttest{
 # Simulate data from two groups with different means
 n1 <- 30
 n2 <- 35

@@ -54,7 +54,7 @@ parameter are computed using a one dimensional observed information approximatio
 per time point, holding other parameters fixed at their fitted values.
 }
 \examples{
-\dontrun{
+\donttest{
 fit <- fit_inad(y, order = 1, thinning = "nbinom", innovation = "bell", blocks = blocks)
 ci <- ci_inad(y, fit, blocks = blocks)
 ci$alpha
