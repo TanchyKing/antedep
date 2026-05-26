@@ -1,0 +1,35 @@
+<style>
+/* Custom layout overrides for inad-validation-summary.html. Loaded via
+   pandoc -H so these rules follow (and therefore override) the default
+   pandoc HTML5 template styles. */
+
+body {
+  max-width: 60em;
+}
+
+@media (max-width: 600px) {
+  body {
+    padding: 12px;
+  }
+}
+
+/* Wide multi-column tables overflow horizontally within their container
+   instead of forcing the body to be enormous. Smaller table font keeps
+   per-row vertical density reasonable. */
+table {
+  font-size: 0.85em;
+  display: block;
+  overflow-x: auto;
+  max-width: 100%;
+}
+
+th, td {
+  padding: 0.25em 0.6em;
+  white-space: nowrap;
+}
+
+/* Tighten code spans inside table cells so column widths stay compact */
+td code, th code {
+  font-size: 0.95em;
+}
+</style>

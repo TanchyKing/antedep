@@ -2,7 +2,7 @@
 % Please edit documentation in R/lrt_order_gau.R
 \name{bic_order_gau}
 \alias{bic_order_gau}
-\title{BIC-based order selection for Gaussian AD models}
+\title{BIC-Based Order Selection for Gaussian AD Models}
 \usage{
 bic_order_gau(y, max_order = 2L, ...)
 }
@@ -31,7 +31,7 @@ set.seed(1)
 y <- simulate_gau(n_subjects = 80, n_time = 6, order = 1, phi = 0.4)
 ord <- bic_order_gau(y, max_order = 2)
 ord$best_order
-ord$table
+print(ord)
 }
 
 }

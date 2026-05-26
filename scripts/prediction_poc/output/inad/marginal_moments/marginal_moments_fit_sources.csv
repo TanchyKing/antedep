@@ -1,0 +1,8 @@
+"model","fit_source","note"
+"INAD unconstrained","local antedep fit",NA
+"INAD constrained alpha","local antedep constrained-alpha fit","nb_inno_size inherited by the POC constrained fit"
+"NB GLM marginal","local MASS::glm.nb","y ~ group + factor(time)"
+"NB GLMM marginal","local glmmTMB","random intercept; no lag"
+"tscount tsglm MC","local tscount","panel-recursive MC from pooled tsglm fit"
+"CGFM independent frailty","published Henderson-Shimakura Table 4","independent frailty marginal moments"
+"CGFM shared frailty","published Henderson-Shimakura Table 4","shared frailty marginal moments"

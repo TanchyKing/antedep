@@ -1,3 +1,45 @@
+# antedep 0.3.0
+
+## New features
+- Fit objects now inherit from a shared `ad_fit` parent class while retaining
+  their family-specific classes (`gau_fit`, `cat_fit`, and `inad_fit`).
+- Added `fit_ad()` as a unified fitting entry point for Gaussian, categorical,
+  and INAD workflows.
+- Added `anova()` methods for likelihood-ratio comparison of nested
+  antedependence fits.
+
+## Improvements
+- `ci_inad()` now reports block-effect `tau` standard errors from the same
+  profile-likelihood interval width used for the existing `tau` confidence
+  intervals, keeping tau SE and CI columns aligned in downstream tables.
+- `coef()` now returns a named numeric vector by default for standard R
+  compatibility; use `type = "list"` for the previous structured inspection
+  format.
+- `confint()` now returns a standard two-column matrix for all fit families;
+  the structured `ci_gau()`, `ci_cat()`, and `ci_inad()` helpers remain
+  available.
+- Added broader `vcov()` support using confidence-interval standard errors
+  where available, improving compatibility with tools such as
+  `lmtest::coeftest()`.
+- The family-specific `aic_*()` and `bic_*()` helpers are retained as thin
+  compatibility wrappers for existing code, but examples and new documentation
+  prefer the standard `AIC()` and `BIC()` generics.
+
+# antedep 0.2.0
+
+## New features
+- New S3 methods `deviance()`, `confint()`, and `vcov()` for `gau_fit`,
+  `cat_fit`, and `inad_fit` objects, improving compatibility with standard
+  R model-fitting workflows.
+- New `summary.partial_corr()` method prints a lag-by-lag table of
+  intervenor-adjusted partial correlations (mean absolute value, range, and
+  number of significant pairs at each lag).
+
+## Improvements
+- Matrix inversion in `ci_inad()`, `fit_gau_em()`, and `cat_test_stats.R`
+  now uses `chol2inv(chol(.))` instead of `solve()` for symmetric
+  positive-definite matrices, improving numerical stability and efficiency.
+
 # antedep 0.1.0
 
 ## New features

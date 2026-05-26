@@ -1,6 +1,6 @@
 Package: antedep
 Title: Antedependence Models for Longitudinal Data
-Version: 0.1.0
+Version: 0.3.0
 Authors@R: c(
     person("Chenyang", "Li", email = "chenyang-li@uiowa.edu", 
            role = c("aut", "cre")),
@@ -34,6 +34,7 @@ Imports:
     MASS
 Suggests: 
     knitr,
+    lmtest,
     rmarkdown,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3

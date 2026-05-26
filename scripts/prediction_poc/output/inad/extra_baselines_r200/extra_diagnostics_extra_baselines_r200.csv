@@ -1,0 +1,401 @@
+"rep","baseline","ok","message","family","size","note"
+1,"nb_glmm",TRUE,NA,"nbinom",3.81922022530972,NA
+1,"tscount_tsglm",TRUE,NA,"nbinom",2.92435701933342,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+2,"nb_glmm",TRUE,NA,"nbinom",4.17330524745746,NA
+2,"tscount_tsglm",TRUE,NA,"nbinom",3.33495653064789,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+3,"nb_glmm",TRUE,NA,"nbinom",4.43604171828471,NA
+3,"tscount_tsglm",TRUE,NA,"nbinom",3.57456157245809,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+4,"nb_glmm",TRUE,NA,"nbinom",3.33015563291516,NA
+4,"tscount_tsglm",TRUE,NA,"nbinom",2.79908018254857,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+5,"nb_glmm",TRUE,NA,"nbinom",3.41274660802166,NA
+5,"tscount_tsglm",TRUE,NA,"nbinom",2.87138236185965,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+6,"nb_glmm",TRUE,NA,"nbinom",4.00826908354923,NA
+6,"tscount_tsglm",TRUE,NA,"nbinom",3.41638845371777,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+7,"nb_glmm",TRUE,NA,"nbinom",3.39465453540328,NA
+7,"tscount_tsglm",TRUE,NA,"nbinom",2.59553349100178,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+8,"nb_glmm",TRUE,NA,"nbinom",3.43938064146476,NA
+8,"tscount_tsglm",TRUE,NA,"nbinom",2.77231662891173,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+9,"nb_glmm",TRUE,NA,"nbinom",3.91670568855708,NA
+9,"tscount_tsglm",TRUE,NA,"nbinom",2.94371093362937,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+10,"nb_glmm",TRUE,NA,"nbinom",3.85340751448546,NA
+10,"tscount_tsglm",TRUE,NA,"nbinom",3.77324724935699,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+11,"nb_glmm",TRUE,NA,"nbinom",3.3688326216334,NA
+11,"tscount_tsglm",TRUE,NA,"nbinom",2.23550987224038,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+12,"nb_glmm",TRUE,NA,"nbinom",3.94236494152408,NA
+12,"tscount_tsglm",TRUE,NA,"nbinom",2.89118195434457,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+13,"nb_glmm",TRUE,NA,"nbinom",3.59523259311842,NA
+13,"tscount_tsglm",TRUE,NA,"nbinom",3.23071960355397,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+14,"nb_glmm",TRUE,NA,"nbinom",4.28120919892769,NA
+14,"tscount_tsglm",TRUE,NA,"nbinom",3.3470280002501,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+15,"nb_glmm",TRUE,NA,"nbinom",3.4556972415854,NA
+15,"tscount_tsglm",TRUE,NA,"nbinom",3.06813128036784,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+16,"nb_glmm",TRUE,NA,"nbinom",3.37665775534231,NA
+16,"tscount_tsglm",TRUE,NA,"nbinom",2.035229094393,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+17,"nb_glmm",TRUE,NA,"nbinom",5.01629973872202,NA
+17,"tscount_tsglm",TRUE,NA,"nbinom",4.28059956133791,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+18,"nb_glmm",TRUE,NA,"nbinom",3.92342035241711,NA
+18,"tscount_tsglm",TRUE,NA,"nbinom",3.32421719585532,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+19,"nb_glmm",TRUE,NA,"nbinom",3.17244717960597,NA
+19,"tscount_tsglm",TRUE,NA,"nbinom",2.67244735417904,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+20,"nb_glmm",TRUE,NA,"nbinom",3.69643509167095,NA
+20,"tscount_tsglm",TRUE,NA,"nbinom",3.49521899036461,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+21,"nb_glmm",TRUE,NA,"nbinom",4.20546767938538,NA
+21,"tscount_tsglm",TRUE,NA,"nbinom",3.5129987062263,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+22,"nb_glmm",TRUE,NA,"nbinom",4.06018652348309,NA
+22,"tscount_tsglm",TRUE,NA,"nbinom",3.57779141935404,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+23,"nb_glmm",TRUE,NA,"nbinom",4.11852982194412,NA
+23,"tscount_tsglm",TRUE,NA,"nbinom",3.41730972186443,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+24,"nb_glmm",TRUE,NA,"nbinom",3.48035112234848,NA
+24,"tscount_tsglm",TRUE,NA,"nbinom",2.84339917578378,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+25,"nb_glmm",TRUE,NA,"nbinom",4.21310314412242,NA
+25,"tscount_tsglm",TRUE,NA,"nbinom",3.20600497610611,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+26,"nb_glmm",TRUE,NA,"nbinom",3.53225900827608,NA
+26,"tscount_tsglm",TRUE,NA,"nbinom",2.83196059301002,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+27,"nb_glmm",TRUE,NA,"nbinom",3.33032939913781,NA
+27,"tscount_tsglm",TRUE,NA,"nbinom",2.80258643509998,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+28,"nb_glmm",TRUE,NA,"nbinom",3.81648215695989,NA
+28,"tscount_tsglm",TRUE,NA,"nbinom",3.1426237406154,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+29,"nb_glmm",TRUE,NA,"nbinom",3.78145173068821,NA
+29,"tscount_tsglm",TRUE,NA,"nbinom",3.40969168240517,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+30,"nb_glmm",TRUE,NA,"nbinom",3.69374139033456,NA
+30,"tscount_tsglm",TRUE,NA,"nbinom",2.93636225246453,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+31,"nb_glmm",TRUE,NA,"nbinom",4.07824419115946,NA
+31,"tscount_tsglm",TRUE,NA,"nbinom",3.09849607877462,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+32,"nb_glmm",TRUE,NA,"nbinom",4.03113115672549,NA
+32,"tscount_tsglm",TRUE,NA,"nbinom",3.16096934381215,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+33,"nb_glmm",TRUE,NA,"nbinom",3.7308540952864,NA
+33,"tscount_tsglm",TRUE,NA,"nbinom",3.43659504387477,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+34,"nb_glmm",TRUE,NA,"nbinom",3.04759587525868,NA
+34,"tscount_tsglm",TRUE,NA,"nbinom",2.4250820373987,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+35,"nb_glmm",TRUE,NA,"nbinom",3.89008002805574,NA
+35,"tscount_tsglm",TRUE,NA,"nbinom",3.509537852957,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+36,"nb_glmm",TRUE,NA,"nbinom",3.6065424826117,NA
+36,"tscount_tsglm",TRUE,NA,"nbinom",3.27695484426307,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+37,"nb_glmm",TRUE,NA,"nbinom",3.22938768807846,NA
+37,"tscount_tsglm",TRUE,NA,"nbinom",2.76351085660596,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+38,"nb_glmm",TRUE,NA,"nbinom",4.18299145608202,NA
+38,"tscount_tsglm",TRUE,NA,"nbinom",3.0554714984426,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+39,"nb_glmm",TRUE,NA,"nbinom",4.25961768583232,NA
+39,"tscount_tsglm",TRUE,NA,"nbinom",3.34765330437109,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+40,"nb_glmm",TRUE,NA,"nbinom",3.57644061616192,NA
+40,"tscount_tsglm",TRUE,NA,"nbinom",2.97103531920456,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+41,"nb_glmm",TRUE,NA,"nbinom",3.67328613306408,NA
+41,"tscount_tsglm",TRUE,NA,"nbinom",3.37761766344729,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+42,"nb_glmm",TRUE,NA,"nbinom",3.36132165429534,NA
+42,"tscount_tsglm",TRUE,NA,"nbinom",2.72543318466011,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+43,"nb_glmm",TRUE,NA,"nbinom",3.55092855280953,NA
+43,"tscount_tsglm",TRUE,NA,"nbinom",3.12443310676913,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+44,"nb_glmm",TRUE,NA,"nbinom",3.5762256672681,NA
+44,"tscount_tsglm",TRUE,NA,"nbinom",2.8913363626191,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+45,"nb_glmm",TRUE,NA,"nbinom",4.82445416581105,NA
+45,"tscount_tsglm",TRUE,NA,"nbinom",3.63570072348819,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+46,"nb_glmm",TRUE,NA,"nbinom",3.25359219104007,NA
+46,"tscount_tsglm",TRUE,NA,"nbinom",2.64142045358318,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+47,"nb_glmm",TRUE,NA,"nbinom",4.30318311648283,NA
+47,"tscount_tsglm",TRUE,NA,"nbinom",3.40274913744595,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+48,"nb_glmm",TRUE,NA,"nbinom",3.54095823490809,NA
+48,"tscount_tsglm",TRUE,NA,"nbinom",2.99055362666151,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+49,"nb_glmm",TRUE,NA,"nbinom",3.52725976032937,NA
+49,"tscount_tsglm",TRUE,NA,"nbinom",2.76151954131391,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+50,"nb_glmm",TRUE,NA,"nbinom",3.87259411341422,NA
+50,"tscount_tsglm",TRUE,NA,"nbinom",3.5003821980095,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+51,"nb_glmm",TRUE,NA,"nbinom",3.36370083809888,NA
+51,"tscount_tsglm",TRUE,NA,"nbinom",2.71816876698242,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+52,"nb_glmm",TRUE,NA,"nbinom",3.22544579760031,NA
+52,"tscount_tsglm",TRUE,NA,"nbinom",2.75972862128054,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+53,"nb_glmm",TRUE,NA,"nbinom",3.49102376794465,NA
+53,"tscount_tsglm",TRUE,NA,"nbinom",2.88748691762042,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+54,"nb_glmm",TRUE,NA,"nbinom",3.99623582462869,NA
+54,"tscount_tsglm",TRUE,NA,"nbinom",3.23501024828622,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+55,"nb_glmm",TRUE,NA,"nbinom",4.05392313829197,NA
+55,"tscount_tsglm",TRUE,NA,"nbinom",2.96816940001342,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+56,"nb_glmm",TRUE,NA,"nbinom",3.4117341762387,NA
+56,"tscount_tsglm",TRUE,NA,"nbinom",2.89873395559571,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+57,"nb_glmm",TRUE,NA,"nbinom",4.16160336627124,NA
+57,"tscount_tsglm",TRUE,NA,"nbinom",3.68442190543713,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+58,"nb_glmm",TRUE,NA,"nbinom",3.80639599627284,NA
+58,"tscount_tsglm",TRUE,NA,"nbinom",2.82673048118754,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+59,"nb_glmm",TRUE,NA,"nbinom",4.61354560585114,NA
+59,"tscount_tsglm",TRUE,NA,"nbinom",3.63832656463072,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+60,"nb_glmm",TRUE,NA,"nbinom",3.77370567337096,NA
+60,"tscount_tsglm",TRUE,NA,"nbinom",3.07976077230105,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+61,"nb_glmm",TRUE,NA,"nbinom",3.85208397031951,NA
+61,"tscount_tsglm",TRUE,NA,"nbinom",3.42037189789368,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+62,"nb_glmm",TRUE,NA,"nbinom",3.89869467702341,NA
+62,"tscount_tsglm",TRUE,NA,"nbinom",2.90819231714211,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+63,"nb_glmm",TRUE,NA,"nbinom",3.78239444927264,NA
+63,"tscount_tsglm",TRUE,NA,"nbinom",2.97030966751788,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+64,"nb_glmm",TRUE,NA,"nbinom",3.43954105299478,NA
+64,"tscount_tsglm",TRUE,NA,"nbinom",3.24838986373419,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+65,"nb_glmm",TRUE,NA,"nbinom",3.98175425927363,NA
+65,"tscount_tsglm",TRUE,NA,"nbinom",3.444773936899,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+66,"nb_glmm",TRUE,NA,"nbinom",4.25697657837992,NA
+66,"tscount_tsglm",TRUE,NA,"nbinom",3.37414180293398,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+67,"nb_glmm",TRUE,NA,"nbinom",3.64075861346091,NA
+67,"tscount_tsglm",TRUE,NA,"nbinom",3.06966651580966,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+68,"nb_glmm",TRUE,NA,"nbinom",3.57088454149087,NA
+68,"tscount_tsglm",TRUE,NA,"nbinom",3.41637363283283,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+69,"nb_glmm",TRUE,NA,"nbinom",4.50993530970919,NA
+69,"tscount_tsglm",TRUE,NA,"nbinom",3.94055371257562,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+70,"nb_glmm",TRUE,NA,"nbinom",4.22822299713154,NA
+70,"tscount_tsglm",TRUE,NA,"nbinom",3.49899007141495,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+71,"nb_glmm",TRUE,NA,"nbinom",3.5141677894325,NA
+71,"tscount_tsglm",TRUE,NA,"nbinom",2.82195569745433,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+72,"nb_glmm",TRUE,NA,"nbinom",3.4667480254984,NA
+72,"tscount_tsglm",TRUE,NA,"nbinom",2.90223829568067,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+73,"nb_glmm",TRUE,NA,"nbinom",4.9394863078055,NA
+73,"tscount_tsglm",TRUE,NA,"nbinom",3.91816323259165,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+74,"nb_glmm",TRUE,NA,"nbinom",4.08899697480825,NA
+74,"tscount_tsglm",TRUE,NA,"nbinom",3.33170849685679,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+75,"nb_glmm",TRUE,NA,"nbinom",3.49378997204502,NA
+75,"tscount_tsglm",TRUE,NA,"nbinom",2.69797695688013,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+76,"nb_glmm",TRUE,NA,"nbinom",3.23079846077366,NA
+76,"tscount_tsglm",TRUE,NA,"nbinom",2.65318072419551,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+77,"nb_glmm",TRUE,NA,"nbinom",4.59901291139901,NA
+77,"tscount_tsglm",TRUE,NA,"nbinom",4.09369105291371,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+78,"nb_glmm",TRUE,NA,"nbinom",4.34575925767046,NA
+78,"tscount_tsglm",TRUE,NA,"nbinom",3.49444051806575,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+79,"nb_glmm",TRUE,NA,"nbinom",3.34973341340429,NA
+79,"tscount_tsglm",TRUE,NA,"nbinom",2.9922584760609,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+80,"nb_glmm",TRUE,NA,"nbinom",3.40889371162772,NA
+80,"tscount_tsglm",TRUE,NA,"nbinom",2.85360935140103,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+81,"nb_glmm",TRUE,NA,"nbinom",3.94239547414539,NA
+81,"tscount_tsglm",TRUE,NA,"nbinom",3.53761860354709,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+82,"nb_glmm",TRUE,NA,"nbinom",4.01873495125515,NA
+82,"tscount_tsglm",TRUE,NA,"nbinom",3.28343104202846,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+83,"nb_glmm",TRUE,NA,"nbinom",3.78651416766322,NA
+83,"tscount_tsglm",TRUE,NA,"nbinom",2.64099174207737,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+84,"nb_glmm",TRUE,NA,"nbinom",4.0163429210001,NA
+84,"tscount_tsglm",TRUE,NA,"nbinom",3.4564458528364,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+85,"nb_glmm",TRUE,NA,"nbinom",4.54202050156396,NA
+85,"tscount_tsglm",TRUE,NA,"nbinom",3.837910864759,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+86,"nb_glmm",TRUE,NA,"nbinom",3.44122459195199,NA
+86,"tscount_tsglm",TRUE,NA,"nbinom",2.39800346457393,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+87,"nb_glmm",TRUE,NA,"nbinom",4.00727268502253,NA
+87,"tscount_tsglm",TRUE,NA,"nbinom",3.26014067815067,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+88,"nb_glmm",TRUE,NA,"nbinom",4.00437200539396,NA
+88,"tscount_tsglm",TRUE,NA,"nbinom",3.06807167236161,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+89,"nb_glmm",TRUE,NA,"nbinom",4.01751533050646,NA
+89,"tscount_tsglm",TRUE,NA,"nbinom",3.17793849322189,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+90,"nb_glmm",TRUE,NA,"nbinom",4.38071758547793,NA
+90,"tscount_tsglm",TRUE,NA,"nbinom",3.38437516393452,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+91,"nb_glmm",TRUE,NA,"nbinom",3.60392972703776,NA
+91,"tscount_tsglm",TRUE,NA,"nbinom",2.61857800732782,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+92,"nb_glmm",TRUE,NA,"nbinom",3.56970968269579,NA
+92,"tscount_tsglm",TRUE,NA,"nbinom",2.7414649310224,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+93,"nb_glmm",TRUE,NA,"nbinom",3.87770654279863,NA
+93,"tscount_tsglm",TRUE,NA,"nbinom",2.36058351377325,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+94,"nb_glmm",TRUE,NA,"nbinom",4.08132829866744,NA
+94,"tscount_tsglm",TRUE,NA,"nbinom",3.22382331336068,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+95,"nb_glmm",TRUE,NA,"nbinom",3.87208673578936,NA
+95,"tscount_tsglm",TRUE,NA,"nbinom",3.24699049543067,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+96,"nb_glmm",TRUE,NA,"nbinom",3.26961427429082,NA
+96,"tscount_tsglm",TRUE,NA,"nbinom",2.50467599736832,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+97,"nb_glmm",TRUE,NA,"nbinom",3.93904846960855,NA
+97,"tscount_tsglm",TRUE,NA,"nbinom",3.48335010669492,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+98,"nb_glmm",TRUE,NA,"nbinom",3.54444496666311,NA
+98,"tscount_tsglm",TRUE,NA,"nbinom",2.87733807992901,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+99,"nb_glmm",TRUE,NA,"nbinom",3.42755490826946,NA
+99,"tscount_tsglm",TRUE,NA,"nbinom",2.85905685103497,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+100,"nb_glmm",TRUE,NA,"nbinom",4.07645546523134,NA
+100,"tscount_tsglm",TRUE,NA,"nbinom",3.60147523789445,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+101,"nb_glmm",TRUE,NA,"nbinom",3.5349529168716,NA
+101,"tscount_tsglm",TRUE,NA,"nbinom",3.08300798008753,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+102,"nb_glmm",TRUE,NA,"nbinom",4.04745286658526,NA
+102,"tscount_tsglm",TRUE,NA,"nbinom",3.52436285585944,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+103,"nb_glmm",TRUE,NA,"nbinom",4.02690805850673,NA
+103,"tscount_tsglm",TRUE,NA,"nbinom",2.96206560608696,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+104,"nb_glmm",TRUE,NA,"nbinom",2.97887675823351,NA
+104,"tscount_tsglm",TRUE,NA,"nbinom",2.68875583284953,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+105,"nb_glmm",TRUE,NA,"nbinom",3.79992674298436,NA
+105,"tscount_tsglm",TRUE,NA,"nbinom",2.95040376955235,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+106,"nb_glmm",TRUE,NA,"nbinom",3.55296058156484,NA
+106,"tscount_tsglm",TRUE,NA,"nbinom",3.15523885704057,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+107,"nb_glmm",TRUE,NA,"nbinom",3.65910058693032,NA
+107,"tscount_tsglm",TRUE,NA,"nbinom",3.16881146048793,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+108,"nb_glmm",TRUE,NA,"nbinom",4.23377127375783,NA
+108,"tscount_tsglm",TRUE,NA,"nbinom",3.52258149915916,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+109,"nb_glmm",TRUE,NA,"nbinom",3.80343062239373,NA
+109,"tscount_tsglm",TRUE,NA,"nbinom",3.24970573926448,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+110,"nb_glmm",TRUE,NA,"nbinom",3.68492728268689,NA
+110,"tscount_tsglm",TRUE,NA,"nbinom",2.7080666453674,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+111,"nb_glmm",TRUE,NA,"nbinom",3.16086375411251,NA
+111,"tscount_tsglm",TRUE,NA,"nbinom",2.76427848986655,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+112,"nb_glmm",TRUE,NA,"nbinom",3.3027622433141,NA
+112,"tscount_tsglm",TRUE,NA,"nbinom",2.88887075279867,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+113,"nb_glmm",TRUE,NA,"nbinom",3.67374451426063,NA
+113,"tscount_tsglm",TRUE,NA,"nbinom",3.15473027256824,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+114,"nb_glmm",TRUE,NA,"nbinom",3.87800318864296,NA
+114,"tscount_tsglm",TRUE,NA,"nbinom",3.38406430284946,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+115,"nb_glmm",TRUE,NA,"nbinom",3.85524613898278,NA
+115,"tscount_tsglm",TRUE,NA,"nbinom",3.14627683941007,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+116,"nb_glmm",TRUE,NA,"nbinom",3.74442869705816,NA
+116,"tscount_tsglm",TRUE,NA,"nbinom",3.25057495093279,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+117,"nb_glmm",TRUE,NA,"nbinom",3.06318218256354,NA
+117,"tscount_tsglm",TRUE,NA,"nbinom",2.53089104408423,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+118,"nb_glmm",TRUE,NA,"nbinom",4.11030134869548,NA
+118,"tscount_tsglm",TRUE,NA,"nbinom",3.29230685607569,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+119,"nb_glmm",TRUE,NA,"nbinom",4.13261591810661,NA
+119,"tscount_tsglm",TRUE,NA,"nbinom",3.22234290831505,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+120,"nb_glmm",TRUE,NA,"nbinom",4.36838127376825,NA
+120,"tscount_tsglm",TRUE,NA,"nbinom",3.53486931873726,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+121,"nb_glmm",TRUE,NA,"nbinom",3.26231414566184,NA
+121,"tscount_tsglm",TRUE,NA,"nbinom",2.69512245402705,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+122,"nb_glmm",TRUE,NA,"nbinom",3.74958503303683,NA
+122,"tscount_tsglm",TRUE,NA,"nbinom",3.35413794853586,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+123,"nb_glmm",TRUE,NA,"nbinom",3.96383178908724,NA
+123,"tscount_tsglm",TRUE,NA,"nbinom",3.01966566775944,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+124,"nb_glmm",TRUE,NA,"nbinom",3.3599240922647,NA
+124,"tscount_tsglm",TRUE,NA,"nbinom",2.6277500522842,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+125,"nb_glmm",TRUE,NA,"nbinom",3.15876887016274,NA
+125,"tscount_tsglm",TRUE,NA,"nbinom",2.61601714992215,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+126,"nb_glmm",TRUE,NA,"nbinom",3.59347082594543,NA
+126,"tscount_tsglm",TRUE,NA,"nbinom",3.14044657484638,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+127,"nb_glmm",TRUE,NA,"nbinom",3.45200391481697,NA
+127,"tscount_tsglm",TRUE,NA,"nbinom",2.90848393098265,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+128,"nb_glmm",TRUE,NA,"nbinom",4.12719154546551,NA
+128,"tscount_tsglm",TRUE,NA,"nbinom",3.49227137226876,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+129,"nb_glmm",TRUE,NA,"nbinom",3.75269919091842,NA
+129,"tscount_tsglm",TRUE,NA,"nbinom",3.21811181016082,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+130,"nb_glmm",TRUE,NA,"nbinom",3.19224997410964,NA
+130,"tscount_tsglm",TRUE,NA,"nbinom",2.64291075454254,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+131,"nb_glmm",TRUE,NA,"nbinom",3.90099761387588,NA
+131,"tscount_tsglm",TRUE,NA,"nbinom",3.17715275013863,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+132,"nb_glmm",TRUE,NA,"nbinom",3.87513988513382,NA
+132,"tscount_tsglm",TRUE,NA,"nbinom",3.15390419747996,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+133,"nb_glmm",TRUE,NA,"nbinom",4.26837569216119,NA
+133,"tscount_tsglm",TRUE,NA,"nbinom",3.87072542556201,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+134,"nb_glmm",TRUE,NA,"nbinom",3.82789644960054,NA
+134,"tscount_tsglm",TRUE,NA,"nbinom",3.32250320732128,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+135,"nb_glmm",TRUE,NA,"nbinom",3.76905308664877,NA
+135,"tscount_tsglm",TRUE,NA,"nbinom",2.95481304827537,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+136,"nb_glmm",TRUE,NA,"nbinom",4.13525492214269,NA
+136,"tscount_tsglm",TRUE,NA,"nbinom",3.79801349886021,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+137,"nb_glmm",TRUE,NA,"nbinom",3.7271899774019,NA
+137,"tscount_tsglm",TRUE,NA,"nbinom",3.44576071615487,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+138,"nb_glmm",TRUE,NA,"nbinom",3.02273909507555,NA
+138,"tscount_tsglm",TRUE,NA,"nbinom",2.61505681396045,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+139,"nb_glmm",TRUE,NA,"nbinom",4.05061148935051,NA
+139,"tscount_tsglm",TRUE,NA,"nbinom",3.37171136693605,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+140,"nb_glmm",TRUE,NA,"nbinom",4.32878434769666,NA
+140,"tscount_tsglm",TRUE,NA,"nbinom",3.51181504874122,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+141,"nb_glmm",TRUE,NA,"nbinom",3.31261460848559,NA
+141,"tscount_tsglm",TRUE,NA,"nbinom",2.47377067432386,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+142,"nb_glmm",TRUE,NA,"nbinom",4.18342043141704,NA
+142,"tscount_tsglm",TRUE,NA,"nbinom",3.06979980922455,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+143,"nb_glmm",TRUE,NA,"nbinom",4.16206034937492,NA
+143,"tscount_tsglm",TRUE,NA,"nbinom",3.53411687861849,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+144,"nb_glmm",TRUE,NA,"nbinom",3.30020612538537,NA
+144,"tscount_tsglm",TRUE,NA,"nbinom",2.87240376170199,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+145,"nb_glmm",TRUE,NA,"nbinom",3.21886080189016,NA
+145,"tscount_tsglm",TRUE,NA,"nbinom",2.35160060431153,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+146,"nb_glmm",TRUE,NA,"nbinom",4.02887343155987,NA
+146,"tscount_tsglm",TRUE,NA,"nbinom",2.88448826998827,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+147,"nb_glmm",TRUE,NA,"nbinom",3.33327381752246,NA
+147,"tscount_tsglm",TRUE,NA,"nbinom",2.81313270552624,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+148,"nb_glmm",TRUE,NA,"nbinom",3.51911703248228,NA
+148,"tscount_tsglm",TRUE,NA,"nbinom",3.06021528224346,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+149,"nb_glmm",TRUE,NA,"nbinom",3.39778273025413,NA
+149,"tscount_tsglm",TRUE,NA,"nbinom",2.77080752415481,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+150,"nb_glmm",TRUE,NA,"nbinom",3.73861962906873,NA
+150,"tscount_tsglm",TRUE,NA,"nbinom",3.01338703907972,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+151,"nb_glmm",TRUE,NA,"nbinom",3.78458412505174,NA
+151,"tscount_tsglm",TRUE,NA,"nbinom",3.27336586956769,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+152,"nb_glmm",TRUE,NA,"nbinom",3.98691837196686,NA
+152,"tscount_tsglm",TRUE,NA,"nbinom",3.3144363454659,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+153,"nb_glmm",TRUE,NA,"nbinom",3.81858329108133,NA
+153,"tscount_tsglm",TRUE,NA,"nbinom",2.98850254045734,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+154,"nb_glmm",TRUE,NA,"nbinom",3.17473696075533,NA
+154,"tscount_tsglm",TRUE,NA,"nbinom",2.67648918914494,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+155,"nb_glmm",TRUE,NA,"nbinom",3.75600574510779,NA
+155,"tscount_tsglm",TRUE,NA,"nbinom",2.89269253967053,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+156,"nb_glmm",TRUE,NA,"nbinom",3.87692757961705,NA
+156,"tscount_tsglm",TRUE,NA,"nbinom",3.11060242569454,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+157,"nb_glmm",TRUE,NA,"nbinom",3.96814074988726,NA
+157,"tscount_tsglm",TRUE,NA,"nbinom",3.63234692120252,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+158,"nb_glmm",TRUE,NA,"nbinom",3.55156110877654,NA
+158,"tscount_tsglm",TRUE,NA,"nbinom",2.86442056512102,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+159,"nb_glmm",TRUE,NA,"nbinom",3.32097516170878,NA
+159,"tscount_tsglm",TRUE,NA,"nbinom",2.79678579625768,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+160,"nb_glmm",TRUE,NA,"nbinom",3.62405222395404,NA
+160,"tscount_tsglm",TRUE,NA,"nbinom",3.424244470222,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+161,"nb_glmm",TRUE,NA,"nbinom",4.03054718250392,NA
+161,"tscount_tsglm",TRUE,NA,"nbinom",3.63445412371146,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+162,"nb_glmm",TRUE,NA,"nbinom",4.95946032905883,NA
+162,"tscount_tsglm",TRUE,NA,"nbinom",3.96344953862426,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+163,"nb_glmm",TRUE,NA,"nbinom",3.67518877738739,NA
+163,"tscount_tsglm",TRUE,NA,"nbinom",3.16091504978336,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+164,"nb_glmm",TRUE,NA,"nbinom",3.19739980451525,NA
+164,"tscount_tsglm",TRUE,NA,"nbinom",3.08040293190873,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+165,"nb_glmm",TRUE,NA,"nbinom",4.65410382196321,NA
+165,"tscount_tsglm",TRUE,NA,"nbinom",3.56000732397357,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+166,"nb_glmm",TRUE,NA,"nbinom",3.9044956757104,NA
+166,"tscount_tsglm",TRUE,NA,"nbinom",3.32364739872683,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+167,"nb_glmm",TRUE,NA,"nbinom",3.26410484909799,NA
+167,"tscount_tsglm",TRUE,NA,"nbinom",2.88904652661875,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+168,"nb_glmm",TRUE,NA,"nbinom",3.82827535812754,NA
+168,"tscount_tsglm",TRUE,NA,"nbinom",3.17506158216347,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+169,"nb_glmm",TRUE,NA,"nbinom",4.1895873560172,NA
+169,"tscount_tsglm",TRUE,NA,"nbinom",3.33114304927204,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+170,"nb_glmm",TRUE,NA,"nbinom",4.22391780188382,NA
+170,"tscount_tsglm",TRUE,NA,"nbinom",3.73884760902752,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+171,"nb_glmm",TRUE,NA,"nbinom",3.80297342643723,NA
+171,"tscount_tsglm",TRUE,NA,"nbinom",3.24596756559397,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+172,"nb_glmm",TRUE,NA,"nbinom",4.13382675858362,NA
+172,"tscount_tsglm",TRUE,NA,"nbinom",3.01321240602224,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+173,"nb_glmm",TRUE,NA,"nbinom",3.53768788969559,NA
+173,"tscount_tsglm",TRUE,NA,"nbinom",2.79808346288018,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+174,"nb_glmm",TRUE,NA,"nbinom",3.54731479008003,NA
+174,"tscount_tsglm",TRUE,NA,"nbinom",2.80962215679952,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+175,"nb_glmm",TRUE,NA,"nbinom",4.08877958932977,NA
+175,"tscount_tsglm",TRUE,NA,"nbinom",3.54558816405112,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+176,"nb_glmm",TRUE,NA,"nbinom",3.50387118605897,NA
+176,"tscount_tsglm",TRUE,NA,"nbinom",2.9277352100127,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+177,"nb_glmm",TRUE,NA,"nbinom",4.15707476479605,NA
+177,"tscount_tsglm",TRUE,NA,"nbinom",3.59557774675883,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+178,"nb_glmm",TRUE,NA,"nbinom",3.93139952949406,NA
+178,"tscount_tsglm",TRUE,NA,"nbinom",2.94598368221586,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+179,"nb_glmm",TRUE,NA,"nbinom",3.26549686568996,NA
+179,"tscount_tsglm",TRUE,NA,"nbinom",2.98294752509411,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+180,"nb_glmm",TRUE,NA,"nbinom",3.93395696455655,NA
+180,"tscount_tsglm",TRUE,NA,"nbinom",2.69762609824217,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+181,"nb_glmm",TRUE,NA,"nbinom",3.47546249156009,NA
+181,"tscount_tsglm",TRUE,NA,"nbinom",2.90596070123378,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+182,"nb_glmm",TRUE,NA,"nbinom",3.41833547955567,NA
+182,"tscount_tsglm",TRUE,NA,"nbinom",3.12638535503154,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+183,"nb_glmm",TRUE,NA,"nbinom",3.38421962796176,NA
+183,"tscount_tsglm",TRUE,NA,"nbinom",2.9243059895776,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+184,"nb_glmm",TRUE,NA,"nbinom",4.52820729398043,NA
+184,"tscount_tsglm",TRUE,NA,"nbinom",3.65392176383565,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+185,"nb_glmm",TRUE,NA,"nbinom",4.63409493860332,NA
+185,"tscount_tsglm",TRUE,NA,"nbinom",4.06575999649925,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+186,"nb_glmm",TRUE,NA,"nbinom",3.76256821558721,NA
+186,"tscount_tsglm",TRUE,NA,"nbinom",3.25634558326228,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+187,"nb_glmm",TRUE,NA,"nbinom",3.89307053981845,NA
+187,"tscount_tsglm",TRUE,NA,"nbinom",3.31650891131903,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+188,"nb_glmm",TRUE,NA,"nbinom",3.93464975141794,NA
+188,"tscount_tsglm",TRUE,NA,"nbinom",2.99833177593824,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+189,"nb_glmm",TRUE,NA,"nbinom",3.26736905464474,NA
+189,"tscount_tsglm",TRUE,NA,"nbinom",2.77188079668609,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+190,"nb_glmm",TRUE,NA,"nbinom",3.81687775549724,NA
+190,"tscount_tsglm",TRUE,NA,"nbinom",3.16153514229498,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+191,"nb_glmm",TRUE,NA,"nbinom",3.58587218376717,NA
+191,"tscount_tsglm",TRUE,NA,"nbinom",3.10112589412936,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+192,"nb_glmm",TRUE,NA,"nbinom",4.18954767763361,NA
+192,"tscount_tsglm",TRUE,NA,"nbinom",3.34977101801059,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+193,"nb_glmm",TRUE,NA,"nbinom",3.50676746076623,NA
+193,"tscount_tsglm",TRUE,NA,"nbinom",2.83860905988934,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+194,"nb_glmm",TRUE,NA,"nbinom",3.83715638938443,NA
+194,"tscount_tsglm",TRUE,NA,"nbinom",2.59321913601612,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+195,"nb_glmm",TRUE,NA,"nbinom",3.86268703554156,NA
+195,"tscount_tsglm",TRUE,NA,"nbinom",3.18320586086961,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+196,"nb_glmm",TRUE,NA,"nbinom",4.26605432419423,NA
+196,"tscount_tsglm",TRUE,NA,"nbinom",2.81859350319169,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+197,"nb_glmm",TRUE,NA,"nbinom",4.13828970264434,NA
+197,"tscount_tsglm",TRUE,NA,"nbinom",3.42052066251168,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+198,"nb_glmm",TRUE,NA,"nbinom",4.13739035719538,NA
+198,"tscount_tsglm",TRUE,NA,"nbinom",3.57269488512283,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+199,"nb_glmm",TRUE,NA,"nbinom",3.97403369586875,NA
+199,"tscount_tsglm",TRUE,NA,"nbinom",3.15661826467836,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."
+200,"nb_glmm",TRUE,NA,"nbinom",3.94423557847603,NA
+200,"tscount_tsglm",TRUE,NA,"nbinom",3.16477347147238,"Exploratory panel surrogate: tscount::tsglm is fit to the pooled subject-by-time training sequence. Subject-boundary lags are therefore not reset by tscount and this baseline should be interpreted cautiously."

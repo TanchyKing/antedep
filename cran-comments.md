@@ -5,14 +5,12 @@
 
 ## R CMD check results
 
-- Local targeted checks completed:
-  - `testthat::test_dir("tests/testthat", load_package = "source")`
-  - `pkgdown::build_site_github_pages(new_process = FALSE, install = FALSE)`
-- CI full package check runs on push to `master` via `.github/workflows/r-check.yml`.
+Status: OK — 0 ERRORs, 0 WARNINGs, 0 NOTEs (local Windows 11, R 4.5.2).
 
 ## Notes
 
-- This is a first CRAN submission for `antedep` (version 0.1.0).
+- This is a patch update (0.1.0 → 0.2.0) adding new S3 methods
+  (`deviance`, `confint`, `vcov`, `summary.partial_corr`) and improving
+  internal matrix inversion efficiency (`chol2inv` replaces `solve`).
 - The package includes no compiled code.
 - Reverse dependency checks are not applicable (no known downstream packages).
-

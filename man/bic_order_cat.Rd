@@ -2,7 +2,7 @@
 % Please edit documentation in R/bic_cat.R
 \name{bic_order_cat}
 \alias{bic_order_cat}
-\title{BIC-based order selection for categorical AD models}
+\title{BIC-Based Order Selection for Categorical AD Models}
 \usage{
 bic_order_cat(
   y,
@@ -41,7 +41,7 @@ Fits AD models of increasing orders and selects the best by BIC.
 \donttest{
 y <- simulate_cat(100, 5, order = 1, n_categories = 2)
 result <- bic_order_cat(y, max_order = 2)
-print(result$table)
+print(result)
 print(result$best_order)
 }
 

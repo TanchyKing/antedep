@@ -1,0 +1,2 @@
+"mode","n_reps","n_sims","n_per_group","fit_max_iter","n_cores","n_workers","seed","elapsed_seconds"
+"smoke_n50_iter50",5,100,50,50,16,10,20260518,478.157660007477

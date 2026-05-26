@@ -1,6 +1,6 @@
 # em_cat.R - EM estimation for categorical antedependence models
 
-#' EM algorithm for categorical AD model estimation
+#' EM Algorithm for Categorical AD Model Estimation
 #'
 #' Fits categorical antedependence models with missing outcomes using the
 #' Expectation-Maximization (EM) algorithm for orders 0 and 1.
@@ -249,7 +249,7 @@ em_cat <- function(y, order = 1, blocks = NULL, homogeneous = TRUE,
     )
   )
 
-  class(out) <- "cat_fit"
+  class(out) <- c("cat_fit", "ad_fit")
   out
 }
 

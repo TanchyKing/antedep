@@ -1,0 +1,2005 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>INAD Validation Summary</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+  /* Custom layout overrides for inad-validation-summary.html. Loaded via
+     pandoc -H so these rules follow (and therefore override) the default
+     pandoc HTML5 template styles. */
+
+  body {
+    max-width: 60em;
+  }
+
+  @media (max-width: 600px) {
+    body {
+      padding: 12px;
+    }
+  }
+
+  /* Wide multi-column tables overflow horizontally within their container
+     instead of forcing the body to be enormous. Smaller table font keeps
+     per-row vertical density reasonable. */
+  table {
+    font-size: 0.85em;
+    display: block;
+    overflow-x: auto;
+    max-width: 100%;
+  }
+
+  th, td {
+    padding: 0.25em 0.6em;
+    white-space: nowrap;
+  }
+
+  /* Tighten code spans inside table cells so column widths stay compact */
+  td code, th code {
+    font-size: 0.95em;
+  }
+  </style>
+</head>
+<body>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#inad-validation-summary---prediction-and-marginal-moments"
+id="toc-inad-validation-summary---prediction-and-marginal-moments">INAD
+Validation Summary - Prediction and Marginal Moments</a>
+<ul>
+<li><a href="#scope-and-setup" id="toc-scope-and-setup">1. Scope and
+setup</a>
+<ul>
+<li><a href="#what-this-note-covers" id="toc-what-this-note-covers">1.1
+What this note covers</a></li>
+<li><a href="#evaluation-framework" id="toc-evaluation-framework">1.2
+Evaluation framework</a></li>
+<li><a href="#metric-primer" id="toc-metric-primer">1.3 Metric
+primer</a></li>
+</ul></li>
+<li><a href="#models-compared---formulations"
+id="toc-models-compared---formulations">2. Models compared -
+formulations</a>
+<ul>
+<li><a href="#nb-glm" id="toc-nb-glm">2.1 NB GLM</a></li>
+<li><a href="#nb-glmm" id="toc-nb-glmm">2.2 NB GLMM</a></li>
+<li><a href="#poisson-glm" id="toc-poisson-glm">2.3 Poisson GLM</a></li>
+<li><a href="#inad-constrained-alpha"
+id="toc-inad-constrained-alpha">2.4 INAD constrained-alpha</a></li>
+<li><a href="#inad-unconstrained" id="toc-inad-unconstrained">2.5 INAD
+unconstrained</a></li>
+<li><a href="#cgfm-independentshared-frailty"
+id="toc-cgfm-independentshared-frailty">2.6 CGFM independent/shared
+frailty</a></li>
+</ul></li>
+<li><a href="#simulation---inad-prediction-precision"
+id="toc-simulation---inad-prediction-precision">3. Simulation - INAD
+prediction precision</a></li>
+<li><a href="#bolus-in-sample-fit---bic-comparison"
+id="toc-bolus-in-sample-fit---bic-comparison">4. Bolus in-sample fit -
+BIC comparison</a></li>
+<li><a href="#bolus-prediction---rolling-one-step"
+id="toc-bolus-prediction---rolling-one-step">5. Bolus prediction -
+rolling one-step</a>
+<ul>
+<li><a href="#stationarity-and-primary-model-choice"
+id="toc-stationarity-and-primary-model-choice">5.1 Stationarity and
+primary-model choice</a></li>
+<li><a href="#constrained-alpha-inad-vs-baselines"
+id="toc-constrained-alpha-inad-vs-baselines">5.2 Constrained-alpha INAD
+vs baselines</a></li>
+<li><a href="#unconstrained-inad-vs-baselines"
+id="toc-unconstrained-inad-vs-baselines">5.3 Unconstrained INAD vs
+baselines</a></li>
+<li><a href="#sensitivity-to-the-constant-alpha-specification"
+id="toc-sensitivity-to-the-constant-alpha-specification">5.4 Sensitivity
+to the constant-alpha specification</a></li>
+<li><a href="#bolus-prediction-headline"
+id="toc-bolus-prediction-headline">5.5 Bolus prediction
+headline</a></li>
+</ul></li>
+<li><a href="#bolus-marginal-mean-and-variance-comparison"
+id="toc-bolus-marginal-mean-and-variance-comparison">6. Bolus marginal
+mean and variance comparison</a>
+<ul>
+<li><a href="#mard-summary" id="toc-mard-summary">6.1 MARD
+summary</a></li>
+<li><a href="#group-1-mean-relative-discrepancy"
+id="toc-group-1-mean-relative-discrepancy">6.2 Group 1 mean relative
+discrepancy (%)</a></li>
+<li><a href="#group-1-variance-relative-discrepancy"
+id="toc-group-1-variance-relative-discrepancy">6.3 Group 1 variance
+relative discrepancy (%)</a></li>
+<li><a href="#group-2-mean-relative-discrepancy"
+id="toc-group-2-mean-relative-discrepancy">6.4 Group 2 mean relative
+discrepancy (%)</a></li>
+<li><a href="#group-2-variance-relative-discrepancy"
+id="toc-group-2-variance-relative-discrepancy">6.5 Group 2 variance
+relative discrepancy (%)</a></li>
+<li><a
+href="#supporting-rank-and-worst-case-summaries-metric-sensitivity"
+id="toc-supporting-rank-and-worst-case-summaries-metric-sensitivity">6.6
+Supporting rank and worst-case summaries (metric sensitivity)</a></li>
+<li><a href="#marginal-moment-headline"
+id="toc-marginal-moment-headline">6.7 Marginal-moment headline</a></li>
+</ul></li>
+<li><a href="#cross-cutting-findings" id="toc-cross-cutting-findings">7.
+Cross-cutting findings</a></li>
+<li><a href="#implications-for-antedep"
+id="toc-implications-for-antedep">8. Implications for antedep</a></li>
+</ul></li>
+</ul>
+</nav>
+<h1 id="inad-validation-summary---prediction-and-marginal-moments">INAD
+Validation Summary - Prediction and Marginal Moments</h1>
+<p><strong>Headline.</strong> Under correct INAD specification (R = 1000
+simulation), INAD predicts the next visit with log score ~2.5 nats and
+randomized PIT centered at 0.5 (well calibrated). On bolus rolling
+one-step prediction (1050 all-pairs folds, patient-level clustered SEs),
+constrained-α INAD beats marginal NB GLM, NB GLMM, and Poisson GLM at
+conventional significance on RPS, RMSE, and log score — with
+<code>|t| &gt; 10</code> against NB GLM on every metric. On bolus
+marginal-moment reproduction, <strong>unconstrained INAD has the
+smallest MARD in 3 of 4 cells (G1 mean, G2 mean, G2 variance)</strong>,
+while <strong>constrained-α INAD wins G1 variance</strong>. The two INAD
+variants are the primary models: <strong>constrained-α</strong> as the
+BIC-supported and prediction-supported predictive primary;
+<strong>unconstrained</strong> as the marginal-moment primary. See §5.5
+and §6.7 for the full breakdowns.</p>
+<p>This note presents predictive and in-sample validation evidence for
+INAD models on simulated data and on the <code>bolus_inad</code>
+dataset. The simulation section reports INAD-only correct-specification
+precision; the bolus predictive section reports rolling one-step
+forecasting against count GLM baselines; the bolus marginal-moment
+section compares fitted to empirical mean and variance against a broader
+baseline ladder including published Henderson-Shimakura CGFM
+estimates.</p>
+<h2 id="scope-and-setup">1. Scope and setup</h2>
+<h3 id="what-this-note-covers">1.1 What this note covers</h3>
+<ul>
+<li>Simulation: absolute prediction precision for constrained-alpha INAD
+under its own NBT-NBI-INADFE(1) DGP.</li>
+<li>Bolus in-sample fit: BIC comparison across INAD and non-INAD count
+models.</li>
+<li>Bolus prediction: rolling one-step leave-one-per-group-out
+prediction on all 30 x 35 = 1050 held-out pairs.</li>
+<li>Bolus marginal moments: Henderson-and-Shimakura-style time-by-time
+mean and variance comparison.</li>
+<li>Package implications: what already landed in <code>antedep</code>,
+and what remains.</li>
+</ul>
+<p>CGFM is included only in the marginal-moment comparison, using
+published Henderson-Shimakura estimates. No R implementation is
+available for refitting CGFM inside each cross-validation fold, so CGFM
+is not included in the predictive comparison.</p>
+<h3 id="evaluation-framework">1.2 Evaluation framework</h3>
+<p>The predictive target is conditional new-subject forecasting. A model
+is fit on training subjects, early observations of held-out subjects are
+revealed, and later observations are predicted from the fitted
+conditional distribution. The headline uses rolling one-step prediction
+at t = 2, …, 12, conditioning on the realized history through t - 1.</p>
+<p>All predictive comparisons are plug-in MLE conditional. INAD uses
+Monte Carlo forward simulation from the fitted process; NB and Poisson
+GLMs use analytic plug-in PMFs; NB GLMM uses the fitted random-intercept
+model for prediction. Lower RMSE, lower log score, and lower RPS are
+better.</p>
+<h3 id="metric-primer">1.3 Metric primer</h3>
+<ul>
+<li>RMSE measures point prediction error of the predictive mean, on the
+original count scale.</li>
+<li>Log score is <code>-log p(Y_obs)</code>. It rewards sharp
+probability at the realized count but is sensitive to finite-support
+smoothing when the PMF is simulation-based.</li>
+<li>RPS compares the predictive CDF with the realized count indicator
+over the full integer support. It is a proper probabilistic score and is
+less sensitive than log score to a single tail probability.</li>
+</ul>
+<h2 id="models-compared---formulations">2. Models compared -
+formulations</h2>
+<p>Notation: subject i has group g(i), time t = 1, …, T, and group 1 is
+the reference.</p>
+<h3 id="nb-glm">2.1 NB GLM</h3>
+<p><code>Y_it ~ NB(mu_it, theta)</code>, with
+<code>log mu_it = beta0 + beta_group[g(i)] + beta_time[t]</code>. This
+is the marginal no-lag form used for the BIC and marginal-moment
+comparison.</p>
+<h3 id="nb-glmm">2.2 NB GLMM</h3>
+<p>Two forms are used. The predictive form is lag-aware:
+<code>log mu_it = beta0 + beta_group[g(i)] + beta_time[t] + gamma log(Y_i,t-1 + 1) + b_i</code>,
+with <code>b_i ~ N(0, sigma_b^2)</code>. The marginal-moment/BIC form
+drops the lag term so closed-form marginal moments can be obtained by
+integrating the random intercept.</p>
+<h3 id="poisson-glm">2.3 Poisson GLM</h3>
+<p>The predictive pipeline uses the lag-aware form
+<code>Y_it ~ Poisson(mu_it)</code>,
+<code>log mu_it = beta0 + beta_group[g(i)] + beta_time[t] + gamma log(Y_i,t-1 + 1)</code>.
+Rows at t = 1 are dropped because no lag is available.</p>
+<h3 id="inad-constrained-alpha">2.4 INAD constrained-alpha</h3>
+<p>NBT-NBI-INADFE(1): <code>Y_it = alpha o Y_i,t-1 + epsilon_it</code>,
+with constant alpha, negative-binomial thinning, and NB innovations with
+time-varying mean/size plus group effect tau. This is the BIC-supported
+primary INAD variant for bolus.</p>
+<h3 id="inad-unconstrained">2.5 INAD unconstrained</h3>
+<p>Same model class, but alpha is allowed to vary over time. It is
+reported as a sensitivity because the bolus LRT detects mild
+non-stationarity even though BIC prefers the constrained model.</p>
+<h3 id="cgfm-independentshared-frailty">2.6 CGFM independent/shared
+frailty</h3>
+<p>CGFM rows use Henderson-Shimakura published full-data estimates only.
+In the local notation, the gamma frailty has mean 1 and frailty variance
+psi. Independent frailty has time-specific independent frailties; shared
+frailty uses a single subject-level frailty across all times. These rows
+are used for marginal mean and variance only.</p>
+<h2 id="simulation---inad-prediction-precision">3. Simulation - INAD
+prediction precision</h2>
+<p>This section asks one question: <strong>how good are the predictions
+produced by constrained-alpha INAD when its modelling assumptions are
+correct?</strong> The DGP is INAD itself, so the simulation tests the
+predictive machinery under correct specification rather than
+benchmarking INAD against alternatives. Cross-model baseline comparisons
+are not retained here; parameter-recovery tables are not retained
+either, since fitter recovery under known DGPs has been validated
+separately.</p>
+<p>DGP: NBT-NBI-INADFE(1), constant alpha = 0.35, time-varying NB
+innovation parameters, tau = c(0, 1.25), 100 subjects, 12 time points, R
+= 1000 simulation replicates. For each rep, the model is fit on 70% of
+subjects and rolling one-step predictions are produced for the held-out
+30% at each time t = 2, …, 12. Per-rep predictive scores are then
+summarized across reps.</p>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Mean</th>
+<th>SE</th>
+<th>2.5%</th>
+<th>97.5%</th>
+<th>Reps</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Log score (nats)</td>
+<td>2.508</td>
+<td>0.002</td>
+<td>2.403</td>
+<td>2.611</td>
+<td>1000</td>
+</tr>
+<tr>
+<td>RPS</td>
+<td>1.857</td>
+<td>0.003</td>
+<td>1.653</td>
+<td>2.069</td>
+<td>1000</td>
+</tr>
+<tr>
+<td>RMSE (counts)</td>
+<td>3.516</td>
+<td>0.007</td>
+<td>3.068</td>
+<td>4.032</td>
+<td>1000</td>
+</tr>
+<tr>
+<td>Randomized PIT</td>
+<td>0.494</td>
+<td>0.001</td>
+<td>0.456</td>
+<td>0.531</td>
+<td>1000</td>
+</tr>
+<tr>
+<td>80% interval coverage</td>
+<td>0.853</td>
+<td>0.001</td>
+<td>0.812</td>
+<td>0.891</td>
+<td>1000</td>
+</tr>
+<tr>
+<td>95% interval coverage</td>
+<td>0.967</td>
+<td>0.000</td>
+<td>0.942</td>
+<td>0.985</td>
+<td>1000</td>
+</tr>
+</tbody>
+</table>
+<p>Three things to read off the table:</p>
+<ul>
+<li><strong>Point and probabilistic precision.</strong> Log score around
+2.5 nats per prediction and RPS around 1.86 characterize the predictive
+precision achievable when INAD’s structural assumptions hold. These
+numbers serve as a reference scale for interpreting real-data INAD
+predictions; real-data performance can be better or worse depending on
+how well the data conform to the assumed structure and how much
+irreducible noise the data contain.</li>
+<li><strong>Calibration.</strong> The randomized PIT mean is essentially
+0.5 (ideal for a well-calibrated discrete predictive distribution), so
+the predictive distribution is not systematically too high or too
+low.</li>
+<li><strong>Predictive intervals.</strong> Empirical 80% and 95%
+coverages are slightly above their nominal levels, so the predictive
+intervals are mildly conservative rather than over-confident. Acceptable
+for the validation target.</li>
+</ul>
+<h2 id="bolus-in-sample-fit---bic-comparison">4. Bolus in-sample fit -
+BIC comparison</h2>
+<p>BIC is computed on the full bolus data. <strong>Rows are listed in
+the consistent model order used throughout §4–§6</strong> (INAD variants
+→ Poisson GLM → NB family → CGFM family). Constrained-α INAD has the
+lowest BIC, with NB GLMM second (4264.8) and unconstrained INAD third
+(4297.8).</p>
+<p>Note that Poisson GLM here is the lag-aware predictive form while NB
+GLM here is the marginal no-lag form; the asymmetry follows the
+dissertation BIC convention for NB GLM but the predictive-pipeline
+convention for Poisson GLM.</p>
+<p><strong>Caveat on cross-model BIC comparability.</strong> The BIC
+values below mix likelihood factorizations: INAD uses subject-level
+joint likelihoods, the GLM and GLMM rows use observation-level fits, and
+the CGFM rows are reconstructed from published log-likelihoods in
+Henderson &amp; Shimakura. BIC is used here as an in-sample diagnostic
+for ranking these models on their ability to fit the bolus data, not as
+a formal Bayes-factor comparison across all possible likelihood
+factorizations. The CGFM rows in particular are reproduced for reference
+only.</p>
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr>
+<th>Model</th>
+<th>Specification</th>
+<th>BIC</th>
+<th>Note</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>INAD constrained-α</td>
+<td>NBT-NBI-INADFE(1), constant alpha</td>
+<td>4243.5</td>
+<td>BIC uses n_subjects; constrained POC inherits nb_inno_size from the
+unconstrained fit (see §6 caveat).</td>
+</tr>
+<tr>
+<td>INAD unconstrained</td>
+<td>NBT-NBI-INADFE(1), time-varying alpha</td>
+<td>4297.8</td>
+<td>BIC uses n_subjects, matching antedep fit-object convention.</td>
+</tr>
+<tr>
+<td>Poisson GLM</td>
+<td>lag-aware predictive: y ~ group + factor(time) + log(y_lag1 +
+1)</td>
+<td>4334.6</td>
+<td>Lag-aware form used in the predictive pipeline; asymmetric with
+marginal NB GLM.</td>
+</tr>
+<tr>
+<td>NB GLM</td>
+<td>marginal no-lag: y ~ group + factor(time)</td>
+<td>4476.8</td>
+<td>Marginal no-lag form, aligned with the dissertation BIC
+comparison.</td>
+</tr>
+<tr>
+<td>NB GLMM</td>
+<td>marginal-moment no-lag with subject random intercept</td>
+<td>4264.8</td>
+<td>No-lag form used for in-sample marginal fit and closed-form marginal
+moments.</td>
+</tr>
+<tr>
+<td>CGFM independent frailty</td>
+<td>published Henderson-Shimakura independent frailty</td>
+<td>4442.0</td>
+<td>Reconstructed from published full log-likelihood and 12 time effects
++ group + frailty variance.</td>
+</tr>
+<tr>
+<td>CGFM shared frailty</td>
+<td>published Henderson-Shimakura shared frailty</td>
+<td>4556.8</td>
+<td>Reconstructed from published full log-likelihood and 12 time effects
++ group + frailty variance.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="bolus-prediction---rolling-one-step">5. Bolus prediction -
+rolling one-step</h2>
+<p>Design: all 30 x 35 cross-group held-out patient pairs, each fold
+holding out one group-1 and one group-2 patient and fitting on the
+remaining 63 patients. Standard errors are patient-level clustered, so
+overlapping folds do not receive naive independent-fold uncertainty.</p>
+<h3 id="stationarity-and-primary-model-choice">5.1 Stationarity and
+primary-model choice</h3>
+<p>The full-data LRT for constant alpha rejects (p = 0.000234), but BIC
+strongly prefers constrained-alpha INAD over unconstrained INAD (4244 vs
+4298). The interpretation is mild detectable non-stationarity that is
+not worth 11 extra alpha parameters under BIC. Constrained-alpha INAD is
+therefore primary; unconstrained INAD is sensitivity.</p>
+<h3 id="constrained-alpha-inad-vs-baselines">5.2 Constrained-alpha INAD
+vs baselines</h3>
+<p>Each cell reports <code>delta (t)</code>, where:</p>
+<ul>
+<li><strong><code>delta</code></strong> = mean of the per-patient paired
+score difference (INAD score minus baseline score) across the 60
+held-out patients pooled over folds. <strong>Negative means INAD is
+better.</strong> Units match the column: RPS units for RPS, counts for
+RMSE, nats for log score.</li>
+<li><strong><code>t</code></strong> = t-statistic of the paired
+difference, using <strong>patient-level clustered standard
+errors</strong> so that overlapping folds (each patient appears in many
+cross-group fold combinations) do not inflate apparent precision.
+Conventional thresholds: <code>|t| &gt; 2</code> is significant at the
+5% level, <code>|t| &gt; 3</code> at roughly 0.1%, and
+<code>|t| &gt; 10</code> is overwhelming.</li>
+</ul>
+<p>A row therefore reads as: <em>“INAD’s score is <code>|delta|</code>
+units below the baseline’s, on average across patients, with a
+t-statistic of <code>t</code>.”</em></p>
+<p>Rows are in the model order used throughout §4–§6 (Poisson before the
+NB family).</p>
+<table>
+<thead>
+<tr>
+<th>Reference</th>
+<th>Delta RPS (t)</th>
+<th>Delta RMSE (t)</th>
+<th>Delta log score (t)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Poisson GLM</td>
+<td>-0.078 (-16.3)</td>
+<td>-0.012 (-1.9)</td>
+<td>-0.175 (-30.6)</td>
+</tr>
+<tr>
+<td>NB GLM</td>
+<td>-0.396 (-22.3)</td>
+<td>-0.689 (-23.9)</td>
+<td>-0.123 (-18.6)</td>
+</tr>
+<tr>
+<td>NB GLMM</td>
+<td>-0.153 (-12.3)</td>
+<td>-0.217 (-10.7)</td>
+<td>-0.056 (-10.8)</td>
+</tr>
+</tbody>
+</table>
+<p>How to read the table: every cell here is negative (INAD better) with
+<code>|t|</code> well above 10 except the Poisson GLM RMSE cell at
+<code>|t| = 1.9</code>, which is at the conventional significance edge.
+So constrained-α INAD outperforms NB GLM, NB GLMM, and Poisson GLM on
+RPS and log score with overwhelming statistical reliability, and
+outperforms NB GLM and NB GLMM on RMSE with the same; the only soft cell
+is constrained-α INAD vs Poisson GLM on RMSE.</p>
+<h3 id="unconstrained-inad-vs-baselines">5.3 Unconstrained INAD vs
+baselines</h3>
+<p>Same table convention as §5.2.</p>
+<table>
+<thead>
+<tr>
+<th>Reference</th>
+<th>Delta RPS (t)</th>
+<th>Delta RMSE (t)</th>
+<th>Delta log score (t)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Poisson GLM</td>
+<td>-0.069 (-14.0)</td>
+<td>0.018 (2.9)</td>
+<td>-0.170 (-29.3)</td>
+</tr>
+<tr>
+<td>NB GLM</td>
+<td>-0.386 (-23.0)</td>
+<td>-0.659 (-24.6)</td>
+<td>-0.118 (-18.9)</td>
+</tr>
+<tr>
+<td>NB GLMM</td>
+<td>-0.144 (-12.3)</td>
+<td>-0.187 (-10.1)</td>
+<td>-0.052 (-10.4)</td>
+</tr>
+</tbody>
+</table>
+<p>The pattern is the same as for constrained-alpha. The only cell where
+the unconstrained fit does worse than the baseline is Poisson GLM on
+RMSE (<code>+0.018</code>, <code>t = 2.9</code>) — still tiny in
+magnitude but pointing in the wrong direction; this is the same
+Poisson-RMSE corner that was soft under the constrained fit.</p>
+<h3 id="sensitivity-to-the-constant-alpha-specification">5.4 Sensitivity
+to the constant-alpha specification</h3>
+<p>§5.1 identified constrained-alpha INAD as the BIC-supported primary
+fit and unconstrained INAD as a sensitivity check. Comparing §5.2 and
+§5.3 row-by-row, <strong>the constrained fit is slightly but
+consistently better than the unconstrained fit on every (baseline,
+metric) cell</strong>. For example, RPS vs NB GLM is <code>-0.396</code>
+for constrained and <code>-0.386</code> for unconstrained (constrained
+gap is 0.01 larger in magnitude); RMSE and log score against the same
+baseline follow the same pattern, and the same is true for the NB GLMM
+and Poisson GLM comparisons. The Poisson-RMSE soft cell is also slightly
+stronger under the constrained fit.</p>
+<p>The constrained-minus-unconstrained gap is small relative to the
+INAD-vs-baseline deltas, so the qualitative predictive ranking of INAD
+against the GLM-family baselines is the same under either fit. But on
+prediction as on BIC, the constrained-alpha specification is the
+preferred choice — the extra 11 alpha parameters in the unconstrained
+fit do not buy back any predictive performance over the GLM-family
+baselines. The bolus predictive evidence therefore reinforces the §5.1
+primary-model decision rather than complicating it.</p>
+<h3 id="bolus-prediction-headline">5.5 Bolus prediction headline</h3>
+<p>On rolling one-step prediction, constrained-alpha INAD beats the
+marginal NB GLM, NB GLMM, and Poisson GLM on RPS. It also beats all
+three on RMSE except that the Poisson RMSE margin is small and only
+borderline by t-statistic. Log score is better than NB GLM, NB GLMM, and
+Poisson GLM. The unconstrained sensitivity tells the same qualitative
+story.</p>
+<h2 id="bolus-marginal-mean-and-variance-comparison">6. Bolus marginal
+mean and variance comparison</h2>
+<p>This section compares full-data fitted marginal moments with
+empirical bolus moments. CGFM is included here only, using published
+Henderson-Shimakura estimates. Relative discrepancy is
+<code>100 * (fitted - empirical) / empirical</code>; MARD is the mean
+absolute relative discrepancy.</p>
+<h3 id="mard-summary">6.1 MARD summary</h3>
+<p>MARD = <strong>Mean Absolute Relative Discrepancy</strong> across the
+12 time points, computed per model, per group, per moment. All values
+are reported as <strong>percentages</strong>: a MARD of 8.35 for G1 mean
+means the fitted marginal mean is on average 8.35% off the empirical
+marginal mean across t = 1, …, 12. Lower is better.</p>
+<p>A second column for Group 1 variance, “G1 var (excl t=11)”, reports
+the same MARD computed without time 11. This is a sensitivity column:
+the empirical G1 variance at t = 11 is unusually small (4.26), which
+inflates relative discrepancies for every model at that one cell. The
+ranking is robust to its exclusion.</p>
+<p><strong>Model ordering.</strong> All §6 tables list models in the
+consistent §4–§6 order: INAD variants (constrained then unconstrained),
+then count GLMs (Poisson, NB, NB GLMM), then CGFM (independent, shared).
+The Poisson GLM row here uses the <strong>marginal no-lag</strong>
+Poisson fit (<code>y ~ group + factor(time)</code>), which is the
+appropriate form for marginal-moment comparison; this is a different fit
+from the lag-aware predictive Poisson GLM used in §4 and §5.</p>
+<p><strong>MARD headline (best per column in bold).</strong> U-INAD has
+the smallest MARD in 3 of 4 cells (G1 mean, G2 mean, G2 variance); C-α
+INAD wins G1 variance and the G1-variance sensitivity excluding t = 11.
+INAD class therefore dominates marginal-moment reproduction on MARD.</p>
+<table style="width:100%;">
+<colgroup>
+<col style="width: 16%" />
+<col style="width: 16%" />
+<col style="width: 16%" />
+<col style="width: 16%" />
+<col style="width: 16%" />
+<col style="width: 16%" />
+</colgroup>
+<thead>
+<tr>
+<th>Model</th>
+<th>G1 mean</th>
+<th>G1 var (all 12)</th>
+<th>G1 var (excl t=11)</th>
+<th>G2 mean</th>
+<th>G2 variance</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>INAD constrained-α</td>
+<td>8.35</td>
+<td><strong>26.74</strong></td>
+<td><strong>15.65</strong></td>
+<td>9.31</td>
+<td>22.79</td>
+</tr>
+<tr>
+<td>INAD unconstrained</td>
+<td><strong>5.92</strong></td>
+<td>29.05</td>
+<td>20.37</td>
+<td><strong>5.83</strong></td>
+<td><strong>19.72</strong></td>
+</tr>
+<tr>
+<td>Poisson GLM (marginal)</td>
+<td>9.95</td>
+<td>59.70</td>
+<td>64.84</td>
+<td>5.96</td>
+<td>78.52</td>
+</tr>
+<tr>
+<td>NB GLM</td>
+<td>8.89</td>
+<td>42.36</td>
+<td>29.70</td>
+<td>6.94</td>
+<td>21.01</td>
+</tr>
+<tr>
+<td>NB GLMM</td>
+<td>8.35</td>
+<td>58.35</td>
+<td>43.73</td>
+<td>8.24</td>
+<td>24.25</td>
+</tr>
+<tr>
+<td>CGFM independent frailty</td>
+<td>8.94</td>
+<td>42.44</td>
+<td>29.53</td>
+<td>6.87</td>
+<td>20.75</td>
+</tr>
+<tr>
+<td>CGFM shared frailty</td>
+<td>9.86</td>
+<td>29.01</td>
+<td>23.14</td>
+<td>6.01</td>
+<td>41.83</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Caveat on the C-α INAD variance row.</strong> The
+constrained-α fit currently uses an inherited <code>nb_inno_size</code>
+from the unconstrained fit (a POC shortcut documented in §4). Under
+proper joint re-estimation of <code>nb_inno_size_t</code> with
+constrained <code>α</code>, the C-α INAD variance numbers (G1 and G2)
+would shift to some extent — the unconstrained
+<code>nb_inno_size_t</code> has CV ≈ 47% across times, so joint
+constrained estimation is unlikely to leave the variance numbers
+unchanged. <strong>The qualitative interpretation is expected to be
+stable, but the constrained-α variance magnitudes should be treated as
+provisional until joint estimation is implemented.</strong> Future work;
+tracked in <code>inad-validation-revision-todo.md</code>.</p>
+<h3 id="group-1-mean-relative-discrepancy">6.2 Group 1 mean relative
+discrepancy (%)</h3>
+<p>Columns are in the consistent §4–§6 model order. Negative means
+fitted is below empirical.</p>
+<table style="width:100%;">
+<colgroup>
+<col style="width: 11%" />
+<col style="width: 11%" />
+<col style="width: 11%" />
+<col style="width: 11%" />
+<col style="width: 11%" />
+<col style="width: 11%" />
+<col style="width: 11%" />
+<col style="width: 11%" />
+<col style="width: 11%" />
+</colgroup>
+<thead>
+<tr>
+<th>Time</th>
+<th>Emp.</th>
+<th>C-α INAD</th>
+<th>U-INAD</th>
+<th>Poisson</th>
+<th>NB GLM</th>
+<th>NB GLMM</th>
+<th>CGFM ind</th>
+<th>CGFM shared</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>9.30</td>
+<td>-1.73</td>
+<td>-1.57</td>
+<td>-13.03</td>
+<td>-12.28</td>
+<td>-4.37</td>
+<td>-12.19</td>
+<td>-13.07</td>
+</tr>
+<tr>
+<td>2</td>
+<td>5.50</td>
+<td>6.34</td>
+<td>-4.45</td>
+<td>-9.22</td>
+<td>-9.03</td>
+<td>-4.43</td>
+<td>-9.04</td>
+<td>-9.04</td>
+</tr>
+<tr>
+<td>3</td>
+<td>5.43</td>
+<td>12.34</td>
+<td>4.46</td>
+<td>2.73</td>
+<td>1.60</td>
+<td>2.83</td>
+<td>1.76</td>
+<td>2.78</td>
+</tr>
+<tr>
+<td>4</td>
+<td>5.13</td>
+<td>-0.28</td>
+<td>11.44</td>
+<td>18.93</td>
+<td>15.98</td>
+<td>18.44</td>
+<td>15.52</td>
+<td>17.85</td>
+</tr>
+<tr>
+<td>5</td>
+<td>7.57</td>
+<td>-5.78</td>
+<td>-2.53</td>
+<td>-5.11</td>
+<td>-5.26</td>
+<td>-1.62</td>
+<td>-6.18</td>
+<td>-5.23</td>
+</tr>
+<tr>
+<td>6</td>
+<td>5.33</td>
+<td>-1.18</td>
+<td>-1.98</td>
+<td>-0.11</td>
+<td>-0.94</td>
+<td>3.13</td>
+<td>-1.39</td>
+<td>-0.40</td>
+</tr>
+<tr>
+<td>7</td>
+<td>3.93</td>
+<td>12.22</td>
+<td>7.52</td>
+<td>13.10</td>
+<td>10.89</td>
+<td>12.22</td>
+<td>10.57</td>
+<td>12.81</td>
+</tr>
+<tr>
+<td>8</td>
+<td>3.73</td>
+<td>5.83</td>
+<td>0.46</td>
+<td>6.86</td>
+<td>5.32</td>
+<td>8.97</td>
+<td>5.41</td>
+<td>6.47</td>
+</tr>
+<tr>
+<td>9</td>
+<td>4.60</td>
+<td>-11.77</td>
+<td>-15.28</td>
+<td>-14.17</td>
+<td>-13.54</td>
+<td>-10.44</td>
+<td>-13.59</td>
+<td>-14.45</td>
+</tr>
+<tr>
+<td>10</td>
+<td>4.93</td>
+<td>2.20</td>
+<td>-9.66</td>
+<td>-4.42</td>
+<td>-4.79</td>
+<td>-3.01</td>
+<td>-4.50</td>
+<td>-4.50</td>
+</tr>
+<tr>
+<td>11</td>
+<td>3.50</td>
+<td>17.93</td>
+<td>6.60</td>
+<td>17.91</td>
+<td>15.32</td>
+<td>18.67</td>
+<td>15.86</td>
+<td>18.20</td>
+</tr>
+<tr>
+<td>12</td>
+<td>3.47</td>
+<td>-22.63</td>
+<td>-5.11</td>
+<td>13.78</td>
+<td>11.72</td>
+<td>12.10</td>
+<td>11.27</td>
+<td>13.52</td>
+</tr>
+</tbody>
+</table>
+<h3 id="group-1-variance-relative-discrepancy">6.3 Group 1 variance
+relative discrepancy (%)</h3>
+<p>Columns are in the consistent §4–§6 model order. Negative means
+fitted is below empirical.</p>
+<table style="width:100%;">
+<colgroup>
+<col style="width: 11%" />
+<col style="width: 11%" />
+<col style="width: 11%" />
+<col style="width: 11%" />
+<col style="width: 11%" />
+<col style="width: 11%" />
+<col style="width: 11%" />
+<col style="width: 11%" />
+<col style="width: 11%" />
+</colgroup>
+<thead>
+<tr>
+<th>Time</th>
+<th>Emp.</th>
+<th>C-α INAD</th>
+<th>U-INAD</th>
+<th>Poisson</th>
+<th>NB GLM</th>
+<th>NB GLMM</th>
+<th>CGFM ind</th>
+<th>CGFM shared</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>33.46</td>
+<td>24.05</td>
+<td>24.41</td>
+<td>-75.83</td>
+<td>21.58</td>
+<td>55.95</td>
+<td>22.07</td>
+<td>-28.95</td>
+</tr>
+<tr>
+<td>2</td>
+<td>22.05</td>
+<td>-8.25</td>
+<td>-20.91</td>
+<td>-77.36</td>
+<td>-21.83</td>
+<td>-7.59</td>
+<td>-21.70</td>
+<td>-50.07</td>
+</tr>
+<tr>
+<td>3</td>
+<td>15.98</td>
+<td>43.98</td>
+<td>35.55</td>
+<td>-65.10</td>
+<td>27.76</td>
+<td>41.89</td>
+<td>28.35</td>
+<td>-18.20</td>
+</tr>
+<tr>
+<td>4</td>
+<td>17.02</td>
+<td>9.67</td>
+<td>37.65</td>
+<td>-64.16</td>
+<td>36.80</td>
+<td>54.62</td>
+<td>36.11</td>
+<td>-12.83</td>
+</tr>
+<tr>
+<td>5</td>
+<td>25.08</td>
+<td>-2.95</td>
+<td>2.17</td>
+<td>-71.36</td>
+<td>28.71</td>
+<td>50.60</td>
+<td>26.77</td>
+<td>-22.21</td>
+</tr>
+<tr>
+<td>6</td>
+<td>11.26</td>
+<td>31.56</td>
+<td>27.58</td>
+<td>-52.71</td>
+<td>68.00</td>
+<td>95.81</td>
+<td>67.01</td>
+<td>7.28</td>
+</tr>
+<tr>
+<td>7</td>
+<td>17.58</td>
+<td>-29.57</td>
+<td>-31.94</td>
+<td>-74.71</td>
+<td>-22.31</td>
+<td>-14.25</td>
+<td>-22.54</td>
+<td>-47.89</td>
+</tr>
+<tr>
+<td>8</td>
+<td>9.24</td>
+<td>10.39</td>
+<td>2.04</td>
+<td>-56.86</td>
+<td>24.36</td>
+<td>42.11</td>
+<td>24.76</td>
+<td>-15.91</td>
+</tr>
+<tr>
+<td>9</td>
+<td>9.97</td>
+<td>6.80</td>
+<td>1.08</td>
+<td>-60.40</td>
+<td>17.40</td>
+<td>34.46</td>
+<td>17.49</td>
+<td>-23.27</td>
+</tr>
+<tr>
+<td>10</td>
+<td>13.17</td>
+<td>-0.30</td>
+<td>0.03</td>
+<td>-64.22</td>
+<td>17.54</td>
+<td>31.48</td>
+<td>18.38</td>
+<td>-23.76</td>
+</tr>
+<tr>
+<td>11</td>
+<td>4.26</td>
+<td>148.75</td>
+<td>124.57</td>
+<td>-3.12</td>
+<td>181.71</td>
+<td>219.24</td>
+<td>184.44</td>
+<td>93.61</td>
+</tr>
+<tr>
+<td>12</td>
+<td>7.98</td>
+<td>-4.61</td>
+<td>40.73</td>
+<td>-50.53</td>
+<td>40.38</td>
+<td>52.23</td>
+<td>39.68</td>
+<td>-4.13</td>
+</tr>
+</tbody>
+</table>
+<h3 id="group-2-mean-relative-discrepancy">6.4 Group 2 mean relative
+discrepancy (%)</h3>
+<p>Columns are in the consistent §4–§6 model order. Negative means
+fitted is below empirical.</p>
+<table style="width:100%;">
+<colgroup>
+<col style="width: 11%" />
+<col style="width: 11%" />
+<col style="width: 11%" />
+<col style="width: 11%" />
+<col style="width: 11%" />
+<col style="width: 11%" />
+<col style="width: 11%" />
+<col style="width: 11%" />
+<col style="width: 11%" />
+</colgroup>
+<thead>
+<tr>
+<th>Time</th>
+<th>Emp.</th>
+<th>C-α INAD</th>
+<th>U-INAD</th>
+<th>Poisson</th>
+<th>NB GLM</th>
+<th>NB GLMM</th>
+<th>CGFM ind</th>
+<th>CGFM shared</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>10.17</td>
+<td>1.08</td>
+<td>1.53</td>
+<td>10.24</td>
+<td>12.75</td>
+<td>16.01</td>
+<td>12.80</td>
+<td>10.56</td>
+</tr>
+<tr>
+<td>2</td>
+<td>6.49</td>
+<td>16.07</td>
+<td>5.07</td>
+<td>6.65</td>
+<td>8.45</td>
+<td>7.53</td>
+<td>8.37</td>
+<td>7.29</td>
+</tr>
+<tr>
+<td>3</td>
+<td>7.86</td>
+<td>2.27</td>
+<td>-4.58</td>
+<td>-1.62</td>
+<td>-1.23</td>
+<td>-5.65</td>
+<td>-1.14</td>
+<td>-1.14</td>
+</tr>
+<tr>
+<td>4</td>
+<td>9.29</td>
+<td>-22.79</td>
+<td>-11.99</td>
+<td>-8.97</td>
+<td>-9.86</td>
+<td>-13.13</td>
+<td>-10.28</td>
+<td>-9.38</td>
+</tr>
+<tr>
+<td>5</td>
+<td>9.63</td>
+<td>-4.08</td>
+<td>0.28</td>
+<td>3.40</td>
+<td>4.66</td>
+<td>2.58</td>
+<td>3.59</td>
+<td>3.59</td>
+</tr>
+<tr>
+<td>6</td>
+<td>7.37</td>
+<td>0.43</td>
+<td>0.38</td>
+<td>0.14</td>
+<td>0.75</td>
+<td>-1.00</td>
+<td>0.24</td>
+<td>0.24</td>
+</tr>
+<tr>
+<td>7</td>
+<td>6.60</td>
+<td>-0.63</td>
+<td>-6.34</td>
+<td>-6.65</td>
+<td>-7.10</td>
+<td>-11.27</td>
+<td>-7.42</td>
+<td>-6.49</td>
+</tr>
+<tr>
+<td>8</td>
+<td>5.74</td>
+<td>6.25</td>
+<td>0.24</td>
+<td>-3.73</td>
+<td>-3.75</td>
+<td>-6.01</td>
+<td>-3.72</td>
+<td>-3.72</td>
+</tr>
+<tr>
+<td>9</td>
+<td>4.91</td>
+<td>26.40</td>
+<td>20.27</td>
+<td>11.47</td>
+<td>13.77</td>
+<td>11.23</td>
+<td>13.64</td>
+<td>11.39</td>
+</tr>
+<tr>
+<td>10</td>
+<td>6.34</td>
+<td>13.46</td>
+<td>11.91</td>
+<td>3.03</td>
+<td>4.10</td>
+<td>0.09</td>
+<td>4.36</td>
+<td>3.32</td>
+</tr>
+<tr>
+<td>11</td>
+<td>6.26</td>
+<td>0.41</td>
+<td>-4.82</td>
+<td>-8.63</td>
+<td>-9.32</td>
+<td>-11.93</td>
+<td>-8.95</td>
+<td>-8.03</td>
+</tr>
+<tr>
+<td>12</td>
+<td>5.89</td>
+<td>-17.81</td>
+<td>2.57</td>
+<td>-7.08</td>
+<td>-7.49</td>
+<td>-12.40</td>
+<td>-7.92</td>
+<td>-7.00</td>
+</tr>
+</tbody>
+</table>
+<h3 id="group-2-variance-relative-discrepancy">6.5 Group 2 variance
+relative discrepancy (%)</h3>
+<p>Columns are in the consistent §4–§6 model order. Negative means
+fitted is below empirical.</p>
+<table style="width:100%;">
+<colgroup>
+<col style="width: 11%" />
+<col style="width: 11%" />
+<col style="width: 11%" />
+<col style="width: 11%" />
+<col style="width: 11%" />
+<col style="width: 11%" />
+<col style="width: 11%" />
+<col style="width: 11%" />
+<col style="width: 11%" />
+</colgroup>
+<thead>
+<tr>
+<th>Time</th>
+<th>Emp.</th>
+<th>C-α INAD</th>
+<th>U-INAD</th>
+<th>Poisson</th>
+<th>NB GLM</th>
+<th>NB GLMM</th>
+<th>CGFM ind</th>
+<th>CGFM shared</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>59.21</td>
+<td>-13.43</td>
+<td>-12.74</td>
+<td>-81.07</td>
+<td>27.93</td>
+<td>48.63</td>
+<td>28.32</td>
+<td>-29.74</td>
+</tr>
+<tr>
+<td>2</td>
+<td>31.08</td>
+<td>-1.03</td>
+<td>-6.58</td>
+<td>-77.73</td>
+<td>0.43</td>
+<td>8.09</td>
+<td>0.50</td>
+<td>-40.22</td>
+</tr>
+<tr>
+<td>3</td>
+<td>60.01</td>
+<td>-39.15</td>
+<td>-41.30</td>
+<td>-87.11</td>
+<td>-38.02</td>
+<td>-37.53</td>
+<td>-37.78</td>
+<td>-62.92</td>
+</tr>
+<tr>
+<td>4</td>
+<td>50.74</td>
+<td>-34.60</td>
+<td>-18.97</td>
+<td>-83.33</td>
+<td>-16.03</td>
+<td>-13.91</td>
+<td>-16.55</td>
+<td>-49.92</td>
+</tr>
+<tr>
+<td>5</td>
+<td>43.06</td>
+<td>-15.02</td>
+<td>-9.95</td>
+<td>-76.88</td>
+<td>38.65</td>
+<td>46.91</td>
+<td>36.36</td>
+<td>-21.39</td>
+</tr>
+<tr>
+<td>6</td>
+<td>30.71</td>
+<td>-21.40</td>
+<td>-22.56</td>
+<td>-75.97</td>
+<td>11.96</td>
+<td>18.67</td>
+<td>11.17</td>
+<td>-33.27</td>
+</tr>
+<tr>
+<td>7</td>
+<td>24.95</td>
+<td>-10.02</td>
+<td>-12.22</td>
+<td>-75.31</td>
+<td>-1.80</td>
+<td>-1.31</td>
+<td>-2.19</td>
+<td>-38.63</td>
+</tr>
+<tr>
+<td>8</td>
+<td>22.84</td>
+<td>-16.50</td>
+<td>-21.75</td>
+<td>-75.80</td>
+<td>-10.44</td>
+<td>-6.57</td>
+<td>-10.22</td>
+<td>-43.68</td>
+</tr>
+<tr>
+<td>9</td>
+<td>16.08</td>
+<td>22.96</td>
+<td>17.02</td>
+<td>-65.97</td>
+<td>29.77</td>
+<td>35.68</td>
+<td>29.76</td>
+<td>-21.24</td>
+</tr>
+<tr>
+<td>10</td>
+<td>30.35</td>
+<td>-27.70</td>
+<td>-20.68</td>
+<td>-78.48</td>
+<td>-8.04</td>
+<td>-6.41</td>
+<td>-7.45</td>
+<td>-44.44</td>
+</tr>
+<tr>
+<td>11</td>
+<td>29.73</td>
+<td>-34.75</td>
+<td>-37.19</td>
+<td>-80.76</td>
+<td>-27.99</td>
+<td>-25.55</td>
+<td>-27.33</td>
+<td>-53.90</td>
+</tr>
+<tr>
+<td>12</td>
+<td>33.81</td>
+<td>-36.86</td>
+<td>-15.69</td>
+<td>-83.81</td>
+<td>-41.04</td>
+<td>-41.72</td>
+<td>-41.40</td>
+<td>-62.54</td>
+</tr>
+</tbody>
+</table>
+<h3 id="supporting-rank-and-worst-case-summaries-metric-sensitivity">6.6
+Supporting rank and worst-case summaries (metric sensitivity)</h3>
+<p>MARD (§6.1) is the headline metric for the §6 comparison. As a
+sensitivity check on metric choice, three supporting per-cell summaries
+are reported here:</p>
+<ul>
+<li><strong>Rank sum.</strong> At each time, rank the seven models by
+<code>|discrepancy|</code> (1 = smallest, ties get average rank). Sum
+the ranks across the 12 time points per model. Lower is better. With 7
+models and 12 times, the minimum possible rank sum is 12 (always best);
+the maximum is 84 (always worst); the mean by chance is 48. Rank sum is
+invariant to magnitude — it measures how often each model is closer than
+its peers.</li>
+<li><strong>Wins.</strong> Number of time points where the model has the
+smallest <code>|discrepancy|</code> (ties for first share a win). Useful
+diagnostic for bimodal best-at-some / worst-at-some behavior.</li>
+<li><strong>Max <code>|discrepancy|</code> (%).</strong> The single
+worst time point per model. Worst-case calibration.</li>
+</ul>
+<p>Rows are in the consistent §4–§6 model order. Best value per column
+is <strong>bold</strong>.</p>
+<p><strong>G1 mean</strong> (12 time points). Agrees with MARD: U-INAD
+is the cleanest single best by all four summaries.</p>
+<table>
+<thead>
+<tr>
+<th>Model</th>
+<th style="text-align: right;">Rank sum</th>
+<th style="text-align: right;">Mean rank</th>
+<th style="text-align: right;">Wins</th>
+<th style="text-align: right;">Max |discrepancy| (%)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>INAD constrained-α</td>
+<td style="text-align: right;">46.5</td>
+<td style="text-align: right;">3.88</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">22.63</td>
+</tr>
+<tr>
+<td>INAD unconstrained</td>
+<td style="text-align: right;"><strong>37.0</strong></td>
+<td style="text-align: right;"><strong>3.08</strong></td>
+<td style="text-align: right;"><strong>5</strong></td>
+<td style="text-align: right;"><strong>15.28</strong></td>
+</tr>
+<tr>
+<td>Poisson GLM</td>
+<td style="text-align: right;">58.0</td>
+<td style="text-align: right;">4.83</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">18.93</td>
+</tr>
+<tr>
+<td>NB GLM</td>
+<td style="text-align: right;">41.0</td>
+<td style="text-align: right;">3.42</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">15.98</td>
+</tr>
+<tr>
+<td>NB GLMM</td>
+<td style="text-align: right;">48.5</td>
+<td style="text-align: right;">4.04</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">18.67</td>
+</tr>
+<tr>
+<td>CGFM independent frailty</td>
+<td style="text-align: right;">45.0</td>
+<td style="text-align: right;">3.75</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">15.86</td>
+</tr>
+<tr>
+<td>CGFM shared frailty</td>
+<td style="text-align: right;">60.0</td>
+<td style="text-align: right;">5.00</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">18.20</td>
+</tr>
+</tbody>
+</table>
+<p><strong>G1 variance</strong> (12 time points). Agrees with MARD: C-α
+INAD is best by both metrics.</p>
+<table>
+<thead>
+<tr>
+<th>Model</th>
+<th style="text-align: right;">Rank sum</th>
+<th style="text-align: right;">Mean rank</th>
+<th style="text-align: right;">Wins</th>
+<th style="text-align: right;">Max |discrepancy| (%)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>INAD constrained-α</td>
+<td style="text-align: right;"><strong>33</strong></td>
+<td style="text-align: right;"><strong>2.75</strong></td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">148.75</td>
+</tr>
+<tr>
+<td>INAD unconstrained</td>
+<td style="text-align: right;">35</td>
+<td style="text-align: right;">2.92</td>
+<td style="text-align: right;"><strong>4</strong></td>
+<td style="text-align: right;">124.57</td>
+</tr>
+<tr>
+<td>Poisson GLM</td>
+<td style="text-align: right;">74</td>
+<td style="text-align: right;">6.17</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;"><strong>77.36</strong></td>
+</tr>
+<tr>
+<td>NB GLM</td>
+<td style="text-align: right;">44</td>
+<td style="text-align: right;">3.67</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">181.71</td>
+</tr>
+<tr>
+<td>NB GLMM</td>
+<td style="text-align: right;">64</td>
+<td style="text-align: right;">5.33</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">219.24</td>
+</tr>
+<tr>
+<td>CGFM independent frailty</td>
+<td style="text-align: right;">46</td>
+<td style="text-align: right;">3.83</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">184.44</td>
+</tr>
+<tr>
+<td>CGFM shared frailty</td>
+<td style="text-align: right;">40</td>
+<td style="text-align: right;">3.33</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">93.61</td>
+</tr>
+</tbody>
+</table>
+<p><strong>G1 variance, excluding t = 11</strong> (11 time points; same
+sensitivity as §6.1). Agrees with MARD: C-α INAD widens its lead.</p>
+<table>
+<thead>
+<tr>
+<th>Model</th>
+<th style="text-align: right;">Rank sum</th>
+<th style="text-align: right;">Mean rank</th>
+<th style="text-align: right;">Wins</th>
+<th style="text-align: right;">Max |discrepancy| (%)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>INAD constrained-α</td>
+<td style="text-align: right;"><strong>29</strong></td>
+<td style="text-align: right;"><strong>2.64</strong></td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;"><strong>43.98</strong></td>
+</tr>
+<tr>
+<td>INAD unconstrained</td>
+<td style="text-align: right;">32</td>
+<td style="text-align: right;">2.91</td>
+<td style="text-align: right;"><strong>4</strong></td>
+<td style="text-align: right;">40.73</td>
+</tr>
+<tr>
+<td>Poisson GLM</td>
+<td style="text-align: right;">73</td>
+<td style="text-align: right;">6.64</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">77.36</td>
+</tr>
+<tr>
+<td>NB GLM</td>
+<td style="text-align: right;">39</td>
+<td style="text-align: right;">3.55</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">68.00</td>
+</tr>
+<tr>
+<td>NB GLMM</td>
+<td style="text-align: right;">57</td>
+<td style="text-align: right;">5.18</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">95.81</td>
+</tr>
+<tr>
+<td>CGFM independent frailty</td>
+<td style="text-align: right;">40</td>
+<td style="text-align: right;">3.64</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">67.01</td>
+</tr>
+<tr>
+<td>CGFM shared frailty</td>
+<td style="text-align: right;">38</td>
+<td style="text-align: right;">3.45</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">50.07</td>
+</tr>
+</tbody>
+</table>
+<p><strong>G2 mean</strong> (12 time points). MARD says U-INAD (5.83%);
+rank sum nudges CGFM shared ahead (33 vs 37). Means CGFM shared is more
+often closest single-time, but U-INAD has smaller average percent error.
+The MARD ordering is the headline.</p>
+<table>
+<thead>
+<tr>
+<th>Model</th>
+<th style="text-align: right;">Rank sum</th>
+<th style="text-align: right;">Mean rank</th>
+<th style="text-align: right;">Wins</th>
+<th style="text-align: right;">Max |discrepancy| (%)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>INAD constrained-α</td>
+<td style="text-align: right;">61</td>
+<td style="text-align: right;">5.08</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">26.40</td>
+</tr>
+<tr>
+<td>INAD unconstrained</td>
+<td style="text-align: right;">37</td>
+<td style="text-align: right;">3.08</td>
+<td style="text-align: right;"><strong>4</strong></td>
+<td style="text-align: right;">20.27</td>
+</tr>
+<tr>
+<td>Poisson GLM</td>
+<td style="text-align: right;">34</td>
+<td style="text-align: right;">2.83</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">11.47</td>
+</tr>
+<tr>
+<td>NB GLM</td>
+<td style="text-align: right;">59</td>
+<td style="text-align: right;">4.92</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">13.77</td>
+</tr>
+<tr>
+<td>NB GLMM</td>
+<td style="text-align: right;">61</td>
+<td style="text-align: right;">5.08</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">16.01</td>
+</tr>
+<tr>
+<td>CGFM independent frailty</td>
+<td style="text-align: right;">51</td>
+<td style="text-align: right;">4.25</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">13.64</td>
+</tr>
+<tr>
+<td>CGFM shared frailty</td>
+<td style="text-align: right;"><strong>33</strong></td>
+<td style="text-align: right;"><strong>2.75</strong></td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;"><strong>11.39</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>G2 variance</strong> (12 time points). MARD says U-INAD
+(19.72%); rank sum nudges CGFM independent ahead (33 vs 41), with NB
+GLMM 3rd by rank sum but most wins (6) — best-at-half / worst-at-half
+pattern.</p>
+<table>
+<thead>
+<tr>
+<th>Model</th>
+<th style="text-align: right;">Rank sum</th>
+<th style="text-align: right;">Mean rank</th>
+<th style="text-align: right;">Wins</th>
+<th style="text-align: right;">Max |discrepancy| (%)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>INAD constrained-α</td>
+<td style="text-align: right;">42</td>
+<td style="text-align: right;">3.50</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;"><strong>39.15</strong></td>
+</tr>
+<tr>
+<td>INAD unconstrained</td>
+<td style="text-align: right;">41</td>
+<td style="text-align: right;">3.42</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">41.30</td>
+</tr>
+<tr>
+<td>Poisson GLM</td>
+<td style="text-align: right;">84</td>
+<td style="text-align: right;">7.00</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">87.11</td>
+</tr>
+<tr>
+<td>NB GLM</td>
+<td style="text-align: right;">35</td>
+<td style="text-align: right;">2.92</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">41.04</td>
+</tr>
+<tr>
+<td>NB GLMM</td>
+<td style="text-align: right;">37</td>
+<td style="text-align: right;">3.08</td>
+<td style="text-align: right;"><strong>6</strong></td>
+<td style="text-align: right;">48.63</td>
+</tr>
+<tr>
+<td>CGFM independent frailty</td>
+<td style="text-align: right;"><strong>33</strong></td>
+<td style="text-align: right;"><strong>2.75</strong></td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">41.40</td>
+</tr>
+<tr>
+<td>CGFM shared frailty</td>
+<td style="text-align: right;">64</td>
+<td style="text-align: right;">5.33</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">62.92</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Summary of metric sensitivity:</strong></p>
+<ul>
+<li><strong>Group 1 (both moments):</strong> all four metrics (MARD,
+rank sum, wins, max) agree that INAD class is best. C-α wins G1
+variance, U-INAD wins G1 mean.</li>
+<li><strong>Group 2:</strong> MARD favors U-INAD on both moments. Rank
+sum partially disagrees: CGFM shared edges G2 mean (33 vs 37), CGFM ind
+edges G2 variance (33 vs 41). The disagreements are small and consistent
+with CGFM variants being slightly more often the closest fit while
+U-INAD has the smaller mean error.</li>
+<li><strong>Poisson GLM as a lower-floor variance reference.</strong>
+Tracks marginal means competitively (rank sum 34 on G2 mean) but is
+dramatically worse on variance (MARD 59.7% / 78.5% on G1 / G2; rank sum
+74 / 84), because the mean = variance constraint cannot accommodate
+bolus overdispersion. Quantitative confirmation that bolus needs an
+overdispersion-capable model.</li>
+<li><strong>Max <code>|discrepancy|</code></strong> at G1 variance is
+dominated by t = 11 (small empirical variance, 4.26); every
+overdispersed-capable model overshoots, Poisson happens to be closest
+only because it always underestimates. The “excl t = 11” table widens
+the INAD lead.</li>
+</ul>
+<h3 id="marginal-moment-headline">6.7 Marginal-moment headline</h3>
+<p><strong>MARD is the headline metric</strong> (§6.1); the §6.6
+rank/wins/max summaries are reported as a metric-sensitivity check. By
+MARD:</p>
+<ul>
+<li><strong>G1 means:</strong> U-INAD wins (5.92%; next: NB GLMM 8.35%,
+C-α INAD 8.35%).</li>
+<li><strong>G1 variances:</strong> C-α INAD wins (26.74%; sensitivity
+excluding t = 11: 15.65%). C-α maintains its lead by rank sum (33), and
+widens it excluding t = 11.</li>
+<li><strong>G2 means:</strong> U-INAD wins (5.83%; next: CGFM shared
+6.01%, Poisson 5.96%).</li>
+<li><strong>G2 variances:</strong> U-INAD wins (19.72%; next: CGFM ind
+20.75%, NB GLM 21.01%).</li>
+</ul>
+<p><strong>Unconstrained INAD is the §6 primary</strong> — it has the
+smallest MARD in 3 of 4 cells. Constrained-α INAD is reported alongside
+because it wins G1 variance and is the §5 primary. The two INAD variants
+together carry the marginal-moment story for both groups.</p>
+<p>Three takeaways:</p>
+<ol type="1">
+<li><strong>INAD class wins all four MARD cells.</strong> Unconstrained
+INAD on G1 mean, G2 mean, and G2 variance; constrained-α INAD on G1
+variance.</li>
+<li><strong>Rank sum mostly agrees on Group 1 and partially disagrees on
+Group 2.</strong> For G2, CGFM shared edges out U-INAD on rank sum for
+G2 mean (33 vs 37), and CGFM ind edges out U-INAD on rank sum for G2
+variance (33 vs 41). The interpretation: CGFM variants are slightly more
+often the closest single-time fit on Group 2, while U-INAD has the
+smaller mean percent error. The disagreement is small and metric-driven,
+not a meaningful contradiction of the headline.</li>
+<li><strong>Poisson GLM as a lower-floor variance reference.</strong>
+Its mean tracks competitively (especially G2), but its mean = variance
+constraint makes it dramatically worse on variance (MARD 59.7% / 78.5%;
+rank sum 74 / 84). This quantitatively confirms bolus is meaningfully
+overdispersed and that any sensible count model needs more flexibility
+than Poisson.</li>
+</ol>
+<h2 id="cross-cutting-findings">7. Cross-cutting findings</h2>
+<ul>
+<li>Predictions are plug-in MLE conditional, not posterior
+predictive.</li>
+<li>INAD predictive samples are integer-valued by construction;
+predictive means are real-valued and are the right point forecasts for
+RMSE.</li>
+<li>Tau confidence intervals are profile-likelihood intervals. Tau SEs
+are derived from profile-CI width for internal consistency in package
+output. A standalone profile-curvature diagnostic was also run from
+<code>scripts/prediction_poc/inad/26_tau_profile_curvature.R</code>; it
+gives a narrower local-quadratic approximation that does not capture the
+tails of the profile log-likelihood.</li>
+<li>The engineering pipeline completed the R = 1000 simulation, 1050
+bolus all-pairs prediction, and full-data marginal-moment drivers
+without fit failures.</li>
+</ul>
+<p>For the bolus alpha-constant NBT-NBI-INADFE(1) fit, the two methods
+give:</p>
+<table>
+<colgroup>
+<col style="width: 15%" />
+<col style="width: 21%" />
+<col style="width: 21%" />
+<col style="width: 21%" />
+<col style="width: 21%" />
+</colgroup>
+<thead>
+<tr>
+<th>Method</th>
+<th style="text-align: right;"><code>tau_2</code> estimate</th>
+<th style="text-align: right;">SE</th>
+<th style="text-align: right;">95% CI lower</th>
+<th style="text-align: right;">95% CI upper</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Profile CI (package convention; primary)</td>
+<td style="text-align: right;">1.1428</td>
+<td style="text-align: right;">0.4818</td>
+<td style="text-align: right;">0.1869</td>
+<td style="text-align: right;">2.0757</td>
+</tr>
+<tr>
+<td>Local profile curvature (diagnostic only)</td>
+<td style="text-align: right;">1.1003</td>
+<td style="text-align: right;">0.2731</td>
+<td style="text-align: right;">0.5650</td>
+<td style="text-align: right;">1.6356</td>
+</tr>
+</tbody>
+</table>
+<p>Both rows use the same profile log-likelihood — for each candidate
+<code>tau_2</code>, all nuisance parameters are re-optimized in the same
+way. The rows differ only in how the resulting profile is
+summarized:</p>
+<ul>
+<li>The <strong>profile CI</strong> (package convention) walks the
+profile log-likelihood outward from the MLE in each direction. It
+locates the two <code>tau_2</code> values — one below the MLE and one
+above — at which the profile log-likelihood has fallen by
+<code>qchisq(0.95, 1) / 2 ≈ 1.92</code> from its peak. Those two values
+are the 95% CI’s lower and upper bounds (here <code>0.1869</code> and
+<code>2.0757</code>); the SE is then derived from the half-width as
+<code>(upper − lower) / (2 · qnorm(0.975))</code>.</li>
+<li>The <strong>local profile curvature</strong> (diagnostic) fits a
+quadratic to the profile near the MLE and reports the asymptotic SE
+<code>sqrt(-1 / (2c))</code> from the quadratic coefficient. The 95% CI
+is <code>vertex ± 1.96 · SE</code>.</li>
+</ul>
+<p>The two would agree only if the profile log-likelihood were exactly
+quadratic. For the bolus <code>tau_2</code> profile, the LR threshold is
+reached at <code>tau_2</code> values further from the MLE than the local
+quadratic predicts, so the LR-based CI is wider. The “estimate” column
+also differs slightly: the package row reports the stored MLE on the
+constrained-alpha POC fit object, while the diagnostic row reports the
+vertex of the local-quadratic fit. They drift apart because the
+constrained-alpha POC is not a fully joint fit, so the stored MLE may
+not be exactly at the local profile maximum after nuisance refits. The
+diagnostic row is included as a sanity check on the profile shape, not
+as a competing interval; the package convention remains the primary
+reporting standard.</p>
+<p>The older dissertation Table 4.3 printed a Hessian/Louis-style SE for
+<code>tau_2</code> while using profile-likelihood bounds, which is why
+<code>est ± 2 SE</code> did not agree with the displayed interval. The
+current package-facing convention keeps <code>tau</code> on a
+profile-likelihood basis for both the interval and the displayed SE;
+other INAD parameters retain Wald SEs and Wald intervals. The profiling
+code loops over <code>tau[2]</code>, …, <code>tau[B]</code>, so the
+implementation extends naturally to 3+ groups.</p>
+<h2 id="implications-for-antedep">8. Implications for antedep</h2>
+<p>Already landed: <code>.simulate_inad_forward()</code> and the public
+<code>predict.inad_fit()</code> S3 method in
+<code>R/predict_inad.R</code>, currently supporting
+<code>type = c("mean", "sample")</code>, with tests in
+<code>tests/testthat/test-predict-inad.R</code>.</p>
+<p>Remaining: a shared cross-family <code>type = "distribution"</code>
+API after the gau/cat POCs; a proper
+<code>alpha_constraint = "constant"</code> path in
+<code>fit_inad()</code> with joint re-estimation; exact one-step PMFs as
+future methodological cleanup; and optional scoring helpers only if
+distribution-valued prediction becomes public.</p>
+<p>Next sequence: start the gau and cat script-first prediction POCs,
+stop at smoke-test validation, then decide the shared prediction API
+before moving gau/cat prediction methods into the package.</p>
+</body>
+</html>

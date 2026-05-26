@@ -1,4 +1,4 @@
-#' Confidence intervals for fitted INAD models
+#' Confidence Intervals for Fitted INAD Models
 #'
 #' Computes confidence intervals for selected parameters from a fitted INAD model.
 #' For the fixed effect case, Wald intervals for time varying alpha and theta are
@@ -385,7 +385,7 @@ summary.inad_ci <- function(object, ...) {
                               thinning, innovation, nb_inno_size)
     if (ridge > 0) Iobs <- Iobs + diag(ridge, nrow(Iobs))
 
-    V <- tryCatch(solve(Iobs), error = function(e) NULL)
+    V <- tryCatch(chol2inv(chol(Iobs)), error = function(e) NULL)
     if (is.null(V)) stop("Singular information at i = ", i, ".")
 
     z <- qnorm(1 - (1 - level) / 2)
@@ -842,21 +842,10 @@ summary.inad_ci <- function(object, ...) {
         if (!is.null(left_int)) left <- uniroot(function(x) prof_target(b, x), interval = left_int)$root
         if (!is.null(right_int)) right <- uniroot(function(x) prof_target(b, x), interval = right_int)$root
 
-        # Approximate SE from observed profile curvature at tau_mle.
-        # Fall back to CI-width-based approximation if curvature is unavailable.
+        # Report tau SE on the same profile-likelihood scale as its CI. This
+        # keeps tabular SE and CI summaries aligned for the block effect.
         se <- NA_real_
-        h <- max(1e-4, min(0.1, abs(tau_mle) * 0.05))
-        if (tau_mle - h > lower_bound + 1e-10) {
-            ll_m <- refit_tau_fixed(tau_fix_idx = b, tau_fix_val = tau_mle - h)
-            ll_0 <- fit$log_l - (f_mle + q_chi_1) / 2
-            ll_p <- refit_tau_fixed(tau_fix_idx = b, tau_fix_val = tau_mle + h)
-            if (is.finite(ll_m) && is.finite(ll_0) && is.finite(ll_p)) {
-                d2 <- (ll_p - 2 * ll_0 + ll_m) / (h^2)
-                info <- -d2
-                if (is.finite(info) && info > 0) se <- sqrt(1 / info)
-            }
-        }
-        if (!is.finite(se) && is.finite(left) && is.finite(right)) {
+        if (is.finite(left) && is.finite(right)) {
             z <- qnorm(1 - (1 - level) / 2)
             if (is.finite(z) && z > 0) se <- (right - left) / (2 * z)
         }

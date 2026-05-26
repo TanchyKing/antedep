@@ -1,0 +1,7 @@
+                                 mode fold_design n_folds n_subjects n_group_1
+1 bolus_leave_one_per_group_all_pairs   all_pairs    1050         65        30
+  n_group_2 n_sims fit_max_iter include_tscount include_nb_glmm chunk_size
+1        35   1000           50            TRUE            TRUE         20
+  n_cores n_workers     seed elapsed_seconds               completed_at
+1      16        10 20260518         42674.9 2026-05-19 05:30:12.010414
+Output: D:/UI/MyPackage/antedep/scripts/prediction_poc/output/inad/bolus_leave_one_per_group_all_pairs 

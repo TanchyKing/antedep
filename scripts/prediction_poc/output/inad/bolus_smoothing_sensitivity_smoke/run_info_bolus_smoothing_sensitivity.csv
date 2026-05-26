@@ -1,0 +1,2 @@
+"mode","n_folds","n_sims","fit_max_iter","epsilon_small","epsilon_main","epsilon_large"
+"bolus_smoothing_sensitivity_smoke",2,150,8,0.000666222518321119,0.00662251655629139,0.0625

@@ -1,0 +1,5 @@
+"task","horizon","diff_log_score_vs_lm.mean","diff_log_score_vs_lm.se","diff_crps_vs_lm.mean","diff_crps_vs_lm.se","diff_rmse_vs_lm.mean","diff_rmse_vs_lm.se"
+"recursive_multi_step",1, 0.09036649, 0.06436765,0.058291402,0.032425002,0.10311151,0.05470281
+"rolling_one_step",1, 0.05765275, 0.02255678,0.027607368,0.010595815,0.04675675,0.01250707
+"recursive_multi_step",2, 0.01320235, 0.03633513,0.016864275,0.006140608,0.02906461,0.01327876
+"recursive_multi_step",3,-0.04556607, 0.06145701,0.008576050,0.025988111,0.03078291,0.03807313

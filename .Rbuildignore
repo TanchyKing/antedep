@@ -22,3 +22,8 @@
 ^\.git$
 ^\.claude$
 ^cran-comments\.md$
+^Rplots\.pdf$
+^\.Rhistory$
+^\.\.Rcheck$
+^antedep\.Rcheck$
+^antedep_.*\.tar\.gz$

@@ -1,0 +1,11 @@
+"model","task","horizon","diff_log_score_vs_nb.mean","diff_log_score_vs_nb.se","diff_rps_vs_nb.mean","diff_rps_vs_nb.se","diff_rmse_vs_nb.mean","diff_rmse_vs_nb.se"
+"inad_constrained_alpha","recursive_multi_step",1,-0.0014820286, 0.0035541728,-0.015856802, 0.004142145,-0.032161033, 0.006866305
+"inad_unconstrained","recursive_multi_step",1, 0.0063568014, 0.0035006563,-0.001830494, 0.004971740,-0.003591059, 0.009179287
+"inad_constrained_alpha","rolling_one_step",1,-0.0029145112, 0.0010838163,-0.015320649, 0.001236954,-0.024279148, 0.002270417
+"inad_unconstrained","rolling_one_step",1, 0.0005197053, 0.0010270809,-0.005408504, 0.001545249,-0.004351274, 0.003079697
+"inad_constrained_alpha","recursive_multi_step",2, 0.0024908524, 0.0032048690,-0.007605107, 0.003267065,-0.018184983, 0.004736658
+"inad_unconstrained","recursive_multi_step",2, 0.0050418531, 0.0032975446,-0.004512267, 0.003299959,-0.008847254, 0.005046925
+"inad_constrained_alpha","recursive_multi_step",3, 0.0039137746, 0.0035216609,-0.007886998, 0.003855515,-0.014502098, 0.005722321
+"inad_unconstrained","recursive_multi_step",3, 0.0025202470, 0.0033656191,-0.010886095, 0.003349461,-0.017068390, 0.004653868
+"inad_constrained_alpha","recursive_multi_step",4,-0.0034236590, 0.0033091105,-0.009916711, 0.003248815,-0.011071667, 0.004326369
+"inad_unconstrained","recursive_multi_step",4, 0.0001160348, 0.0032576405,-0.006153877, 0.002939584,-0.005408634, 0.003915922

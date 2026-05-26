@@ -1,4 +1,4 @@
-#' Fit INAD antedependence model by maximum likelihood
+#' Fit INAD Antedependence Model by Maximum Likelihood
 #'
 #' Fits INAD models by maximum likelihood.
 #'
@@ -180,6 +180,9 @@ fit_inad <- function(
         fit$settings$block_levels <- block_levels
     }
 
+    fit$.y <- y
+    fit$.blocks <- blocks_id
+
     fit$n_obs <- sum(!is.na(y))
     fit$n_missing <- sum(is.na(y))
     fit$pct_missing <- mean(is.na(y)) * 100
@@ -218,7 +221,7 @@ fit_inad <- function(
         fit$bic <- NA_real_
     }
 
-    class(fit) <- "inad_fit"
+    class(fit) <- c("inad_fit", "ad_fit")
     fit
 }
 

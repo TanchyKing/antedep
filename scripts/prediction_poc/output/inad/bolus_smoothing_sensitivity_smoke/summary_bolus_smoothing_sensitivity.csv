@@ -1,0 +1,25 @@
+"epsilon_label","model","task","horizon","diff_log_score_vs_nb.mean","diff_log_score_vs_nb.se","diff_rps_vs_nb.mean","diff_rps_vs_nb.se","diff_rmse_vs_nb.mean","diff_rmse_vs_nb.se"
+"large","inad_constrained_alpha","recursive_multi_step",1, 0.06735830, 0.07517368,-0.08494420, 0.21836762, 0.15315569, 0.10156109
+"main","inad_constrained_alpha","recursive_multi_step",1, 0.14914599, 0.05193929, 0.08593877, 0.01610569, 0.15315569, 0.10156109
+"small","inad_constrained_alpha","recursive_multi_step",1, 0.16467183, 0.04566454, 0.08783672, 0.01713417, 0.15315569, 0.10156109
+"large","inad_unconstrained","recursive_multi_step",1, 0.08212871, 0.03756033, 0.03359292, 0.04973018, 0.06293903, 0.02348577
+"main","inad_unconstrained","recursive_multi_step",1, 0.14318244, 0.02436230, 0.09110783, 0.01364451, 0.06293903, 0.02348577
+"small","inad_unconstrained","recursive_multi_step",1, 0.15385914, 0.02119183, 0.07679666, 0.01368091, 0.06293903, 0.02348577
+"large","inad_constrained_alpha","recursive_multi_step",2, 0.06768104, 0.14113797,-0.52237731, 0.53893786,-0.03221018, 0.07030475
+"main","inad_constrained_alpha","recursive_multi_step",2, 0.22222106, 0.10374004,-0.05679816, 0.10892379,-0.03221018, 0.07030475
+"small","inad_constrained_alpha","recursive_multi_step",2, 0.25542114, 0.09156927, 0.02511142, 0.03613740,-0.03221018, 0.07030475
+"large","inad_unconstrained","recursive_multi_step",2, 0.07177794, 0.12655903,-0.36969877, 0.44123502, 0.15088834, 0.03789730
+"main","inad_unconstrained","recursive_multi_step",2, 0.19748937, 0.11252427, 0.02961263, 0.11131909, 0.15088834, 0.03789730
+"small","inad_unconstrained","recursive_multi_step",2, 0.22404312, 0.10589265, 0.08856093, 0.06147865, 0.15088834, 0.03789730
+"large","inad_constrained_alpha","recursive_multi_step",3,-0.15808925, 0.16104761,-0.39953593, 0.39330335,-0.18216408, 0.12284799
+"main","inad_constrained_alpha","recursive_multi_step",3,-0.14574041, 0.16237933,-0.08953584, 0.09235847,-0.18216408, 0.12284799
+"small","inad_constrained_alpha","recursive_multi_step",3,-0.13871516, 0.15927634,-0.05656880, 0.06493157,-0.18216408, 0.12284799
+"large","inad_unconstrained","recursive_multi_step",3,-0.17855337, 0.06689697,-0.22137473, 0.14827354,-0.52153747, 0.10669971
+"main","inad_unconstrained","recursive_multi_step",3,-0.24954959, 0.08191801,-0.27967327, 0.11000104,-0.52153747, 0.10669971
+"small","inad_unconstrained","recursive_multi_step",3,-0.26144099, 0.08422932,-0.29771830, 0.09255041,-0.52153747, 0.10669971
+"large","inad_constrained_alpha","recursive_multi_step",4,-0.26137086, 0.09660779,-0.51564113, 0.30691110,-0.45187377, 0.11912925
+"main","inad_constrained_alpha","recursive_multi_step",4,-0.39605838, 0.11523204,-0.39286158, 0.19373579,-0.45187377, 0.11912925
+"small","inad_constrained_alpha","recursive_multi_step",4,-0.42526925, 0.11633125,-0.38349579, 0.18132893,-0.45187377, 0.11912925
+"large","inad_unconstrained","recursive_multi_step",4,-0.25141713, 0.07098921,-0.59651723, 0.39923558,-0.69518568, 0.26526879
+"main","inad_unconstrained","recursive_multi_step",4,-0.39776341, 0.04391101,-0.50880383, 0.11103384,-0.69518568, 0.26526879
+"small","inad_unconstrained","recursive_multi_step",4,-0.42873623, 0.03549607,-0.49601951, 0.04777178,-0.69518568, 0.26526879

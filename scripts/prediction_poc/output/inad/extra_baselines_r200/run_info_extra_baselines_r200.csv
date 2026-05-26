@@ -1,0 +1,2 @@
+"mode","n_reps","n_sims","n_per_group","fit_max_iter","include_tscount","include_nb_glmm","tscount_version","glmmTMB_version","n_cores","n_workers","seed","elapsed_seconds"
+"extra_baselines_r200",200,1000,50,50,TRUE,TRUE,"1.4.3","1.1.14",16,10,20260518,5108.83067703247

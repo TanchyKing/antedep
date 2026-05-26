@@ -1,0 +1,7 @@
+                       mode n_folds n_subjects n_group_1 n_group_2 n_sims
+1 bolus_leave_one_per_group      35         65        30        35   1000
+  fit_max_iter include_tscount include_nb_glmm n_cores n_workers     seed
+1           50            TRUE            TRUE      16        10 20260518
+  elapsed_seconds
+1        1384.761
+Output: D:/UI/MyPackage/antedep/scripts/prediction_poc/output/inad/bolus_leave_one_per_group 

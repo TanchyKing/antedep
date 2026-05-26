@@ -1,0 +1,2 @@
+"mode","fold_design","n_folds","n_sims","fit_max_iter","epsilon_small","epsilon_main","epsilon_large"
+"bolus_smoothing_sensitivity","rotation",35,1000,50,9.99900009999e-05,0.000999000999000999,0.0099009900990099

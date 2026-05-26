@@ -1,0 +1,2 @@
+"mode","n_folds","n_subjects","n_group_1","n_group_2","n_sims","fit_max_iter","include_tscount","include_nb_glmm","n_cores","n_workers","seed","elapsed_seconds"
+"bolus_leave_one_per_group",35,65,30,35,1000,50,TRUE,TRUE,16,10,20260518,1384.76074194908

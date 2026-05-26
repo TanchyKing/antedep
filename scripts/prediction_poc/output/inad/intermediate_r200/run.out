@@ -1,0 +1,5 @@
+               mode n_reps n_sims n_per_group fit_max_iter n_cores n_workers
+1 intermediate_r200    200   1000          50           50      16        10
+      seed elapsed_seconds
+1 20260518        4651.537
+Output: D:/UI/MyPackage/antedep/scripts/prediction_poc/output/inad/intermediate_r200 

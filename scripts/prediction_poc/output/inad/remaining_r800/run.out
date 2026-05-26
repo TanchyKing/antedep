@@ -1,0 +1,8 @@
+                             mode n_reps n_sims n_per_group fit_max_iter
+1 final_r1000_from_r200_plus_r800   1000   1000          50           50
+  n_cores n_workers     seed elapsed_seconds_remaining
+1      16        10 20260518                  20312.65
+                completed_at
+1 2026-05-18 10:57:07.204037
+Remaining output: D:/UI/MyPackage/antedep/scripts/prediction_poc/output/inad/remaining_r800 
+Final output: D:/UI/MyPackage/antedep/scripts/prediction_poc/output/inad/final_r1000 

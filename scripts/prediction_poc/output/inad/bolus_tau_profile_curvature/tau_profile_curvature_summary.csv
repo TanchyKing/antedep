@@ -1,0 +1,2 @@
+"param","est_fit","est_profile_curvature","se_profile_curvature","lower_profile_curvature","upper_profile_curvature","se_profile_ci_width","lower_profile_ci","upper_profile_ci","width_profile_ci","level","n_profile_points","curvature_delta_from_fit"
+"tau[2]",1.14284148568003,1.10028913394736,0.27310885320204,0.565005617812326,1.6355726500824,0.481833306056596,0.186910913067031,2.07566276591262,1.88875185284558,0.95,11,-0.042552351732665

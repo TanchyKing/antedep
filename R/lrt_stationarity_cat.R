@@ -1,6 +1,6 @@
 # test_stationarity_cat.R - Likelihood ratio test for stationarity in categorical AD
 
-#' Likelihood ratio test for stationarity (categorical AD data)
+#' Likelihood Ratio Test for Stationarity (Categorical AD Data)
 #'
 #' Tests whether a categorical antedependence process satisfies stationarity
 #' constraints in the AD parameterization.
@@ -207,11 +207,19 @@ test_stationarity_cat <- function(y, order = 1, blocks = NULL,
     bic = c(fit_null$bic, fit_alt$bic)
   )
   
+  method_label <- switch(test, lrt = "Likelihood Ratio", score = "Score (Pearson)",
+                         mlrt = "Modified LRT", wald = "Wald", test)
+
   # Assemble output
   out <- list(
-    method = test,
+    statistic  = stats::setNames(stat_value, paste(method_label, "chi-squared")),
+    parameter  = stats::setNames(df, "df"),
+    p.value    = p_value,
+    method     = paste0(method_label,
+                        " Test for Stationarity of Categorical AD(", p, ")"),
+    data.name  = deparse(substitute(y)),
+    inference  = test,
     lrt_stat = stat_value,
-    statistic = stat_value,
     lrt_stat_raw = lrt_stat_raw,
     e_hat_mlrt = e_hat_mlrt,
     df = df,
@@ -222,8 +230,8 @@ test_stationarity_cat <- function(y, order = 1, blocks = NULL,
     order = p,
     table = table_df
   )
-  
-  class(out) <- "cat_lrt"
+
+  class(out) <- c("cat_lrt", "htest")
   out
 }
 
@@ -307,7 +315,7 @@ test_stationarity_cat <- function(y, order = 1, blocks = NULL,
     )
   )
   
-  class(out) <- "cat_fit"
+  class(out) <- c("cat_fit", "ad_fit")
   out
 }
 
@@ -431,7 +439,7 @@ test_stationarity_cat <- function(y, order = 1, blocks = NULL,
 }
 
 
-#' Run all stationarity-related tests for categorical AD
+#' Run All Stationarity-Related Tests for Categorical AD
 #'
 #' Performs tests for time-invariance and stationarity constraints. For
 #' \code{order = 1}, the stationarity test corresponds to strict stationarity;
@@ -461,7 +469,7 @@ test_stationarity_cat <- function(y, order = 1, blocks = NULL,
 #' \donttest{
 #' y <- simulate_cat(200, 6, order = 1, n_categories = 2)
 #' result <- run_stationarity_tests_cat(y, order = 1)
-#' print(result$table)
+#' print(result)
 #' }
 #'
 #' @export
@@ -488,18 +496,38 @@ run_stationarity_tests_cat <- function(y, order = 1, blocks = NULL,
   # Build summary table
   table_df <- data.frame(
     test = c("Time-invariance", "Stationarity"),
-    method = c(test_ti$method, test_stat$method),
     lrt_stat = c(test_ti$lrt_stat, test_stat$lrt_stat),
     df = c(test_ti$df, test_stat$df),
     p_value = c(test_ti$p_value, test_stat$p_value),
-    significant = c(test_ti$p_value < 0.05, test_stat$p_value < 0.05),
     stringsAsFactors = FALSE
   )
   
-  list(
+  out <- list(
     method = test,
     time_invariance = test_ti,
     stationarity = test_stat,
     table = table_df
   )
+  class(out) <- "stationarity_tests_cat"
+  out
+}
+
+#' Print Method for Categorical Stationarity Test Collections
+#'
+#' @param x Object returned by \code{\link{run_stationarity_tests_cat}}.
+#' @param digits Number of digits used for printed numeric columns.
+#' @param ... Unused.
+#'
+#' @return The input object, invisibly.
+#' @export
+print.stationarity_tests_cat <- function(x, digits = 4, ...) {
+  cat("Stationarity-Related Tests for Categorical AD\n")
+  cat("=============================================\n\n")
+  if (!is.null(x$table)) {
+    tbl <- x$table
+    num_cols <- vapply(tbl, is.numeric, logical(1))
+    tbl[num_cols] <- lapply(tbl[num_cols], round, digits = digits)
+    print(tbl, row.names = FALSE)
+  }
+  invisible(x)
 }

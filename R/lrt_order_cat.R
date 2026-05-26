@@ -18,7 +18,7 @@
   )
 }
 
-#' Likelihood ratio test for antedependence order (categorical AD data)
+#' Likelihood Ratio Test for Antedependence Order (Categorical AD Data)
 #'
 #' Tests whether a higher-order AD model provides significantly better fit
 #' than a lower-order model for categorical longitudinal data.
@@ -80,11 +80,11 @@
 #'
 #' # Test AD(0) vs AD(1)
 #' test_01 <- test_order_cat(y, order_null = 0, order_alt = 1)
-#' print(test_01$table)
+#' print(test_01)
 #'
 #' # Test AD(1) vs AD(2)
 #' test_12 <- test_order_cat(y, order_null = 1, order_alt = 2)
-#' print(test_12$table)
+#' print(test_12)
 #'
 #' # Using pre-fitted models
 #' fit0 <- fit_cat(y, order = 0)
@@ -104,6 +104,7 @@ test_order_cat <- function(y = NULL, order_null = 0, order_alt = 1,
                           blocks = NULL, homogeneous = TRUE, n_categories = NULL,
                           fit_null = NULL, fit_alt = NULL,
                           test = c("lrt", "score", "mlrt", "wald")) {
+    data_name <- if (!is.null(y)) deparse(substitute(y)) else "supplied fits"
   test <- match.arg(test)
   
  # Validate that we have either y or pre-fitted models
@@ -240,11 +241,28 @@ test_order_cat <- function(y = NULL, order_null = 0, order_alt = 1,
     bic = c(fit_null$bic, fit_alt$bic)
   )
   
+  # Human-readable method name
+  method_label <- switch(test,
+    lrt   = "Likelihood Ratio",
+    score = "Score (Pearson)",
+    mlrt  = "Modified LRT",
+    wald  = "Wald",
+    test
+  )
+
   # Assemble output
   out <- list(
-    method = test,
+    # htest required slots
+    statistic  = stats::setNames(stat_value, paste(method_label, "chi-squared")),
+    parameter  = stats::setNames(df, "df"),
+    p.value    = p_value,
+    method     = paste0(method_label, " Test for Categorical AD Order (H0: AD(",
+                        fit_null$settings$order, ") vs H1: AD(",
+                        fit_alt$settings$order, "))"),
+    data.name  = data_name,
+    # additional slots
+    inference  = test,
     lrt_stat = stat_value,
-    statistic = stat_value,
     lrt_stat_raw = lrt_stat_raw,
     e_hat_mlrt = e_hat_mlrt,
     df = df,
@@ -256,8 +274,8 @@ test_order_cat <- function(y = NULL, order_null = 0, order_alt = 1,
     order_alt = fit_alt$settings$order,
     table = table_df
   )
-  
-  class(out) <- "cat_lrt"
+
+  class(out) <- c("cat_lrt", "htest")
   out
 }
 
@@ -304,7 +322,7 @@ print.cat_lrt <- function(x, ...) {
 }
 
 
-#' Run all pairwise order tests
+#' Run All Pairwise Order Tests for Categorical AD
 #'
 #' Performs sequential likelihood ratio tests for AD orders 0 vs 1, 1 vs 2, etc.
 #'
@@ -332,7 +350,7 @@ print.cat_lrt <- function(x, ...) {
 #' \donttest{
 #' y <- simulate_cat(200, 6, order = 1, n_categories = 2)
 #' result <- run_order_tests_cat(y, max_order = 2)
-#' print(result$table)
+#' print(result)
 #' cat("Selected order:", result$selected_order, "\n")
 #' }
 #'
@@ -423,11 +441,36 @@ run_order_tests_cat <- function(y, max_order = 2, blocks = NULL,
     }
   }
   
-  list(
+  out <- list(
     method = test,
     tests = tests,
     table = test_results,
     fits = fits,
     selected_order = selected_order
   )
+  class(out) <- "cat_order_tests"
+  out
+}
+
+#' Print Method for Categorical Order Test Collections
+#'
+#' @param x Object returned by \code{\link{run_order_tests_cat}}.
+#' @param digits Number of digits used for printed numeric columns.
+#' @param ... Unused.
+#'
+#' @return The input object, invisibly.
+#' @export
+print.cat_order_tests <- function(x, digits = 4, ...) {
+  cat("Sequential Order Tests for Categorical AD\n")
+  cat("=========================================\n\n")
+  if (!is.null(x$table)) {
+    tbl <- x$table
+    num_cols <- vapply(tbl, is.numeric, logical(1))
+    tbl[num_cols] <- lapply(tbl[num_cols], round, digits = digits)
+    print(tbl, row.names = FALSE)
+  }
+  if (!is.null(x$selected_order)) {
+    cat("\nSelected order:", x$selected_order, "\n")
+  }
+  invisible(x)
 }
