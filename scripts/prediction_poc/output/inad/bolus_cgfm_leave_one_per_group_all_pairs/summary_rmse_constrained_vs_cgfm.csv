@@ -1,0 +1,4 @@
+"model","reference","task","horizon","diff_rmse.mean","diff_rmse.se","diff_rmse.t","diff_rmse.q025","diff_rmse.q975"
+"inad_constrained_alpha","cgfm_independent","rolling_one_step",1,-0.62696470, 0.14907838,-4.20560452,-3.15118599, 0.92919820
+"inad_constrained_alpha","cgfm_shared","rolling_one_step",1, 0.01473825, 0.08942598, 0.16480953,-1.79956128, 1.05634192
+"inad_constrained_alpha","cgfm_time_varying","rolling_one_step",1, 0.01969261, 0.04083410, 0.48225893,-0.60950422, 0.75789471

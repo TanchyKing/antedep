@@ -69,9 +69,9 @@ NBT-NBI-INADFE(1): `Y_it = alpha o Y_i,t-1 + epsilon_it`, with constant alpha, n
 
 Same model class, but alpha is allowed to vary over time. It is reported as a sensitivity because the bolus LRT detects mild non-stationarity even though BIC prefers the constrained model.
 
-### 2.6 CGFM independent/shared frailty
+### 2.6 CGFM independent/shared/time-varying frailty
 
-CGFM rows use Henderson-Shimakura published full-data estimates only. In the local notation, the gamma frailty has mean 1 and frailty variance psi. Independent frailty has time-specific independent frailties; shared frailty uses a single subject-level frailty across all times. These rows are used for marginal mean and variance only.
+CGFM rows use Henderson-Shimakura published full-data estimates only. In the local notation, the gamma frailty has mean 1 and frailty variance psi. Independent frailty has time-specific independent frailties; shared frailty uses a single subject-level frailty across all times. The time-varying CGFM row uses the reproduced Henderson-Shimakura time-varying estimates; its correlation parameter rho affects cross-time association, while the one-time marginal means and variances use the fitted time effects, group effect, and frailty variance. These rows are used for marginal mean and variance only.
 
 ## 3. Simulation - INAD prediction precision
 
@@ -142,12 +142,12 @@ Design: all 30 x 35 cross-group held-out patient pairs, each fold holding out on
 
 The full-data LRT for constant alpha rejects (p = 0.000234), but BIC strongly prefers constrained-alpha INAD over unconstrained INAD (4244 vs 4298). The interpretation is mild detectable non-stationarity that is not worth 11 extra alpha parameters under BIC. Constrained-alpha INAD is therefore primary; unconstrained INAD is sensitivity.
 
-### 5.2 Constrained-alpha INAD vs baselines
+### 5.2 Single comparison table
 
 Each cell reports `delta (t)`, where:
 
 - **`delta`** = mean of the per-patient paired score difference
-  (INAD score minus baseline score) across the 60 held-out patients
+  (constrained-alpha INAD score minus reference score) across the 60 held-out patients
   pooled over folds. **Negative means INAD is better.** Units match the
   column: RPS units for RPS, counts for RMSE, nats for log score.
 - **`t`** = t-statistic of the paired difference, using **patient-level
@@ -157,66 +157,26 @@ Each cell reports `delta (t)`, where:
   significant at the 5% level, `|t| > 3` at roughly 0.1%, and `|t| >
   10` is overwhelming.
 
-A row therefore reads as: *"INAD's score is `|delta|` units below the
-baseline's, on average across patients, with a t-statistic of `t`."*
+A row therefore reads as: *"constrained-alpha INAD's score is `|delta|`
+units below the reference model's, on average across patients, with a
+t-statistic of `t`."*
 
-Rows are in the model order used throughout §4–§6 (Poisson before the NB family).
+Rows use constrained-alpha INAD as the comparison anchor. The unconstrained INAD fit is included as a reference row, so the constant-alpha sensitivity appears in the same table as the external baselines.
 
 | Reference | Delta RPS (t) | Delta RMSE (t) | Delta log score (t) |
 | --- | --- | --- | --- |
+| INAD unconstrained | -0.010 (-2.9) | -0.029 (-5.1) | -0.005 (-2.4) |
 | Poisson GLM | -0.078 (-16.3) | -0.012 (-1.9) | -0.175 (-30.6) |
 | NB GLM | -0.396 (-22.3) | -0.689 (-23.9) | -0.123 (-18.6) |
 | NB GLMM | -0.153 (-12.3) | -0.217 (-10.7) | -0.056 (-10.8) |
 
-How to read the table: every cell here is negative (INAD better) with
-`|t|` well above 10 except the Poisson GLM RMSE cell at `|t| = 1.9`,
-which is at the conventional significance edge. So constrained-α INAD
-outperforms NB GLM, NB GLMM, and Poisson GLM on RPS and log score with
-overwhelming statistical reliability, and outperforms NB GLM and NB GLMM
-on RMSE with the same; the only soft cell is constrained-α INAD vs
-Poisson GLM on RMSE.
+How to read the table: constrained-alpha INAD is modestly but consistently better than unconstrained INAD on rolling one-step prediction. It is also better than NB GLM, NB GLMM, and Poisson GLM on RPS and log score with strong statistical reliability, and better than NB GLM and NB GLMM on RMSE. The only soft external-baseline cell is the Poisson GLM RMSE comparison, which is small and borderline by t-statistic.
 
-### 5.3 Unconstrained INAD vs baselines
+CGFM variants are not shown as numeric prediction rows in this table. The Henderson-Shimakura reproduction script validates the full-data independent, shared, and time-varying CGFM fits, but those fits have not yet been refit and scored inside each leave-two-out prediction fold. The independent CGFM has the same one-time marginal predictive family as a marginal NB GLM, because an independent Poisson-gamma mixture reduces to an NB distribution; a separate independent-CGFM prediction row would therefore be theoretically redundant with the NB-GLM-style marginal predictive row once the same mean and dispersion convention is used. Shared and time-varying CGFM prediction would be genuinely different because they use within-patient frailty history, but they require separate fold-wise prediction scripts.
 
-Same table convention as §5.2.
+### 5.3 Bolus prediction headline
 
-| Reference | Delta RPS (t) | Delta RMSE (t) | Delta log score (t) |
-| --- | --- | --- | --- |
-| Poisson GLM | -0.069 (-14.0) | 0.018 (2.9) | -0.170 (-29.3) |
-| NB GLM | -0.386 (-23.0) | -0.659 (-24.6) | -0.118 (-18.9) |
-| NB GLMM | -0.144 (-12.3) | -0.187 (-10.1) | -0.052 (-10.4) |
-
-The pattern is the same as for constrained-alpha. The only cell where
-the unconstrained fit does worse than the baseline is Poisson GLM on
-RMSE (`+0.018`, `t = 2.9`) — still tiny in magnitude but pointing in
-the wrong direction; this is the same Poisson-RMSE corner that was
-soft under the constrained fit.
-
-### 5.4 Sensitivity to the constant-alpha specification
-
-§5.1 identified constrained-alpha INAD as the BIC-supported primary
-fit and unconstrained INAD as a sensitivity check. Comparing §5.2 and
-§5.3 row-by-row, **the constrained fit is slightly but consistently
-better than the unconstrained fit on every (baseline, metric) cell**.
-For example, RPS vs NB GLM is `-0.396` for constrained and `-0.386`
-for unconstrained (constrained gap is 0.01 larger in magnitude); RMSE
-and log score against the same baseline follow the same pattern, and
-the same is true for the NB GLMM and Poisson GLM comparisons. The
-Poisson-RMSE soft cell is also slightly stronger under the constrained
-fit.
-
-The constrained-minus-unconstrained gap is small relative to the
-INAD-vs-baseline deltas, so the qualitative predictive ranking of INAD
-against the GLM-family baselines is the same under either fit. But on
-prediction as on BIC, the constrained-alpha specification is the
-preferred choice — the extra 11 alpha parameters in the unconstrained
-fit do not buy back any predictive performance over the GLM-family
-baselines. The bolus predictive evidence therefore reinforces the
-§5.1 primary-model decision rather than complicating it.
-
-### 5.5 Bolus prediction headline
-
-On rolling one-step prediction, constrained-alpha INAD beats the marginal NB GLM, NB GLMM, and Poisson GLM on RPS. It also beats all three on RMSE except that the Poisson RMSE margin is small and only borderline by t-statistic. Log score is better than NB GLM, NB GLMM, and Poisson GLM. The unconstrained sensitivity tells the same qualitative story.
+On rolling one-step prediction, constrained-alpha INAD beats the marginal NB GLM, NB GLMM, and Poisson GLM on RPS. It also beats all three on RMSE except that the Poisson RMSE margin is small and only borderline by t-statistic. Log score is better than NB GLM, NB GLMM, and Poisson GLM. The unconstrained sensitivity is now folded into the single comparison table and shows that constrained-alpha INAD is slightly better than unconstrained INAD across all three metrics.
 
 ## 6. Bolus marginal mean and variance comparison
 
@@ -228,7 +188,7 @@ MARD = **Mean Absolute Relative Discrepancy** across the 12 time points, compute
 
 A second column for Group 1 variance, "G1 var (excl t=11)", reports the same MARD computed without time 11. This is a sensitivity column: the empirical G1 variance at t = 11 is unusually small (4.26), which inflates relative discrepancies for every model at that one cell. The ranking is robust to its exclusion.
 
-**Model ordering.** All §6 tables list models in the consistent §4–§6 order: INAD variants (constrained then unconstrained), then count GLMs (Poisson, NB, NB GLMM), then CGFM (independent, shared). The Poisson GLM row here uses the **marginal no-lag** Poisson fit (`y ~ group + factor(time)`), which is the appropriate form for marginal-moment comparison; this is a different fit from the lag-aware predictive Poisson GLM used in §4 and §5.
+**Model ordering.** All §6 tables list models in the consistent §4–§6 order: INAD variants (constrained then unconstrained), then count GLMs (Poisson, NB, NB GLMM), then CGFM (independent, shared, time-varying). The Poisson GLM row here uses the no-lag Poisson fit (`y ~ group + factor(time)`), which is the appropriate form for marginal-moment comparison; this is a different fit from the lag-aware predictive Poisson GLM used in §4 and §5.
 
 **MARD headline (best per column in bold).** U-INAD has the smallest MARD in 3 of 4 cells (G1 mean, G2 mean, G2 variance); C-α INAD wins G1 variance and the G1-variance sensitivity excluding t = 11. INAD class therefore dominates marginal-moment reproduction on MARD.
 
@@ -236,11 +196,12 @@ A second column for Group 1 variance, "G1 var (excl t=11)", reports the same MAR
 | --- | --- | --- | --- | --- | --- |
 | INAD constrained-α | 8.35 | **26.74** | **15.65** | 9.31 | 22.79 |
 | INAD unconstrained | **5.92** | 29.05 | 20.37 | **5.83** | **19.72** |
-| Poisson GLM (marginal) | 9.95 | 59.70 | 64.84 | 5.96 | 78.52 |
+| Poisson GLM | 9.95 | 59.70 | 64.84 | 5.96 | 78.52 |
 | NB GLM | 8.89 | 42.36 | 29.70 | 6.94 | 21.01 |
 | NB GLMM | 8.35 | 58.35 | 43.73 | 8.24 | 24.25 |
 | CGFM independent frailty | 8.94 | 42.44 | 29.53 | 6.87 | 20.75 |
 | CGFM shared frailty | 9.86 | 29.01 | 23.14 | 6.01 | 41.83 |
+| CGFM time-varying frailty | 8.96 | 42.26 | 29.70 | 6.88 | 21.08 |
 
 **Caveat on the C-α INAD variance row.** The constrained-α fit currently uses an inherited `nb_inno_size` from the unconstrained fit (a POC shortcut documented in §4). Under proper joint re-estimation of `nb_inno_size_t` with constrained `α`, the C-α INAD variance numbers (G1 and G2) would shift to some extent — the unconstrained `nb_inno_size_t` has CV ≈ 47% across times, so joint constrained estimation is unlikely to leave the variance numbers unchanged. **The qualitative interpretation is expected to be stable, but the constrained-α variance magnitudes should be treated as provisional until joint estimation is implemented.** Future work; tracked in `inad-validation-revision-todo.md`.
 
@@ -444,4 +405,3 @@ Already landed: `.simulate_inad_forward()` and the public `predict.inad_fit()` S
 Remaining: a shared cross-family `type = "distribution"` API after the gau/cat POCs; a proper `alpha_constraint = "constant"` path in `fit_inad()` with joint re-estimation; exact one-step PMFs as future methodological cleanup; and optional scoring helpers only if distribution-valued prediction becomes public.
 
 Next sequence: start the gau and cat script-first prediction POCs, stop at smoke-test validation, then decide the shared prediction API before moving gau/cat prediction methods into the package.
-

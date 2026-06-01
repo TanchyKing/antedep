@@ -1,0 +1,4 @@
+"model","reference","task","horizon","diff_log_score.mean","diff_log_score.se","diff_log_score.t","diff_log_score.q025","diff_log_score.q975","diff_rps.mean","diff_rps.se","diff_rps.t","diff_rps.q025","diff_rps.q975"
+"inad_constrained_alpha","cgfm_independent","rolling_one_step",1,-0.15693883, 0.03739086,-4.19725076,-0.79097241, 0.51021577,-0.45926311, 0.09760267,-4.70543613,-2.33367956, 0.77008670
+"inad_constrained_alpha","cgfm_shared","rolling_one_step",1,-0.14391529, 0.04454294,-3.23093344,-0.93682165, 0.29372251,-0.07243162, 0.06603634,-1.09684479,-1.56663038, 0.89607956
+"inad_constrained_alpha","cgfm_time_varying","rolling_one_step",1,-0.01676607, 0.01253518,-1.33752145,-0.16142733, 0.20015230,-0.06649682, 0.02895552,-2.29651609,-0.37922350, 0.57433140

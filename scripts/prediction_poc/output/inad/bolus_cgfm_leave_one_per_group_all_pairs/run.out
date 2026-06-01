@@ -1,0 +1,29 @@
+                                      mode fold_source n_folds
+1 bolus_cgfm_leave_one_per_group_all_pairs   all_pairs    1050
+  include_time_varying maxit elapsed_seconds               completed_at
+1                 TRUE  3000        8092.818 2026-05-27 01:31:05.339737
+                   model         reference             task horizon
+1 inad_constrained_alpha  cgfm_independent rolling_one_step       1
+2 inad_constrained_alpha       cgfm_shared rolling_one_step       1
+3 inad_constrained_alpha cgfm_time_varying rolling_one_step       1
+  diff_log_score.mean diff_log_score.se diff_log_score.t diff_log_score.q025
+1         -0.15693883        0.03739086      -4.19725076         -0.79097241
+2         -0.14391529        0.04454294      -3.23093344         -0.93682165
+3         -0.01676607        0.01253518      -1.33752145         -0.16142733
+  diff_log_score.q975 diff_rps.mean diff_rps.se  diff_rps.t diff_rps.q025
+1          0.51021577   -0.45926311  0.09760267 -4.70543613   -2.33367956
+2          0.29372251   -0.07243162  0.06603634 -1.09684479   -1.56663038
+3          0.20015230   -0.06649682  0.02895552 -2.29651609   -0.37922350
+  diff_rps.q975
+1    0.77008670
+2    0.89607956
+3    0.57433140
+                   model         reference             task horizon
+1 inad_constrained_alpha  cgfm_independent rolling_one_step       1
+2 inad_constrained_alpha       cgfm_shared rolling_one_step       1
+3 inad_constrained_alpha cgfm_time_varying rolling_one_step       1
+  diff_rmse.mean diff_rmse.se diff_rmse.t diff_rmse.q025 diff_rmse.q975
+1    -0.62696470   0.14907838 -4.20560452    -3.15118599     0.92919820
+2     0.01473825   0.08942598  0.16480953    -1.79956128     1.05634192
+3     0.01969261   0.04083410  0.48225893    -0.60950422     0.75789471
+Output: D:/UI/MyPackage/antedep/scripts/prediction_poc/output/inad/bolus_cgfm_leave_one_per_group_all_pairs 

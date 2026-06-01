@@ -168,6 +168,7 @@
       margin: 0 0.8em 0.2em -1.6em;
       vertical-align: middle;
     }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
   <style>
   /* Custom layout overrides for inad-validation-summary.html. Loaded via
@@ -209,94 +210,118 @@
 <nav id="TOC" role="doc-toc">
 <ul>
 <li><a href="#inad-validation-summary---prediction-and-marginal-moments"
-id="toc-inad-validation-summary---prediction-and-marginal-moments">INAD
-Validation Summary - Prediction and Marginal Moments</a>
+id="toc-inad-validation-summary---prediction-and-marginal-moments"><span
+class="toc-section-number">1</span> INAD Validation Summary - Prediction
+and Marginal Moments</a>
 <ul>
-<li><a href="#scope-and-setup" id="toc-scope-and-setup">1. Scope and
-setup</a>
+<li><a href="#scope-and-setup" id="toc-scope-and-setup"><span
+class="toc-section-number">1.1</span> 1. Scope and setup</a>
 <ul>
-<li><a href="#what-this-note-covers" id="toc-what-this-note-covers">1.1
-What this note covers</a></li>
-<li><a href="#evaluation-framework" id="toc-evaluation-framework">1.2
-Evaluation framework</a></li>
-<li><a href="#metric-primer" id="toc-metric-primer">1.3 Metric
-primer</a></li>
+<li><a href="#what-this-note-covers"
+id="toc-what-this-note-covers"><span
+class="toc-section-number">1.1.1</span> 1.1 What this note
+covers</a></li>
+<li><a href="#evaluation-framework" id="toc-evaluation-framework"><span
+class="toc-section-number">1.1.2</span> 1.2 Evaluation
+framework</a></li>
+<li><a href="#metric-primer" id="toc-metric-primer"><span
+class="toc-section-number">1.1.3</span> 1.3 Metric primer</a></li>
 </ul></li>
 <li><a href="#models-compared---formulations"
-id="toc-models-compared---formulations">2. Models compared -
+id="toc-models-compared---formulations"><span
+class="toc-section-number">1.2</span> 2. Models compared -
 formulations</a>
 <ul>
-<li><a href="#nb-glm" id="toc-nb-glm">2.1 NB GLM</a></li>
-<li><a href="#nb-glmm" id="toc-nb-glmm">2.2 NB GLMM</a></li>
-<li><a href="#poisson-glm" id="toc-poisson-glm">2.3 Poisson GLM</a></li>
+<li><a href="#nb-glm" id="toc-nb-glm"><span
+class="toc-section-number">1.2.1</span> 2.1 NB GLM</a></li>
+<li><a href="#nb-glmm" id="toc-nb-glmm"><span
+class="toc-section-number">1.2.2</span> 2.2 NB GLMM</a></li>
+<li><a href="#poisson-glm" id="toc-poisson-glm"><span
+class="toc-section-number">1.2.3</span> 2.3 Poisson GLM</a></li>
 <li><a href="#inad-constrained-alpha"
-id="toc-inad-constrained-alpha">2.4 INAD constrained-alpha</a></li>
-<li><a href="#inad-unconstrained" id="toc-inad-unconstrained">2.5 INAD
-unconstrained</a></li>
-<li><a href="#cgfm-independentshared-frailty"
-id="toc-cgfm-independentshared-frailty">2.6 CGFM independent/shared
-frailty</a></li>
+id="toc-inad-constrained-alpha"><span
+class="toc-section-number">1.2.4</span> 2.4 INAD
+constrained-alpha</a></li>
+<li><a href="#inad-unconstrained" id="toc-inad-unconstrained"><span
+class="toc-section-number">1.2.5</span> 2.5 INAD unconstrained</a></li>
+<li><a href="#cgfm-independentsharedtime-varying-frailty"
+id="toc-cgfm-independentsharedtime-varying-frailty"><span
+class="toc-section-number">1.2.6</span> 2.6 CGFM
+independent/shared/time-varying frailty</a></li>
 </ul></li>
 <li><a href="#simulation---inad-prediction-precision"
-id="toc-simulation---inad-prediction-precision">3. Simulation - INAD
-prediction precision</a></li>
+id="toc-simulation---inad-prediction-precision"><span
+class="toc-section-number">1.3</span> 3. Simulation - INAD prediction
+precision</a></li>
 <li><a href="#bolus-in-sample-fit---bic-comparison"
-id="toc-bolus-in-sample-fit---bic-comparison">4. Bolus in-sample fit -
-BIC comparison</a></li>
+id="toc-bolus-in-sample-fit---bic-comparison"><span
+class="toc-section-number">1.4</span> 4. Bolus in-sample fit - BIC
+comparison</a></li>
 <li><a href="#bolus-prediction---rolling-one-step"
-id="toc-bolus-prediction---rolling-one-step">5. Bolus prediction -
-rolling one-step</a>
+id="toc-bolus-prediction---rolling-one-step"><span
+class="toc-section-number">1.5</span> 5. Bolus prediction - rolling
+one-step</a>
 <ul>
 <li><a href="#stationarity-and-primary-model-choice"
-id="toc-stationarity-and-primary-model-choice">5.1 Stationarity and
+id="toc-stationarity-and-primary-model-choice"><span
+class="toc-section-number">1.5.1</span> 5.1 Stationarity and
 primary-model choice</a></li>
-<li><a href="#constrained-alpha-inad-vs-baselines"
-id="toc-constrained-alpha-inad-vs-baselines">5.2 Constrained-alpha INAD
-vs baselines</a></li>
-<li><a href="#unconstrained-inad-vs-baselines"
-id="toc-unconstrained-inad-vs-baselines">5.3 Unconstrained INAD vs
-baselines</a></li>
-<li><a href="#sensitivity-to-the-constant-alpha-specification"
-id="toc-sensitivity-to-the-constant-alpha-specification">5.4 Sensitivity
-to the constant-alpha specification</a></li>
+<li><a href="#single-comparison-table"
+id="toc-single-comparison-table"><span
+class="toc-section-number">1.5.2</span> 5.2 Single comparison
+table</a></li>
 <li><a href="#bolus-prediction-headline"
-id="toc-bolus-prediction-headline">5.5 Bolus prediction
+id="toc-bolus-prediction-headline"><span
+class="toc-section-number">1.5.3</span> 5.3 Bolus prediction
 headline</a></li>
 </ul></li>
 <li><a href="#bolus-marginal-mean-and-variance-comparison"
-id="toc-bolus-marginal-mean-and-variance-comparison">6. Bolus marginal
-mean and variance comparison</a>
+id="toc-bolus-marginal-mean-and-variance-comparison"><span
+class="toc-section-number">1.6</span> 6. Bolus marginal mean and
+variance comparison</a>
 <ul>
-<li><a href="#mard-summary" id="toc-mard-summary">6.1 MARD
-summary</a></li>
+<li><a href="#mard-summary" id="toc-mard-summary"><span
+class="toc-section-number">1.6.1</span> 6.1 MARD summary</a></li>
 <li><a href="#group-1-mean-relative-discrepancy"
-id="toc-group-1-mean-relative-discrepancy">6.2 Group 1 mean relative
+id="toc-group-1-mean-relative-discrepancy"><span
+class="toc-section-number">1.6.2</span> 6.2 Group 1 mean relative
 discrepancy (%)</a></li>
 <li><a href="#group-1-variance-relative-discrepancy"
-id="toc-group-1-variance-relative-discrepancy">6.3 Group 1 variance
-relative discrepancy (%)</a></li>
+id="toc-group-1-variance-relative-discrepancy"><span
+class="toc-section-number">1.6.3</span> 6.3 Group 1 variance relative
+discrepancy (%)</a></li>
 <li><a href="#group-2-mean-relative-discrepancy"
-id="toc-group-2-mean-relative-discrepancy">6.4 Group 2 mean relative
+id="toc-group-2-mean-relative-discrepancy"><span
+class="toc-section-number">1.6.4</span> 6.4 Group 2 mean relative
 discrepancy (%)</a></li>
 <li><a href="#group-2-variance-relative-discrepancy"
-id="toc-group-2-variance-relative-discrepancy">6.5 Group 2 variance
-relative discrepancy (%)</a></li>
+id="toc-group-2-variance-relative-discrepancy"><span
+class="toc-section-number">1.6.5</span> 6.5 Group 2 variance relative
+discrepancy (%)</a></li>
 <li><a
 href="#supporting-rank-and-worst-case-summaries-metric-sensitivity"
-id="toc-supporting-rank-and-worst-case-summaries-metric-sensitivity">6.6
-Supporting rank and worst-case summaries (metric sensitivity)</a></li>
+id="toc-supporting-rank-and-worst-case-summaries-metric-sensitivity"><span
+class="toc-section-number">1.6.6</span> 6.6 Supporting rank and
+worst-case summaries (metric sensitivity)</a></li>
 <li><a href="#marginal-moment-headline"
-id="toc-marginal-moment-headline">6.7 Marginal-moment headline</a></li>
+id="toc-marginal-moment-headline"><span
+class="toc-section-number">1.6.7</span> 6.7 Marginal-moment
+headline</a></li>
 </ul></li>
-<li><a href="#cross-cutting-findings" id="toc-cross-cutting-findings">7.
-Cross-cutting findings</a></li>
+<li><a href="#cross-cutting-findings"
+id="toc-cross-cutting-findings"><span
+class="toc-section-number">1.7</span> 7. Cross-cutting findings</a></li>
 <li><a href="#implications-for-antedep"
-id="toc-implications-for-antedep">8. Implications for antedep</a></li>
+id="toc-implications-for-antedep"><span
+class="toc-section-number">1.8</span> 8. Implications for
+antedep</a></li>
 </ul></li>
 </ul>
 </nav>
-<h1 id="inad-validation-summary---prediction-and-marginal-moments">INAD
-Validation Summary - Prediction and Marginal Moments</h1>
+<h1 data-number="1"
+id="inad-validation-summary---prediction-and-marginal-moments"><span
+class="header-section-number">1</span> INAD Validation Summary -
+Prediction and Marginal Moments</h1>
 <p><strong>Headline.</strong> Under correct INAD specification (R = 1000
 simulation), INAD predicts the next visit with log score ~2.5 nats and
 randomized PIT centered at 0.5 (well calibrated). On bolus rolling
@@ -319,8 +344,11 @@ forecasting against count GLM baselines; the bolus marginal-moment
 section compares fitted to empirical mean and variance against a broader
 baseline ladder including published Henderson-Shimakura CGFM
 estimates.</p>
-<h2 id="scope-and-setup">1. Scope and setup</h2>
-<h3 id="what-this-note-covers">1.1 What this note covers</h3>
+<h2 data-number="1.1" id="scope-and-setup"><span
+class="header-section-number">1.1</span> 1. Scope and setup</h2>
+<h3 data-number="1.1.1" id="what-this-note-covers"><span
+class="header-section-number">1.1.1</span> 1.1 What this note
+covers</h3>
 <ul>
 <li>Simulation: absolute prediction precision for constrained-alpha INAD
 under its own NBT-NBI-INADFE(1) DGP.</li>
@@ -337,7 +365,8 @@ and what remains.</li>
 published Henderson-Shimakura estimates. No R implementation is
 available for refitting CGFM inside each cross-validation fold, so CGFM
 is not included in the predictive comparison.</p>
-<h3 id="evaluation-framework">1.2 Evaluation framework</h3>
+<h3 data-number="1.1.2" id="evaluation-framework"><span
+class="header-section-number">1.1.2</span> 1.2 Evaluation framework</h3>
 <p>The predictive target is conditional new-subject forecasting. A model
 is fit on training subjects, early observations of held-out subjects are
 revealed, and later observations are predicted from the fitted
@@ -348,7 +377,8 @@ Monte Carlo forward simulation from the fitted process; NB and Poisson
 GLMs use analytic plug-in PMFs; NB GLMM uses the fitted random-intercept
 model for prediction. Lower RMSE, lower log score, and lower RPS are
 better.</p>
-<h3 id="metric-primer">1.3 Metric primer</h3>
+<h3 data-number="1.1.3" id="metric-primer"><span
+class="header-section-number">1.1.3</span> 1.3 Metric primer</h3>
 <ul>
 <li>RMSE measures point prediction error of the predictive mean, on the
 original count scale.</li>
@@ -359,44 +389,58 @@ smoothing when the PMF is simulation-based.</li>
 over the full integer support. It is a proper probabilistic score and is
 less sensitive than log score to a single tail probability.</li>
 </ul>
-<h2 id="models-compared---formulations">2. Models compared -
+<h2 data-number="1.2" id="models-compared---formulations"><span
+class="header-section-number">1.2</span> 2. Models compared -
 formulations</h2>
 <p>Notation: subject i has group g(i), time t = 1, …, T, and group 1 is
 the reference.</p>
-<h3 id="nb-glm">2.1 NB GLM</h3>
+<h3 data-number="1.2.1" id="nb-glm"><span
+class="header-section-number">1.2.1</span> 2.1 NB GLM</h3>
 <p><code>Y_it ~ NB(mu_it, theta)</code>, with
 <code>log mu_it = beta0 + beta_group[g(i)] + beta_time[t]</code>. This
 is the marginal no-lag form used for the BIC and marginal-moment
 comparison.</p>
-<h3 id="nb-glmm">2.2 NB GLMM</h3>
+<h3 data-number="1.2.2" id="nb-glmm"><span
+class="header-section-number">1.2.2</span> 2.2 NB GLMM</h3>
 <p>Two forms are used. The predictive form is lag-aware:
 <code>log mu_it = beta0 + beta_group[g(i)] + beta_time[t] + gamma log(Y_i,t-1 + 1) + b_i</code>,
 with <code>b_i ~ N(0, sigma_b^2)</code>. The marginal-moment/BIC form
 drops the lag term so closed-form marginal moments can be obtained by
 integrating the random intercept.</p>
-<h3 id="poisson-glm">2.3 Poisson GLM</h3>
+<h3 data-number="1.2.3" id="poisson-glm"><span
+class="header-section-number">1.2.3</span> 2.3 Poisson GLM</h3>
 <p>The predictive pipeline uses the lag-aware form
 <code>Y_it ~ Poisson(mu_it)</code>,
 <code>log mu_it = beta0 + beta_group[g(i)] + beta_time[t] + gamma log(Y_i,t-1 + 1)</code>.
 Rows at t = 1 are dropped because no lag is available.</p>
-<h3 id="inad-constrained-alpha">2.4 INAD constrained-alpha</h3>
+<h3 data-number="1.2.4" id="inad-constrained-alpha"><span
+class="header-section-number">1.2.4</span> 2.4 INAD
+constrained-alpha</h3>
 <p>NBT-NBI-INADFE(1): <code>Y_it = alpha o Y_i,t-1 + epsilon_it</code>,
 with constant alpha, negative-binomial thinning, and NB innovations with
 time-varying mean/size plus group effect tau. This is the BIC-supported
 primary INAD variant for bolus.</p>
-<h3 id="inad-unconstrained">2.5 INAD unconstrained</h3>
+<h3 data-number="1.2.5" id="inad-unconstrained"><span
+class="header-section-number">1.2.5</span> 2.5 INAD unconstrained</h3>
 <p>Same model class, but alpha is allowed to vary over time. It is
 reported as a sensitivity because the bolus LRT detects mild
 non-stationarity even though BIC prefers the constrained model.</p>
-<h3 id="cgfm-independentshared-frailty">2.6 CGFM independent/shared
-frailty</h3>
+<h3 data-number="1.2.6"
+id="cgfm-independentsharedtime-varying-frailty"><span
+class="header-section-number">1.2.6</span> 2.6 CGFM
+independent/shared/time-varying frailty</h3>
 <p>CGFM rows use Henderson-Shimakura published full-data estimates only.
 In the local notation, the gamma frailty has mean 1 and frailty variance
 psi. Independent frailty has time-specific independent frailties; shared
-frailty uses a single subject-level frailty across all times. These rows
-are used for marginal mean and variance only.</p>
-<h2 id="simulation---inad-prediction-precision">3. Simulation - INAD
-prediction precision</h2>
+frailty uses a single subject-level frailty across all times. The
+time-varying CGFM row uses the reproduced Henderson-Shimakura
+time-varying estimates; its correlation parameter rho affects cross-time
+association, while the one-time marginal means and variances use the
+fitted time effects, group effect, and frailty variance. These rows are
+used for marginal mean and variance only.</p>
+<h2 data-number="1.3" id="simulation---inad-prediction-precision"><span
+class="header-section-number">1.3</span> 3. Simulation - INAD prediction
+precision</h2>
 <p>This section asks one question: <strong>how good are the predictions
 produced by constrained-alpha INAD when its modelling assumptions are
 correct?</strong> The DGP is INAD itself, so the simulation tests the
@@ -491,8 +535,9 @@ coverages are slightly above their nominal levels, so the predictive
 intervals are mildly conservative rather than over-confident. Acceptable
 for the validation target.</li>
 </ul>
-<h2 id="bolus-in-sample-fit---bic-comparison">4. Bolus in-sample fit -
-BIC comparison</h2>
+<h2 data-number="1.4" id="bolus-in-sample-fit---bic-comparison"><span
+class="header-section-number">1.4</span> 4. Bolus in-sample fit - BIC
+comparison</h2>
 <p>BIC is computed on the full bolus data. <strong>Rows are listed in
 the consistent model order used throughout §4–§6</strong> (INAD variants
 → Poisson GLM → NB family → CGFM family). Constrained-α INAD has the
@@ -578,28 +623,31 @@ moments.</td>
 </tr>
 </tbody>
 </table>
-<h2 id="bolus-prediction---rolling-one-step">5. Bolus prediction -
-rolling one-step</h2>
+<h2 data-number="1.5" id="bolus-prediction---rolling-one-step"><span
+class="header-section-number">1.5</span> 5. Bolus prediction - rolling
+one-step</h2>
 <p>Design: all 30 x 35 cross-group held-out patient pairs, each fold
 holding out one group-1 and one group-2 patient and fitting on the
 remaining 63 patients. Standard errors are patient-level clustered, so
 overlapping folds do not receive naive independent-fold uncertainty.</p>
-<h3 id="stationarity-and-primary-model-choice">5.1 Stationarity and
+<h3 data-number="1.5.1" id="stationarity-and-primary-model-choice"><span
+class="header-section-number">1.5.1</span> 5.1 Stationarity and
 primary-model choice</h3>
 <p>The full-data LRT for constant alpha rejects (p = 0.000234), but BIC
 strongly prefers constrained-alpha INAD over unconstrained INAD (4244 vs
 4298). The interpretation is mild detectable non-stationarity that is
 not worth 11 extra alpha parameters under BIC. Constrained-alpha INAD is
 therefore primary; unconstrained INAD is sensitivity.</p>
-<h3 id="constrained-alpha-inad-vs-baselines">5.2 Constrained-alpha INAD
-vs baselines</h3>
+<h3 data-number="1.5.2" id="single-comparison-table"><span
+class="header-section-number">1.5.2</span> 5.2 Single comparison
+table</h3>
 <p>Each cell reports <code>delta (t)</code>, where:</p>
 <ul>
 <li><strong><code>delta</code></strong> = mean of the per-patient paired
-score difference (INAD score minus baseline score) across the 60
-held-out patients pooled over folds. <strong>Negative means INAD is
-better.</strong> Units match the column: RPS units for RPS, counts for
-RMSE, nats for log score.</li>
+score difference (constrained-alpha INAD score minus reference score)
+across the 60 held-out patients pooled over folds. <strong>Negative
+means INAD is better.</strong> Units match the column: RPS units for
+RPS, counts for RMSE, nats for log score.</li>
 <li><strong><code>t</code></strong> = t-statistic of the paired
 difference, using <strong>patient-level clustered standard
 errors</strong> so that overlapping folds (each patient appears in many
@@ -608,11 +656,13 @@ Conventional thresholds: <code>|t| &gt; 2</code> is significant at the
 5% level, <code>|t| &gt; 3</code> at roughly 0.1%, and
 <code>|t| &gt; 10</code> is overwhelming.</li>
 </ul>
-<p>A row therefore reads as: <em>“INAD’s score is <code>|delta|</code>
-units below the baseline’s, on average across patients, with a
-t-statistic of <code>t</code>.”</em></p>
-<p>Rows are in the model order used throughout §4–§6 (Poisson before the
-NB family).</p>
+<p>A row therefore reads as: <em>“constrained-alpha INAD’s score is
+<code>|delta|</code> units below the reference model’s, on average
+across patients, with a t-statistic of <code>t</code>.”</em></p>
+<p>Rows use constrained-alpha INAD as the comparison anchor. The
+unconstrained INAD fit is included as a reference row, so the
+constant-alpha sensitivity appears in the same table as the external
+baselines.</p>
 <table>
 <thead>
 <tr>
@@ -623,6 +673,12 @@ NB family).</p>
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>INAD unconstrained</td>
+<td>-0.010 (-2.9)</td>
+<td>-0.029 (-5.1)</td>
+<td>-0.005 (-2.4)</td>
+</tr>
 <tr>
 <td>Poisson GLM</td>
 <td>-0.078 (-16.3)</td>
@@ -643,86 +699,46 @@ NB family).</p>
 </tr>
 </tbody>
 </table>
-<p>How to read the table: every cell here is negative (INAD better) with
-<code>|t|</code> well above 10 except the Poisson GLM RMSE cell at
-<code>|t| = 1.9</code>, which is at the conventional significance edge.
-So constrained-α INAD outperforms NB GLM, NB GLMM, and Poisson GLM on
-RPS and log score with overwhelming statistical reliability, and
-outperforms NB GLM and NB GLMM on RMSE with the same; the only soft cell
-is constrained-α INAD vs Poisson GLM on RMSE.</p>
-<h3 id="unconstrained-inad-vs-baselines">5.3 Unconstrained INAD vs
-baselines</h3>
-<p>Same table convention as §5.2.</p>
-<table>
-<thead>
-<tr>
-<th>Reference</th>
-<th>Delta RPS (t)</th>
-<th>Delta RMSE (t)</th>
-<th>Delta log score (t)</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Poisson GLM</td>
-<td>-0.069 (-14.0)</td>
-<td>0.018 (2.9)</td>
-<td>-0.170 (-29.3)</td>
-</tr>
-<tr>
-<td>NB GLM</td>
-<td>-0.386 (-23.0)</td>
-<td>-0.659 (-24.6)</td>
-<td>-0.118 (-18.9)</td>
-</tr>
-<tr>
-<td>NB GLMM</td>
-<td>-0.144 (-12.3)</td>
-<td>-0.187 (-10.1)</td>
-<td>-0.052 (-10.4)</td>
-</tr>
-</tbody>
-</table>
-<p>The pattern is the same as for constrained-alpha. The only cell where
-the unconstrained fit does worse than the baseline is Poisson GLM on
-RMSE (<code>+0.018</code>, <code>t = 2.9</code>) — still tiny in
-magnitude but pointing in the wrong direction; this is the same
-Poisson-RMSE corner that was soft under the constrained fit.</p>
-<h3 id="sensitivity-to-the-constant-alpha-specification">5.4 Sensitivity
-to the constant-alpha specification</h3>
-<p>§5.1 identified constrained-alpha INAD as the BIC-supported primary
-fit and unconstrained INAD as a sensitivity check. Comparing §5.2 and
-§5.3 row-by-row, <strong>the constrained fit is slightly but
-consistently better than the unconstrained fit on every (baseline,
-metric) cell</strong>. For example, RPS vs NB GLM is <code>-0.396</code>
-for constrained and <code>-0.386</code> for unconstrained (constrained
-gap is 0.01 larger in magnitude); RMSE and log score against the same
-baseline follow the same pattern, and the same is true for the NB GLMM
-and Poisson GLM comparisons. The Poisson-RMSE soft cell is also slightly
-stronger under the constrained fit.</p>
-<p>The constrained-minus-unconstrained gap is small relative to the
-INAD-vs-baseline deltas, so the qualitative predictive ranking of INAD
-against the GLM-family baselines is the same under either fit. But on
-prediction as on BIC, the constrained-alpha specification is the
-preferred choice — the extra 11 alpha parameters in the unconstrained
-fit do not buy back any predictive performance over the GLM-family
-baselines. The bolus predictive evidence therefore reinforces the §5.1
-primary-model decision rather than complicating it.</p>
-<h3 id="bolus-prediction-headline">5.5 Bolus prediction headline</h3>
+<p>How to read the table: constrained-alpha INAD is modestly but
+consistently better than unconstrained INAD on rolling one-step
+prediction. It is also better than NB GLM, NB GLMM, and Poisson GLM on
+RPS and log score with strong statistical reliability, and better than
+NB GLM and NB GLMM on RMSE. The only soft external-baseline cell is the
+Poisson GLM RMSE comparison, which is small and borderline by
+t-statistic.</p>
+<p>CGFM variants are not shown as numeric prediction rows in this table.
+The Henderson-Shimakura reproduction script validates the full-data
+independent, shared, and time-varying CGFM fits, but those fits have not
+yet been refit and scored inside each leave-two-out prediction fold. The
+independent CGFM has the same one-time marginal predictive family as a
+marginal NB GLM, because an independent Poisson-gamma mixture reduces to
+an NB distribution; a separate independent-CGFM prediction row would
+therefore be theoretically redundant with the NB-GLM-style marginal
+predictive row once the same mean and dispersion convention is used.
+Shared and time-varying CGFM prediction would be genuinely different
+because they use within-patient frailty history, but they require
+separate fold-wise prediction scripts.</p>
+<h3 data-number="1.5.3" id="bolus-prediction-headline"><span
+class="header-section-number">1.5.3</span> 5.3 Bolus prediction
+headline</h3>
 <p>On rolling one-step prediction, constrained-alpha INAD beats the
 marginal NB GLM, NB GLMM, and Poisson GLM on RPS. It also beats all
 three on RMSE except that the Poisson RMSE margin is small and only
 borderline by t-statistic. Log score is better than NB GLM, NB GLMM, and
-Poisson GLM. The unconstrained sensitivity tells the same qualitative
-story.</p>
-<h2 id="bolus-marginal-mean-and-variance-comparison">6. Bolus marginal
-mean and variance comparison</h2>
+Poisson GLM. The unconstrained sensitivity is now folded into the single
+comparison table and shows that constrained-alpha INAD is slightly
+better than unconstrained INAD across all three metrics.</p>
+<h2 data-number="1.6"
+id="bolus-marginal-mean-and-variance-comparison"><span
+class="header-section-number">1.6</span> 6. Bolus marginal mean and
+variance comparison</h2>
 <p>This section compares full-data fitted marginal moments with
 empirical bolus moments. CGFM is included here only, using published
 Henderson-Shimakura estimates. Relative discrepancy is
 <code>100 * (fitted - empirical) / empirical</code>; MARD is the mean
 absolute relative discrepancy.</p>
-<h3 id="mard-summary">6.1 MARD summary</h3>
+<h3 data-number="1.6.1" id="mard-summary"><span
+class="header-section-number">1.6.1</span> 6.1 MARD summary</h3>
 <p>MARD = <strong>Mean Absolute Relative Discrepancy</strong> across the
 12 time points, computed per model, per group, per moment. All values
 are reported as <strong>percentages</strong>: a MARD of 8.35 for G1 mean
@@ -735,11 +751,11 @@ inflates relative discrepancies for every model at that one cell. The
 ranking is robust to its exclusion.</p>
 <p><strong>Model ordering.</strong> All §6 tables list models in the
 consistent §4–§6 order: INAD variants (constrained then unconstrained),
-then count GLMs (Poisson, NB, NB GLMM), then CGFM (independent, shared).
-The Poisson GLM row here uses the <strong>marginal no-lag</strong>
-Poisson fit (<code>y ~ group + factor(time)</code>), which is the
-appropriate form for marginal-moment comparison; this is a different fit
-from the lag-aware predictive Poisson GLM used in §4 and §5.</p>
+then count GLMs (Poisson, NB, NB GLMM), then CGFM (independent, shared,
+time-varying). The Poisson GLM row here uses the no-lag Poisson fit
+(<code>y ~ group + factor(time)</code>), which is the appropriate form
+for marginal-moment comparison; this is a different fit from the
+lag-aware predictive Poisson GLM used in §4 and §5.</p>
 <p><strong>MARD headline (best per column in bold).</strong> U-INAD has
 the smallest MARD in 3 of 4 cells (G1 mean, G2 mean, G2 variance); C-α
 INAD wins G1 variance and the G1-variance sensitivity excluding t = 11.
@@ -781,7 +797,7 @@ INAD class therefore dominates marginal-moment reproduction on MARD.</p>
 <td><strong>19.72</strong></td>
 </tr>
 <tr>
-<td>Poisson GLM (marginal)</td>
+<td>Poisson GLM</td>
 <td>9.95</td>
 <td>59.70</td>
 <td>64.84</td>
@@ -820,6 +836,14 @@ INAD class therefore dominates marginal-moment reproduction on MARD.</p>
 <td>6.01</td>
 <td>41.83</td>
 </tr>
+<tr>
+<td>CGFM time-varying frailty</td>
+<td>8.96</td>
+<td>42.26</td>
+<td>29.70</td>
+<td>6.88</td>
+<td>21.08</td>
+</tr>
 </tbody>
 </table>
 <p><strong>Caveat on the C-α INAD variance row.</strong> The
@@ -834,7 +858,8 @@ unchanged. <strong>The qualitative interpretation is expected to be
 stable, but the constrained-α variance magnitudes should be treated as
 provisional until joint estimation is implemented.</strong> Future work;
 tracked in <code>inad-validation-revision-todo.md</code>.</p>
-<h3 id="group-1-mean-relative-discrepancy">6.2 Group 1 mean relative
+<h3 data-number="1.6.2" id="group-1-mean-relative-discrepancy"><span
+class="header-section-number">1.6.2</span> 6.2 Group 1 mean relative
 discrepancy (%)</h3>
 <p>Columns are in the consistent §4–§6 model order. Negative means
 fitted is below empirical.</p>
@@ -998,8 +1023,9 @@ fitted is below empirical.</p>
 </tr>
 </tbody>
 </table>
-<h3 id="group-1-variance-relative-discrepancy">6.3 Group 1 variance
-relative discrepancy (%)</h3>
+<h3 data-number="1.6.3" id="group-1-variance-relative-discrepancy"><span
+class="header-section-number">1.6.3</span> 6.3 Group 1 variance relative
+discrepancy (%)</h3>
 <p>Columns are in the consistent §4–§6 model order. Negative means
 fitted is below empirical.</p>
 <table style="width:100%;">
@@ -1162,7 +1188,8 @@ fitted is below empirical.</p>
 </tr>
 </tbody>
 </table>
-<h3 id="group-2-mean-relative-discrepancy">6.4 Group 2 mean relative
+<h3 data-number="1.6.4" id="group-2-mean-relative-discrepancy"><span
+class="header-section-number">1.6.4</span> 6.4 Group 2 mean relative
 discrepancy (%)</h3>
 <p>Columns are in the consistent §4–§6 model order. Negative means
 fitted is below empirical.</p>
@@ -1326,8 +1353,9 @@ fitted is below empirical.</p>
 </tr>
 </tbody>
 </table>
-<h3 id="group-2-variance-relative-discrepancy">6.5 Group 2 variance
-relative discrepancy (%)</h3>
+<h3 data-number="1.6.5" id="group-2-variance-relative-discrepancy"><span
+class="header-section-number">1.6.5</span> 6.5 Group 2 variance relative
+discrepancy (%)</h3>
 <p>Columns are in the consistent §4–§6 model order. Negative means
 fitted is below empirical.</p>
 <table style="width:100%;">
@@ -1490,8 +1518,10 @@ fitted is below empirical.</p>
 </tr>
 </tbody>
 </table>
-<h3 id="supporting-rank-and-worst-case-summaries-metric-sensitivity">6.6
-Supporting rank and worst-case summaries (metric sensitivity)</h3>
+<h3 data-number="1.6.6"
+id="supporting-rank-and-worst-case-summaries-metric-sensitivity"><span
+class="header-section-number">1.6.6</span> 6.6 Supporting rank and
+worst-case summaries (metric sensitivity)</h3>
 <p>MARD (§6.1) is the headline metric for the §6 comparison. As a
 sensitivity check on metric choice, three supporting per-cell summaries
 are reported here:</p>
@@ -1857,7 +1887,9 @@ overdispersed-capable model overshoots, Poisson happens to be closest
 only because it always underestimates. The “excl t = 11” table widens
 the INAD lead.</li>
 </ul>
-<h3 id="marginal-moment-headline">6.7 Marginal-moment headline</h3>
+<h3 data-number="1.6.7" id="marginal-moment-headline"><span
+class="header-section-number">1.6.7</span> 6.7 Marginal-moment
+headline</h3>
 <p><strong>MARD is the headline metric</strong> (§6.1); the §6.6
 rank/wins/max summaries are reported as a metric-sensitivity check. By
 MARD:</p>
@@ -1895,7 +1927,8 @@ rank sum 74 / 84). This quantitatively confirms bolus is meaningfully
 overdispersed and that any sensible count model needs more flexibility
 than Poisson.</li>
 </ol>
-<h2 id="cross-cutting-findings">7. Cross-cutting findings</h2>
+<h2 data-number="1.7" id="cross-cutting-findings"><span
+class="header-section-number">1.7</span> 7. Cross-cutting findings</h2>
 <ul>
 <li>Predictions are plug-in MLE conditional, not posterior
 predictive.</li>
@@ -1986,7 +2019,9 @@ profile-likelihood basis for both the interval and the displayed SE;
 other INAD parameters retain Wald SEs and Wald intervals. The profiling
 code loops over <code>tau[2]</code>, …, <code>tau[B]</code>, so the
 implementation extends naturally to 3+ groups.</p>
-<h2 id="implications-for-antedep">8. Implications for antedep</h2>
+<h2 data-number="1.8" id="implications-for-antedep"><span
+class="header-section-number">1.8</span> 8. Implications for
+antedep</h2>
 <p>Already landed: <code>.simulate_inad_forward()</code> and the public
 <code>predict.inad_fit()</code> S3 method in
 <code>R/predict_inad.R</code>, currently supporting
