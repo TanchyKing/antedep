@@ -361,7 +361,7 @@ test_homogeneity_inad <- function(y, blocks, order = 1,
   n_alpha <- switch(as.character(order),
                     "0" = 0,
                     "1" = n_time - 1,
-                    "2" = 2 * (n_time - 2))
+                    "2" = 2 * n_time - 3)
   n_theta <- n_time
 
   # NB innovation size params: count directly from the fit so this matches

@@ -29,6 +29,14 @@
 #'     \item \code{"complete"}: fit using complete-case subjects only.
 #'     \item \code{"marginalize"}: maximize observed-data likelihood under MAR.
 #'   }
+#' @param constrain Optional time-invariance constraint, for example
+#'   \code{"alpha"} for a common thinning parameter, \code{"innovation"} for
+#'   constant innovation parameters, or \code{"all"}; see
+#'   \code{\link{test_stationarity_inad}} for the full list. When supplied, the
+#'   unconstrained model is fitted first to provide starting values, and the
+#'   constrained model is then refitted by maximizing the observed-data
+#'   log-likelihood jointly over all remaining free parameters (including
+#'   negative binomial innovation sizes). Default \code{NULL} (no constraint).
 #'
 #' @return A list of class \code{"inad_fit"} containing:
 #' \describe{
@@ -73,7 +81,8 @@ fit_inad <- function(
         init_tau = 0.4,
         init_nb_inno_size = 1,
         nb_inno_size_ub = 50,
-        na_action = c("fail", "complete", "marginalize")
+        na_action = c("fail", "complete", "marginalize"),
+        constrain = NULL
 ) {
     thinning <- match.arg(thinning)
     innovation <- match.arg(innovation)
@@ -85,6 +94,19 @@ fit_inad <- function(
         stop("y must be a nonnegative integer matrix")
     }
     if (!(order %in% c(0, 1, 2))) stop("order must be 0, 1, or 2")
+    if (!is.null(constrain) && order == 0) stop("constrain requires order 1 or 2")
+
+    # Apply a time-invariance constraint, starting from the unconstrained fit.
+    finish <- function(fit_u, y_used, blocks_used) {
+        if (is.null(constrain)) return(fit_u)
+        .fit_constrained(
+            y = y_used, order = order, thinning = thinning, innovation = innovation,
+            blocks = blocks_used,
+            cinfo = .parse_constraint(constrain, order, ncol(y_used), innovation),
+            init_from = fit_u, na_action = na_action,
+            nb_inno_size_ub = nb_inno_size_ub, verbose = verbose
+        )
+    }
     if (!is.numeric(nb_inno_size_ub) || length(nb_inno_size_ub) != 1L ||
         !is.finite(nb_inno_size_ub) || nb_inno_size_ub <= 0) {
         stop("nb_inno_size_ub must be a positive finite scalar")
@@ -121,11 +143,11 @@ fit_inad <- function(
                 init_nb_inno_size = init_nb_inno_size,
                 nb_inno_size_ub = nb_inno_size_ub
             )
-            return(.finalize_inad_fit(
+            return(finish(.finalize_inad_fit(
                 fit, y = y, na_action = na_action,
                 blocks_id = blocks_id,
                 block_levels = if (is.null(blocks)) NULL else block_info$block_levels
-            ))
+            ), y, blocks))
         }
     }
 
@@ -140,7 +162,10 @@ fit_inad <- function(
             init_nb_inno_size = init_nb_inno_size,
             nb_inno_size_ub = nb_inno_size_ub
         )
-        return(.finalize_inad_fit(fit, y = y, na_action = na_action, blocks_id = NULL, block_levels = NULL))
+        return(finish(
+            .finalize_inad_fit(fit, y = y, na_action = na_action, blocks_id = NULL, block_levels = NULL),
+            y, NULL
+        ))
     }
 
     block_info <- .normalize_blocks(blocks, nrow(y))
@@ -160,11 +185,11 @@ fit_inad <- function(
         init_nb_inno_size = init_nb_inno_size,
         nb_inno_size_ub = nb_inno_size_ub
     )
-    .finalize_inad_fit(
+    finish(.finalize_inad_fit(
         fit, y = y, na_action = na_action,
         blocks_id = blocks_id,
         block_levels = block_info$block_levels
-    )
+    ), y, blocks)
 }
 
 #' @keywords internal
@@ -1362,5 +1387,14 @@ solve_theta_bell <- function(mu, lower = 0, upper = 10) {
     }
     if (!is.finite(fu) || fu < 0) return(NA_real_)
 
-    uniroot(f, c(lower, up))$root
+    # Bracket with uniroot, then polish by Newton's method so that the Bell
+    # parameter (and hence the likelihood) is a smooth function of the mean;
+    # uniroot's default tolerance alone leaves errors of order 1e-5.
+    theta <- uniroot(f, c(lower, up), tol = 1e-10)$root
+    for (k in seq_len(20)) {
+        step <- f(theta) / (exp(theta) * (1 + theta))
+        theta <- theta - step
+        if (abs(step) <= 1e-15 * max(1, abs(theta))) break
+    }
+    theta
 }

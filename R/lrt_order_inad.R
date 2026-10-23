@@ -132,8 +132,7 @@ test_order_inad <- function(y, order_null = 0, order_alt = 1,
   
   table <- data.frame(model = c(paste0("Order ", order_null), paste0("Order ", order_alt)),
                       order = c(order_null, order_alt), logLik = c(logL_null, logL_alt),
-                      n_params = c(.count_params_inad(order_null, n_time, n_blocks, thinning, innovation),
-                                   .count_params_inad(order_alt, n_time, n_blocks, thinning, innovation)),
+                      n_params = c(.count_params_inad_fit(fit_null), .count_params_inad_fit(fit_alt)),
                       BIC = c(bic_null, bic_alt), stringsAsFactors = FALSE)
   
   result <- list(
@@ -169,20 +168,35 @@ print.test_order_inad <- function(x, digits = 4, ...) {
   invisible(x)
 }
 
+#' Upper-tail probability of a chi-bar-square mixture
+#'
+#' The j = 0 component is a point mass at zero, so its upper-tail probability
+#' P(chi^2_0 >= stat) is 1 when stat <= 0 and 0 when stat > 0.
+#'
 #' @keywords internal
 .chi_bar_pvalue <- function(stat, r, weights = NULL) {
-  if (r == 0) return(as.numeric(stat > 0))
+  tail0 <- as.numeric(stat <= 0)
+  if (r == 0) return(tail0)
   if (is.null(weights)) weights <- choose(r, 0:r) * 2^(-r)
-  tails <- vapply(0:r, function(j) if (j == 0) as.numeric(stat > 0) else 1 - pchisq(stat, df = j), numeric(1))
+  tails <- vapply(0:r, function(j) {
+    if (j == 0) tail0 else stats::pchisq(stat, df = j, lower.tail = FALSE)
+  }, numeric(1))
   sum(weights * tails)
 }
 
+#' Free-parameter count of an unconstrained INAD model
+#'
+#' Matches \code{.count_params_inad_fit()}: order 2 has \code{2 * n_time - 3}
+#' thinning parameters (\eqn{\alpha_{2,1}}, then two per time point), and negative
+#' binomial innovations carry one size parameter per time point, as fitted by
+#' \code{fit_inad()}.
+#'
 #' @keywords internal
 .count_params_inad <- function(order, n_time, n_blocks, thinning, innovation) {
-  n_alpha <- switch(as.character(order), "0" = 0, "1" = n_time - 1, "2" = 2 * (n_time - 2))
+  n_alpha <- switch(as.character(order), "0" = 0, "1" = n_time - 1, "2" = 2 * n_time - 3)
   n_theta <- n_time
   n_tau <- max(0, n_blocks - 1)
-  n_nb_inno <- if (innovation == "nbinom") 1 else 0
+  n_nb_inno <- if (innovation == "nbinom") n_time else 0
   n_alpha + n_theta + n_tau + n_nb_inno
 }
 
@@ -231,7 +245,7 @@ bic_order_inad <- function(y, max_order = 2, thinning = "binom", innovation = "p
                                                  innovation = innovation, blocks = blocks, ...))
   names(fits) <- paste0("order_", orders)
   table <- data.frame(order = orders, logLik = sapply(fits, function(f) f$log_l),
-                      n_params = sapply(orders, function(ord) .count_params_inad(ord, n_time, n_blocks, thinning, innovation)),
+                      n_params = sapply(fits, .count_params_inad_fit),
                       stringsAsFactors = FALSE)
   table$BIC <- -2 * table$logLik + table$n_params * log(n_subjects)
   bic_vals <- stats::setNames(table$BIC, paste0("order_", orders))

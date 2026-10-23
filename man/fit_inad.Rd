@@ -18,7 +18,8 @@ fit_inad(
   init_tau = 0.4,
   init_nb_inno_size = 1,
   nb_inno_size_ub = 50,
-  na_action = c("fail", "complete", "marginalize")
+  na_action = c("fail", "complete", "marginalize"),
+  constrain = NULL
 )
 }
 \arguments{
@@ -56,6 +57,15 @@ parameter when \code{innovation = "nbinom"}. Default is 50.}
 \item \code{"complete"}: fit using complete-case subjects only.
 \item \code{"marginalize"}: maximize observed-data likelihood under MAR.
 }}
+
+\item{constrain}{Optional time-invariance constraint, for example
+\code{"alpha"} for a common thinning parameter, \code{"innovation"} for
+constant innovation parameters, or \code{"all"}; see
+\code{\link{test_stationarity_inad}} for the full list. When supplied, the
+unconstrained model is fitted first to provide starting values, and the
+constrained model is then refitted by maximizing the observed-data
+log-likelihood jointly over all remaining free parameters (including
+negative binomial innovation sizes). Default \code{NULL} (no constraint).}
 }
 \value{
 A list of class \code{"inad_fit"} containing:
