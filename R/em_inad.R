@@ -147,7 +147,8 @@ em_inad <- function(y, order = 1, thinning = "binom", innovation = "pois",
     convergence = if (converged) 0L else 1L,
     loglik_trace = loglik_trace,
     settings = list(order = order, thinning = thinning, innovation = innovation,
-                    n_subjects = n_subjects, n_time = n_time, method = "em")
+                    n_subjects = n_subjects, n_time = n_time, method = "em",
+                    nb_inno_size_ub = nb_inno_size_ub)
   )
   if (newton_polish) {
     pol <- .inad_newton_polish(y, result, blocks = if (n_blocks > 1L) blocks_id else NULL,
@@ -286,14 +287,16 @@ em_inad <- function(y, order = 1, thinning = "binom", innovation = "pois",
   a_lo <- 1e-12
   a_hi <- if (thinning == "binom") 1 - 1e-12 else Inf
   a1 <- par$a1; a2 <- par$a2
+  # When all predecessor counts are zero the coefficient is not identifiable
+  # (the update is 0/0) and is set to zero.
   for (i in 2:N) {
     den <- sum(y[, i - 1])
-    if (den > 0) a1[i] <- min(max(sum(es$EZ1[, i]) / den, a_lo), a_hi)
+    a1[i] <- if (den > 0) min(max(sum(es$EZ1[, i]) / den, a_lo), a_hi) else 0
   }
   if (order == 2) {
     for (i in 3:N) {
       den <- sum(y[, i - 2])
-      if (den > 0) a2[i] <- min(max(sum(es$EZ2[, i]) / den, a_lo), a_hi)
+      a2[i] <- if (den > 0) min(max(sum(es$EZ2[, i]) / den, a_lo), a_hi) else 0
     }
   }
 

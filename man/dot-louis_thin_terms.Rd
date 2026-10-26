@@ -11,6 +11,9 @@ A list with the score \code{s} and the negative second derivative
 \code{b} of \code{log P(alpha odot yprev = z)} with respect to alpha.
 }
 \description{
-Complete-data score and negative Hessian of one thinned count
+Valid for \code{0 < alpha} (and \code{alpha < 1} for binomial thinning). At
+\code{alpha = 0}, or binomial \code{alpha = 1}, the thinned count is
+degenerate and the conditional mean of this score is 0/0; see
+\code{.louis_thin_boundary}.
 }
 \keyword{internal}

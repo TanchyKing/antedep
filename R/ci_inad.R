@@ -16,7 +16,11 @@
 #' up to numerical error, except that numerical differentiation is unreliable
 #' for estimates very close to zero, for which the Louis calculation should be
 #' used. Estimates on the boundary of the parameter space (a thinning
-#' coefficient at zero) are held fixed and receive no Wald interval.
+#' coefficient at zero or, for binomial thinning, at one, or a negative binomial
+#' innovation size at its cap \code{nb_inno_size_ub}) are held fixed and
+#' receive no Wald interval. The information is computed from exact finite
+#' sums (up to floating-point arithmetic); the resulting Wald intervals are
+#' large-sample approximations.
 #'
 #' By default, intervals for the positive parameters (\code{alpha},
 #' \code{theta}, \code{nb_inno_size}) are formed on the log scale and

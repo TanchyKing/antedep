@@ -26,3 +26,9 @@ An \code{anova} data frame.
 \description{
 Compares one or more nested antedependence model fits in the order supplied.
 }
+\details{
+For INAD fits, a comparison between models of different orders is
+a boundary problem (the added thinning coefficients are zero under the
+smaller model), so no chi-square p-value is reported for it; see
+\code{\link{test_order_inad}}.
+}

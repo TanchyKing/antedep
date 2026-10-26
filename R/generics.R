@@ -495,6 +495,11 @@ vcov.inad_fit <- function(object, y, ...) {
 #' @param ... Additional fitted model objects.
 #' @param test Test label; only \code{"Chisq"} is currently supported.
 #'
+#' @details For INAD fits, a comparison between models of different orders is
+#' a boundary problem (the added thinning coefficients are zero under the
+#' smaller model), so no chi-square p-value is reported for it; see
+#' \code{\link{test_order_inad}}.
+#'
 #' @return An \code{anova} data frame.
 #'
 #' @name anova.antedep
@@ -511,4 +516,17 @@ anova.cat_fit <- function(object, ..., test = "Chisq") .ad_anova(object, ..., te
 
 #' @rdname anova.antedep
 #' @export
-anova.inad_fit <- function(object, ..., test = "Chisq") .ad_anova(object, ..., test = test)
+anova.inad_fit <- function(object, ..., test = "Chisq") {
+    out <- .ad_anova(object, ..., test = test)
+    ord <- vapply(c(list(object), list(...)), function(f) as.numeric(f$settings$order), numeric(1))
+    boundary <- c(FALSE, diff(ord) != 0)
+    if (any(boundary)) {
+        out[["Pr(>Chisq)"]][boundary] <- NA_real_
+        attr(out, "heading") <- c(
+            attr(out, "heading"),
+            paste("Order comparisons are boundary problems; no chi-square p-value is given",
+                  "for them (see test_order_inad).")
+        )
+    }
+    out
+}

@@ -151,7 +151,9 @@ summary(fit_inad_miss)
 ```{r}
 # Missing-data LRTs (observed-data likelihood)
 blocks_inad <- rep(1:2, each = nrow(y_inad_miss) / 2)
-test_order_inad(y_inad_miss, order_null = 0, order_alt = 1, blocks = blocks_inad)$p_value
+# Order comparisons are boundary problems: compare BIC (no calibrated p-value)
+ord_inad <- test_order_inad(y_inad_miss, order_null = 0, order_alt = 1, blocks = blocks_inad)
+c(LR = ord_inad$lrt_stat, BIC_order0 = ord_inad$bic_null, BIC_order1 = ord_inad$bic_alt)
 test_homogeneity_inad(y_inad_miss, blocks = blocks_inad, order = 1, test = "mean")$p_value
 ```
 

@@ -132,7 +132,12 @@ test_stationarity_inad <- function(y, order = 1, thinning = "binom", innovation 
 
   logL_uncon <- fit_unconstrained$log_l; logL_con <- fit_constrained$log_l
   lrt_stat <- 2 * (logL_uncon - logL_con)
-  if (lrt_stat < 0) { warning("LRT negative, setting to 0"); lrt_stat <- 0 }
+  # A constrained fit can exceed an unconstrained one only by rounding, unless
+  # the unconstrained fit is not at its maximum.
+  if (lrt_stat < -1e-6 * max(1, abs(logL_uncon))) {
+    warning("The constrained fit has a larger log-likelihood; LRT set to 0")
+  }
+  lrt_stat <- max(lrt_stat, 0)
   df <- constraint_info$df
   p_value <- pchisq(lrt_stat, df = df, lower.tail = FALSE)
 
@@ -225,8 +230,12 @@ print.test_stationarity_inad <- function(x, digits = 4, ...) {
 #' Fit an INAD model under time-invariance constraints
 #'
 #' Maximizes the observed-data log-likelihood jointly over all parameters left
-#' free by the constraint, using blockwise BOBYQA updates followed by a joint
-#' BOBYQA refinement, repeated until the log-likelihood stabilizes.
+#' free by the constraint. With complete data it first takes damped Newton
+#' steps with the exact score and information from pooled starting values
+#' (\code{settings$path = "newton"}); if the first-order conditions do not hold
+#' at the result, it continues with blockwise BOBYQA updates and a joint BOBYQA
+#' refinement, repeated until the log-likelihood stabilizes
+#' (\code{settings$path = "search"}).
 #'
 #' @return An \code{inad_fit} object whose \code{settings$constraint_df} records
 #'   the number of equality constraints, so that \code{n_params}, \code{aic},
@@ -243,7 +252,14 @@ print.test_stationarity_inad <- function(x, digits = 4, ...) {
   B <- block_info$n_blocks
   is_nb <- innovation == "nbinom"
   eps <- 1e-10
-  alpha_ub <- 1 - 1e-10  # same box as fit_inad()
+  # Family-specific limits for the thinning coefficients (alpha <= 1 only for
+  # binomial thinning); a coefficient common to all occasions gets its own limit.
+  ub_a1 <- if (cinfo$alpha1_const) .inad_alpha_upper(y, 1, thinning, common = TRUE)
+           else .inad_alpha_upper(y, 1, thinning)[2:N]
+  ub_a2 <- if (order == 2) {
+    if (cinfo$alpha2_const) .inad_alpha_upper(y, 2, thinning, common = TRUE)
+    else .inad_alpha_upper(y, 2, thinning)[3:N]
+  } else NULL
 
   # Starting values from the unconstrained fit when available.
   theta_default <- colMeans(y, na.rm = TRUE)
@@ -270,21 +286,53 @@ print.test_stationarity_inad <- function(x, digits = 4, ...) {
   }
   tau0[1] <- 0
 
+  # Fast path with complete data: pooled starting values, then Newton steps
+  # with the exact score and information. It is accepted when the first-order
+  # (Karush-Kuhn-Tucker) conditions hold; otherwise the derivative-free
+  # algorithm below continues from its result.
+  if (!anyNA(y)) {
+    fast <- .fit_constrained_newton(y, order, thinning, innovation,
+                                    blocks_id = if (B > 1L) blocks_id else NULL, B = B,
+                                    cinfo = cinfo, a1 = a1_0, a2 = a2_0, theta = theta0,
+                                    kappa = kappa0, tau = tau0,
+                                    nb_inno_size_ub = nb_inno_size_ub,
+                                    ub_a1 = ub_a1, ub_a2 = ub_a2)
+    if (!is.null(fast)) {
+      if (isTRUE(fast$kkt_ok)) {
+        f <- fast$fit
+        f$convergence <- 0L
+        f$settings <- list(order = order, thinning = thinning, innovation = innovation,
+                           n_subjects = n, n_time = N, method = "constrained", path = "newton",
+                           constraint = cinfo$description, constraint_df = cinfo$df,
+                           constraint_info = cinfo, nb_inno_size_ub = nb_inno_size_ub)
+        if (B == 1L) f$tau <- init_from$tau
+        return(.finalize_inad_fit(f, y = y, na_action = na_action,
+                                  blocks_id = if (B > 1L) blocks_id else NULL,
+                                  block_levels = if (B > 1L) block_info$block_levels else NULL))
+      }
+      au <- .unpack_alpha(order, fast$fit$alpha, N)
+      a1_0 <- au$a1; a2_0 <- au$a2
+      theta0 <- fast$fit$theta
+      if (is_nb) kappa0 <- fast$fit$nb_inno_size
+      if (B > 1L) tau0 <- fast$fit$tau
+    }
+  }
+
   # Free-parameter layout: one group per parameter type.
   groups <- list(); par0 <- numeric(0); lower <- numeric(0); upper <- numeric(0)
   add_group <- function(name, init, lb, ub) {
     idx <- length(par0) + seq_along(init)
     groups[[name]] <<- idx
     par0 <<- c(par0, init)
-    lower <<- c(lower, rep(lb, length(init)))
-    upper <<- c(upper, rep(ub, length(init)))
+    lower <<- c(lower, rep_len(lb, length(init)))
+    upper <<- c(upper, rep_len(ub, length(init)))
   }
-  clamp_a <- function(a) pmin(pmax(a, 1e-6), alpha_ub - 1e-6)
-  if (cinfo$alpha1_const) add_group("a1", clamp_a(mean(a1_0[2:N])), 0, alpha_ub)
-  else add_group("a1", clamp_a(a1_0[2:N]), 0, alpha_ub)
+  clamp_a <- function(a, ub) pmin(pmax(a, pmin(1e-6, ub / 2)), ub * (1 - 1e-6))
+  if (cinfo$alpha1_const) add_group("a1", clamp_a(mean(a1_0[2:N]), ub_a1), 0, ub_a1)
+  else add_group("a1", clamp_a(a1_0[2:N], ub_a1), 0, ub_a1)
   if (order == 2) {
-    if (cinfo$alpha2_const) add_group("a2", clamp_a(mean(a2_0[3:N])), 0, alpha_ub)
-    else add_group("a2", clamp_a(a2_0[3:N]), 0, alpha_ub)
+    if (cinfo$alpha2_const) add_group("a2", clamp_a(mean(a2_0[3:N]), ub_a2), 0, ub_a2)
+    else add_group("a2", clamp_a(a2_0[3:N], ub_a2), 0, ub_a2)
   }
   if (cinfo$theta_const) add_group("theta", max(mean(theta0), 1e-6), eps, 1e6)
   else add_group("theta", pmax(theta0, 1e-6), eps, 1e6)
@@ -381,7 +429,7 @@ print.test_stationarity_inad <- function(x, digits = 4, ...) {
     nb_inno_size = est$kappa, log_l = -value,
     convergence = if (converged) 0L else 1L,
     settings = list(order = order, thinning = thinning, innovation = innovation,
-                    n_subjects = n, n_time = N, method = "constrained",
+                    n_subjects = n, n_time = N, method = "constrained", path = "search",
                     constraint = cinfo$description, constraint_df = cinfo$df,
                     constraint_info = cinfo, nb_inno_size_ub = nb_inno_size_ub)
   )
@@ -399,6 +447,60 @@ print.test_stationarity_inad <- function(x, digits = 4, ...) {
   .finalize_inad_fit(fit, y = y, na_action = na_action,
                      blocks_id = if (B > 1L) blocks_id else NULL,
                      block_levels = if (B > 1L) block_info$block_levels else NULL)
+}
+
+#' Constrained fit by Newton steps from pooled starting values
+#'
+#' Replaces each constrained group of the unconstrained estimates by a pooled
+#' value (thinning coefficients weighted by their predecessor totals, with the
+#' innovation means shifted so that the fitted means are unchanged), then
+#' takes Newton steps with the exact score and information.
+#'
+#' @return \code{NULL} if the starting values are infeasible, otherwise a list
+#'   with the \code{fit} and \code{kkt_ok}.
+#' @keywords internal
+.fit_constrained_newton <- function(y, order, thinning, innovation, blocks_id, B, cinfo,
+                                    a1, a2, theta, kappa, tau, nb_inno_size_ub,
+                                    ub_a1, ub_a2) {
+  N <- ncol(y)
+  S <- colSums(y)
+  ybar <- colMeans(y)
+  mu <- .inad_effective_innovation_mean(theta, 0, innovation)
+  pool <- function(a, lag, ub) {
+    idx <- (lag + 1L):N
+    ac <- sum(a[idx] * S[idx - lag]) / max(sum(S[idx - lag]), 1e-12)
+    ac <- min(max(ac, 1e-6), ub * (1 - 1e-6))
+    mu[idx] <<- mu[idx] + (a[idx] - ac) * ybar[idx - lag]
+    a[idx] <- ac
+    a
+  }
+  if (cinfo$alpha1_const) a1 <- pool(a1, 1L, ub_a1)
+  if (order == 2 && cinfo$alpha2_const) a2 <- pool(a2, 2L, ub_a2)
+  mu <- pmax(mu, 0.05 * pmax(ybar, 1e-3))
+  if (cinfo$theta_const) mu[] <- mean(mu)
+  theta <- if (innovation == "bell") .bell_theta_from_mean(mu) else mu
+  if (!is.null(kappa) && cinfo$kappa_const) kappa[] <- exp(mean(log(kappa)))
+  fit <- list(
+    alpha = if (order == 2) cbind(a1, a2) else a1, theta = theta, nb_inno_size = kappa,
+    tau = if (B > 1L) tau else NULL,
+    settings = list(order = order, thinning = thinning, innovation = innovation,
+                    n_subjects = nrow(y), n_time = N, constraint_info = cinfo,
+                    nb_inno_size_ub = nb_inno_size_ub)
+  )
+  ll0 <- tryCatch(logL_inad(y = y, order = order, thinning = thinning, innovation = innovation,
+                            alpha = fit$alpha, theta = theta, nb_inno_size = kappa,
+                            blocks = blocks_id, tau = if (B > 1L) tau else 0),
+                  error = function(e) -Inf)
+  if (!is.finite(ll0)) return(NULL)
+  fit$log_l <- ll0
+  pol <- tryCatch(.inad_newton_polish(y, fit, blocks = blocks_id, nb_inno_size_ub = nb_inno_size_ub,
+                                      max_iter = 100),
+                  error = function(e) NULL)
+  if (is.null(pol) || !is.finite(pol$log_l)) return(NULL)
+  fit <- pol$fit
+  fit$log_l <- pol$log_l
+  k <- tryCatch(.inad_kkt_core(y, fit, blocks_id), error = function(e) NULL)
+  list(fit = fit, kkt_ok = !is.null(k) && isTRUE(k$kkt_ok))
 }
 
 #' Run All Stationarity-Related Tests for INAD

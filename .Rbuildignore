@@ -23,6 +23,7 @@
 ^\.claude$
 ^cran-comments\.md$
 ^Rplots\.pdf$
+^tests/testthat/Rplots\.pdf$
 ^\.Rhistory$
 ^\.\.Rcheck$
 ^antedep\.Rcheck$

@@ -52,10 +52,14 @@
     if (B > 1L) add("tau", "tau", paste0("tau[", 2:B, "]"), tau[2:B], 2:B)
     tab <- do.call(rbind, rows)
     # Estimates on the boundary of the parameter space (a thinning coefficient
-    # at zero, or a negative binomial size at its upper bound) have no Wald
+    # at zero or, for binomial thinning, at one, an innovation parameter at
+    # zero, or a negative binomial size at its upper bound) have no Wald
     # interval; they are held fixed in information calculations.
     kappa_ub <- if (!is.null(fit$settings$nb_inno_size_ub)) fit$settings$nb_inno_size_ub else 50
-    tab$boundary <- (tab$group %in% c("a1", "a2") & tab$est <= 1e-8) |
+    is_alpha <- tab$group %in% c("a1", "a2")
+    tab$boundary <- (is_alpha & tab$est <= 1e-8) |
+        (is_alpha & identical(fit$settings$thinning, "binom") & tab$est >= 1 - 1e-8) |
+        (tab$group == "theta" & tab$est <= 1e-8) |
         (tab$group == "kappa" & tab$est >= kappa_ub * (1 - 1e-6))
     list(tab = tab, a1 = au$a1, a2 = au$a2, theta = theta,
          kappa = kappa, tau = tau, cinfo = cinfo)
@@ -106,19 +110,73 @@
 
 #' Complete-data score and negative Hessian of one thinned count
 #'
+#' Valid for \code{0 < alpha} (and \code{alpha < 1} for binomial thinning). At
+#' \code{alpha = 0}, or binomial \code{alpha = 1}, the thinned count is
+#' degenerate and the conditional mean of this score is 0/0; see
+#' \code{.louis_thin_boundary}.
+#'
 #' @return A list with the score \code{s} and the negative second derivative
 #'   \code{b} of \code{log P(alpha odot yprev = z)} with respect to alpha.
 #' @keywords internal
 .louis_thin_terms <- function(z, yprev, alpha, thinning) {
-    a <- max(alpha, 1e-10)
+    a <- alpha
     if (thinning == "binom") {
-        a <- min(a, 1 - 1e-10)
         list(s = z / a - (yprev - z) / (1 - a), b = z / a^2 + (yprev - z) / (1 - a)^2)
     } else if (thinning == "pois") {
         list(s = z / a - yprev, b = z / a^2)
     } else {
         list(s = z / a - (yprev + z) / (1 + a), b = z / a^2 - (yprev + z) / (1 + a)^2)
     }
+}
+
+#' Is a thinning coefficient on a bound where the thinned count is degenerate?
+#' @keywords internal
+.thin_at_bound <- function(alpha, thinning) {
+    alpha == 0 || (thinning == "binom" && alpha == 1)
+}
+
+#' One-sided observed-data derivatives for a thinning coefficient on a bound
+#'
+#' At \code{alpha = 0} the thinned count \code{Z} is identically 0, and at
+#' binomial \code{alpha = 1} it equals \code{yprev}; the support of the
+#' complete-data distribution changes there, so the conditional mean of the
+#' complete-data score is 0/0 and Fisher's identity cannot be evaluated at the
+#' bound. The observed-data likelihood is \eqn{f(y) = \sum_z p_\alpha(z)
+#' h(y - z)}, where \eqn{h} is the pmf of the other components of \eqn{y}.
+#' With \eqn{n} = \code{yprev} and \eqn{H_k = h(y - k)}, the derivatives of
+#' \eqn{p_\alpha} at \eqn{\alpha = 0} are \eqn{-n, n, 0, \ldots} for \eqn{z =
+#' 0, 1, 2, \ldots} (all three thinning operators), so the right derivative is
+#' \eqn{n (H_1 / H_0 - 1)}. The second derivatives are \eqn{c, -2c, c} for
+#' \eqn{z = 0, 1, 2}, with \eqn{c = n(n - 1)}, \eqn{n^2}, and \eqn{n(n + 1)} for
+#' binomial, Poisson, and negative binomial thinning. Binomial thinning at
+#' \eqn{\alpha = 1} is the mirror image in \eqn{1 - \alpha}, with \eqn{z = n, n
+#' - 1, n - 2}, giving the left derivative \eqn{-n (H_{n-1} / H_n - 1)}.
+#'
+#' @param z Values of the thinned count on the latent grid.
+#' @param lp_other Log of the joint pmf of the other components at each grid
+#'   point.
+#' @return A named vector: the one-sided derivative \code{s} of
+#'   \code{log f(y)} with respect to alpha, and \code{b}, minus the one-sided
+#'   second derivative.
+#' @keywords internal
+.louis_thin_boundary <- function(z, lp_other, yprev, alpha, thinning) {
+    n <- as.numeric(yprev)  # drop any name, which c(s = ...) would extend
+    if (n == 0) return(c(s = 0, b = 0))
+    lse_at <- function(k) {
+        j <- z == k
+        if (any(j)) .log_sum_exp(lp_other[j]) else -Inf
+    }
+    if (alpha == 0) {
+        k0 <- 0; dir <- 1
+    } else {
+        k0 <- n; dir <- -1
+    }
+    l0 <- lse_at(k0)
+    r1 <- exp(lse_at(k0 + dir) - l0)
+    r2 <- exp(lse_at(k0 + 2 * dir) - l0)
+    cc <- switch(thinning, binom = n * (n - 1), pois = n^2, n * (n + 1))
+    d1 <- n * (r1 - 1)
+    c(s = dir * d1, b = -(cc * (1 - 2 * r1 + r2) - d1^2))
 }
 
 #' Louis score and information for the parameters entering time i
@@ -170,35 +228,55 @@
             par_inno <- m
         }
 
-        lp <- log(.innov_vec(w, par_inno, innovation, if (is_nb) kappa_i else NA_real_))
-        if (has_a1) lp <- lp + log(.thin_vec(z1, y[s, i - 1], a1[i], thinning))
-        if (has_a2) lp <- lp + log(.thin_vec(z2, y[s, i - 2], a2[i], thinning))
+        lp_w <- log(.innov_vec(w, par_inno, innovation, if (is_nb) kappa_i else NA_real_))
+        lp_1 <- if (has_a1) log(.thin_vec(z1, y[s, i - 1], a1[i], thinning)) else 0
+        lp_2 <- if (has_a2) log(.thin_vec(z2, y[s, i - 2], a2[i], thinning)) else 0
+        lp <- lp_w + lp_1 + lp_2
         lZ <- .log_sum_exp(lp)
         if (!is.finite(lZ)) stop("Zero likelihood contribution at time ", i, ", subject ", s)
         post <- exp(lp - lZ)
 
         S <- matrix(0, length(w), P, dimnames = list(NULL, nm))
         Bm <- matrix(0, P, P, dimnames = list(nm, nm))
+        # A coefficient on a bound where its thinned count is degenerate gets
+        # its exact one-sided score from .louis_thin_boundary and contributes
+        # nothing to the complete-data score matrix S; its row and column of
+        # the information hold only the one-sided curvature. Such coefficients
+        # are held fixed or moved off the bound by a line search, never by a
+        # Newton step, so their cross terms are not needed.
+        bnd_score <- stats::setNames(numeric(P), nm)
         if (has_a1) {
-            tt <- .louis_thin_terms(z1, y[s, i - 1], a1[i], thinning)
-            S[, "a1"] <- tt$s; Bm["a1", "a1"] <- sum(post * tt$b)
+            if (.thin_at_bound(a1[i], thinning)) {
+                tb1 <- .louis_thin_boundary(z1, lp_w + lp_2, y[s, i - 1], a1[i], thinning)
+                bnd_score["a1"] <- tb1[["s"]]; Bm["a1", "a1"] <- tb1[["b"]]
+            } else {
+                tt <- .louis_thin_terms(z1, y[s, i - 1], a1[i], thinning)
+                S[, "a1"] <- tt$s; Bm["a1", "a1"] <- sum(post * tt$b)
+            }
         }
         if (has_a2) {
-            tt <- .louis_thin_terms(z2, y[s, i - 2], a2[i], thinning)
-            S[, "a2"] <- tt$s; Bm["a2", "a2"] <- sum(post * tt$b)
+            if (.thin_at_bound(a2[i], thinning)) {
+                tb2 <- .louis_thin_boundary(z2, lp_w + lp_1, y[s, i - 2], a2[i], thinning)
+                bnd_score["a2"] <- tb2[["s"]]; Bm["a2", "a2"] <- tb2[["b"]]
+            } else {
+                tt <- .louis_thin_terms(z2, y[s, i - 2], a2[i], thinning)
+                S[, "a2"] <- tt$s; Bm["a2", "a2"] <- sum(post * tt$b)
+            }
         }
 
         # Innovation terms. For Poisson and negative binomial innovations the
         # mean m = theta_i + tau_b, so d m / d theta_i = d m / d tau_b = 1.
+        # The innovation pmf is zero for m <= 0, so m > 0 here, and the
+        # conditional means below are exact for any m > 0.
         mean_nm <- c("theta", tnm)
         if (innovation == "pois") {
-            mm <- max(m, 1e-12)
+            mm <- m
             s_m <- w / mm - 1
             b_mm <- sum(post * w / mm^2)
             for (a in mean_nm) S[, a] <- s_m
             Bm[mean_nm, mean_nm] <- b_mm
         } else if (innovation == "nbinom") {
-            mm <- max(m, 1e-12); k <- max(kappa_i, 1e-12)
+            mm <- m; k <- max(kappa_i, 1e-12)
             s_m <- w / mm - (w + k) / (k + mm)
             for (a in mean_nm) S[, a] <- s_m
             S[, "kappa"] <- digamma(w + k) - digamma(k) + log(k / (k + mm)) + (mm - w) / (k + mm)
@@ -228,7 +306,7 @@
             }
         }
         ES <- colSums(post * S)
-        score <- score + ES
+        score <- score + ES + bnd_score
         info <- info + Bm - (crossprod(S, post * S) - tcrossprod(ES))
     }
     list(score = score, info = info)
@@ -347,6 +425,77 @@
     list(info = info, fp = fp)
 }
 
+#' Observed-data log-likelihood of a fit-like list, as a function of the fit
+#' @keywords internal
+.inad_loglik_fun <- function(y, fit, blocks = NULL) {
+    ord <- fit$settings$order
+    thinning <- fit$settings$thinning
+    innovation <- fit$settings$innovation
+    B <- if (!is.null(blocks) && !is.null(fit$tau) && length(fit$tau) > 1L) length(fit$tau) else 1L
+    if (B == 1L) blocks <- NULL
+    function(f) {
+        tryCatch(
+            logL_inad(y = y, order = ord, thinning = thinning, innovation = innovation,
+                      alpha = f$alpha, theta = f$theta, nb_inno_size = f$nb_inno_size,
+                      blocks = blocks, tau = if (B > 1L) f$tau else 0),
+            error = function(e) -Inf
+        )
+    }
+}
+
+#' Line search along one free parameter, starting from a bound
+#'
+#' Maximizes the observed-data log-likelihood over the parameter in row
+#' \code{k} of the free-parameter table, all other parameters fixed, between
+#' its current value and \code{lim}. The search starts with a step of size
+#' \code{t0} towards \code{lim}, shortens it until the log-likelihood
+#' increases, lengthens it while the log-likelihood keeps increasing, and
+#' finishes with \code{stats::optimize} on the bracket found.
+#'
+#' @return A list with the best value \code{par}, the log-likelihood increase
+#'   \code{gain} (0 if no increase was found), and the corresponding \code{fit}.
+#' @keywords internal
+.inad_coord_search <- function(loglik, fit, fp, k, lim, t0, N, ll0 = loglik(fit)) {
+    v0 <- fp$tab$est
+    a <- v0[k]
+    fit_at <- function(x) {
+        v <- v0
+        v[k] <- x
+        .inad_set_free(fit, fp, v, N)
+    }
+    phi <- function(x) {
+        ll <- loglik(fit_at(x))
+        if (is.finite(ll)) ll - ll0 else -Inf
+    }
+    d <- lim - a
+    none <- list(par = a, gain = 0, fit = fit)
+    if (!is.finite(d) || d == 0) return(none)
+    t <- sign(d) * min(abs(t0), abs(d))
+    p1 <- phi(a + t)
+    shrink <- 0
+    while (!(p1 > 0) && shrink < 40) {
+        t <- t / 4
+        p1 <- phi(a + t)
+        shrink <- shrink + 1
+    }
+    if (!(p1 > 0)) return(none)
+    while (abs(2 * t) <= abs(d)) {
+        p2 <- phi(a + 2 * t)
+        if (!(p2 > p1)) break
+        t <- 2 * t
+        p1 <- p2
+    }
+    hi <- if (abs(2 * t) <= abs(d)) a + 2 * t else lim
+    opt <- stats::optimize(phi, interval = sort(c(a, hi)), maximum = TRUE,
+                           tol = 1e-10 * max(abs(t), 1e-12))
+    if (is.finite(opt$objective) && opt$objective > p1) {
+        best <- opt$maximum; gain <- opt$objective
+    } else {
+        best <- a + t; gain <- p1
+    }
+    list(par = best, gain = gain, fit = fit_at(best))
+}
+
 #' Newton polish of an INAD fit using the exact score and information
 #'
 #' Takes Newton-Raphson steps on the free parameters, using the Louis score and
@@ -365,19 +514,12 @@
     innovation <- fit$settings$innovation
     B <- if (!is.null(blocks) && !is.null(fit$tau) && length(fit$tau) > 1L) length(fit$tau) else 1L
     if (B == 1L) blocks <- NULL
-    loglik <- function(f) {
-        tryCatch(
-            logL_inad(y = y, order = ord, thinning = thinning, innovation = innovation,
-                      alpha = f$alpha, theta = f$theta, nb_inno_size = f$nb_inno_size,
-                      blocks = blocks, tau = if (B > 1L) f$tau else 0),
-            error = function(e) -Inf
-        )
-    }
+    loglik <- .inad_loglik_fun(y, fit, blocks)
     in_space <- function(tab, v) {
         a <- v[tab$group %in% c("a1", "a2")]
         th <- v[tab$group == "theta"]
         kp <- v[tab$group == "kappa"]
-        all(a >= 0) && (thinning != "binom" || all(a < 1)) && all(a < 1 - 1e-10) &&
+        all(a >= 0) && (thinning != "binom" || all(a < 1)) &&
             all(th > 0) && all(kp > 0) && all(kp <= nb_inno_size_ub)
     }
     ll <- loglik(fit)
@@ -386,32 +528,131 @@
         if (is.null(li)) break
         tab <- li$fp$tab
         est <- tab$est
+        # Coefficients exactly on a bound where the thinned count is degenerate
+        # (alpha = 0, or binomial alpha = 1) have a one-sided score. If it
+        # points into the parameter space, the coefficient is moved off the
+        # bound by a line search on the observed log-likelihood, and Newton
+        # steps continue from the interior on the next iteration. Coefficients
+        # that the search cannot move are held on the bound.
+        is_a <- tab$group %in% c("a1", "a2")
+        on_bnd <- is_a & vapply(est, .thin_at_bound, logical(1), thinning = thinning)
+        inward <- on_bnd & ((est == 0 & li$score > 0) | (est == 1 & li$score < 0))
+        stuck <- rep(FALSE, length(est))
+        if (any(inward)) {
+            moved <- FALSE
+            for (k in which(inward)) {
+                lim <- if (est[k] == 1) 0 else if (thinning == "binom") 1 - 1e-10 else est[k] + 1e3
+                ikk <- li$info[k, k]
+                t0 <- if (is.finite(ikk) && ikk > 0) abs(li$score[k]) / ikk else 1e-4
+                cs <- .inad_coord_search(loglik, fit, li$fp, k, lim, t0, N, ll0 = ll)
+                if (cs$gain > 0) {
+                    fit <- cs$fit
+                    ll <- ll + cs$gain
+                    # Later searches rebuild the fit from these values.
+                    li$fp$tab$est[k] <- cs$par
+                    moved <- TRUE
+                } else {
+                    stuck[k] <- TRUE
+                }
+            }
+            if (moved) next
+        }
         # Active set: parameters on the boundary whose score points out of the
-        # parameter space stay fixed (Karush-Kuhn-Tucker conditions).
-        at_lower <- tab$group %in% c("a1", "a2", "kappa") & est <= 1e-8 & li$score < 0
-        at_upper <- tab$group == "kappa" & est >= nb_inno_size_ub * (1 - 1e-8) & li$score > 0
+        # parameter space stay fixed (Karush-Kuhn-Tucker conditions). A zero
+        # score at zero also fixes a coefficient that is not identifiable.
+        at_lower <- (tab$group %in% c("a1", "a2", "theta", "kappa") & est <= 1e-8 & li$score <= 0) |
+            stuck | (on_bnd & est == 0)
+        at_upper <- (tab$group == "kappa" & est >= nb_inno_size_ub * (1 - 1e-8) & li$score > 0) |
+            (thinning == "binom" & is_a & est >= 1 - 1e-8 & li$score > 0) | (on_bnd & est == 1)
         free <- !(at_lower | at_upper)
         if (!any(free)) break
+        Iff <- li$info[free, free, drop = FALSE]
+        sf <- li$score[free]
+        try_step <- function(step, lam_min) {
+            # Step halving; returns the accepted candidate or NULL.
+            lam <- 1
+            while (lam >= lam_min) {
+                v <- est + lam * step
+                if (in_space(li$fp$tab, v)) {
+                    cand <- .inad_set_free(fit, li$fp, v, N)
+                    ll_c <- loglik(cand)
+                    if (is.finite(ll_c) && ll_c >= ll - 1e-9) {
+                        return(list(fit = cand, ll = ll_c, change = max(abs(lam * step))))
+                    }
+                }
+                lam <- lam / 2
+            }
+            NULL
+        }
+        lower_grp <- tab$group %in% c("a1", "a2", "theta", "kappa")
         step <- numeric(length(est))
-        sol <- tryCatch(solve(li$info[free, free, drop = FALSE], li$score[free]),
-                        error = function(e) NULL)
-        if (is.null(sol) || any(!is.finite(sol))) break
-        step[free] <- sol
-        lam <- 1
-        accepted <- FALSE
-        while (lam >= 1 / 1024) {
-            v <- est + lam * step
-            if (in_space(li$fp$tab, v)) {
+        sol <- tryCatch(solve(Iff, sf), error = function(e) NULL)
+        # A parameter already on its lower bound whose Newton step points out of
+        # the parameter space is held there and the step recomputed.
+        for (k in seq_len(5)) {
+            if (is.null(sol) || any(!is.finite(sol))) break
+            step[] <- 0
+            step[free] <- sol
+            hold <- free & lower_grp & est <= 1e-8 & step < 0
+            if (!any(hold)) break
+            free <- free & !hold
+            if (!any(free)) {
+                sol <- NULL
+                break
+            }
+            Iff <- li$info[free, free, drop = FALSE]
+            sf <- li$score[free]
+            sol <- tryCatch(solve(Iff, sf), error = function(e) NULL)
+        }
+        if (!any(free)) break
+        acc <- NULL
+        if (!is.null(sol) && all(is.finite(sol))) {
+            step[] <- 0
+            step[free] <- sol
+            # Projection: parameters that the full step would take below their
+            # lower bound are moved onto the bound, and the move is kept if the
+            # log-likelihood does not decrease; the active-set rule then holds
+            # them there. Without this, a coefficient slightly above zero whose
+            # score points outward makes the step-halving search stall.
+            cross <- free & lower_grp & est > 1e-8 & est + step < 0
+            if (any(cross)) {
+                v <- est
+                v[cross] <- ifelse(tab$group[cross] %in% c("a1", "a2"), 0, 1e-10)
                 cand <- .inad_set_free(fit, li$fp, v, N)
                 ll_c <- loglik(cand)
                 if (is.finite(ll_c) && ll_c >= ll - 1e-9) {
-                    fit <- cand; ll <- max(ll, ll_c); accepted <- TRUE
-                    break
+                    fit <- cand
+                    ll <- max(ll, ll_c)
+                    next
                 }
             }
-            lam <- lam / 2
+            acc <- try_step(step, 1 / 1024)
+            if (!is.null(acc)) {
+                fit <- acc$fit
+                ll <- max(ll, acc$ll)
+                if (acc$change < tol) break
+                next
+            }
         }
-        if (!accepted || max(abs(lam * step)) < tol) break
+        # Damped (Levenberg-Marquardt) steps when the Newton step fails, as far
+        # from the maximum, where the observed information need not be positive
+        # definite: a large damping gives a short step along the score, which
+        # increases the log-likelihood.
+        d <- pmax(abs(diag(Iff)), 1e-8)
+        mu <- 1e-3
+        while (is.null(acc) && mu <= 1e10) {
+            sol <- tryCatch(solve(Iff + mu * diag(d, nrow = length(d)), sf), error = function(e) NULL)
+            if (!is.null(sol) && all(is.finite(sol))) {
+                step <- numeric(length(est))
+                step[free] <- sol
+                acc <- try_step(step, 1 / 8)
+                if (!is.null(acc) && acc$ll <= ll + 1e-12) acc <- NULL
+            }
+            mu <- mu * 10
+        }
+        if (is.null(acc)) break
+        fit <- acc$fit
+        ll <- max(ll, acc$ll)
     }
     list(fit = fit, log_l = ll)
 }

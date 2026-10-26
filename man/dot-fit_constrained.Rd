@@ -27,7 +27,11 @@ and \code{bic} count only the free parameters.
 }
 \description{
 Maximizes the observed-data log-likelihood jointly over all parameters left
-free by the constraint, using blockwise BOBYQA updates followed by a joint
-BOBYQA refinement, repeated until the log-likelihood stabilizes.
+free by the constraint. With complete data it first takes damped Newton
+steps with the exact score and information from pooled starting values
+(\code{settings$path = "newton"}); if the first-order conditions do not hold
+at the result, it continues with blockwise BOBYQA updates and a joint BOBYQA
+refinement, repeated until the log-likelihood stabilizes
+(\code{settings$path = "search"}).
 }
 \keyword{internal}
