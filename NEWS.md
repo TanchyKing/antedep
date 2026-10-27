@@ -1,3 +1,15 @@
+# antedep 0.3.1
+
+## Documentation
+- The examples of `ci_inad()`, `test_homogeneity_inad()`, and
+  `run_homogeneity_tests_inad()` use the first four occasions of the bolus
+  data and Poisson innovations, so that they run in seconds;
+  `test_homogeneity_inad()` now shows how fits are reused across tests.
+- The reference in `test_homogeneity_inad()` now cites the INAD manuscript as
+  under review.
+- No change in computations: every function returns the same results as in
+  0.3.0.
+
 # antedep 0.3.0
 
 ## New features

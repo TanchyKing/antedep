@@ -65,10 +65,10 @@
 #' @examples
 #' \donttest{
 #' data("bolus_inad", package = "antedep")
-#' y <- bolus_inad$y
+#' y <- bolus_inad$y[, 1:4]  # first four occasions, to keep the example short
 #' blocks <- bolus_inad$blocks
-#' fit <- fit_inad(y, order = 1, thinning = "binom", innovation = "bell", blocks = blocks)
-#' ci <- ci_inad(y, fit, blocks = blocks)
+#' fit <- fit_inad(y, order = 1, thinning = "binom", innovation = "pois", blocks = blocks)
+#' ci <- ci_inad(y, fit, blocks = blocks, profile_tau = FALSE)
 #' ci$alpha
 #' ci$theta
 #' ci$tau

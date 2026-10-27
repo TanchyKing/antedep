@@ -1,6 +1,6 @@
 Package: antedep
 Title: Antedependence Models for Longitudinal Data
-Version: 0.3.0
+Version: 0.3.1
 Authors@R: c(
     person("Chenyang", "Li", email = "chenyang-li@uiowa.edu", 
            role = c("aut", "cre")),
