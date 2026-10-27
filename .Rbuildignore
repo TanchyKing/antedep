@@ -17,6 +17,7 @@
 ^_pkgdown\.yml$
 ^docs$
 ^LOCAL_CHECKS\.md$
+^inst/dev-notes$
 ^antedep-reference-manual\.pdf$
 ^antedep-reference-manual-.*\.pdf$
 ^\.git$
